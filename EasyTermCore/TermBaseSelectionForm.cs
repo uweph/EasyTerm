@@ -12,7 +12,7 @@ namespace EasyTermCore
 {
     public partial class TermBaseSelectionForm : Form
     {
-        TermbaseSet _TermbaseSet;
+        TermBaseSet _TermbaseSet;
         bool _DataChanged = false;
 
         // ********************************************************************************
@@ -24,7 +24,7 @@ namespace EasyTermCore
         /// <created>UPh,29.08.2015</created>
         /// <changed>UPh,29.08.2015</changed>
         // ********************************************************************************
-        public TermBaseSelectionForm(TermbaseSet set)
+        public TermBaseSelectionForm(TermBaseSet set)
         {
             InitializeComponent();
             _TermbaseSet = set;

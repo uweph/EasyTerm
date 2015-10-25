@@ -241,18 +241,18 @@ namespace EasyTermCore
         /// <created>UPh,29.08.2015</created>
         /// <changed>UPh,29.08.2015</changed>
         // ********************************************************************************
-        internal void FillList(TermbaseSet set)
+        internal void FillList(TermBaseSet set)
         {
             Items.Clear();
             
             Items.AddRange(set.Files.ToArray());            
         }
 
-        public delegate void ActiveChangedHandler(object sender, ActiveChangedEventArgs e);
-        public event ActiveChangedHandler ActiveChanged;
+        internal delegate void ActiveChangedHandler(object sender, ActiveChangedEventArgs e);
+        internal event ActiveChangedHandler ActiveChanged;
     }
 
-    public class ActiveChangedEventArgs : EventArgs
+    internal class ActiveChangedEventArgs : EventArgs
     {
         public TermBaseFile File{ get; set; }
 

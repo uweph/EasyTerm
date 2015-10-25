@@ -9,14 +9,25 @@ using System.Xml;
 
 namespace EasyTermCore
 {
-    public class TermbaseSet
+    public class TermBaseSet
     {
-        public List<TermBaseFile> Files { get; private set; }
         public string SettingsFile { get; set; }
 
-        public TermbaseSet()
+        // Access for term base queries
+        public TermBaseQuery Query{get; private set;}
+
+        // ********************************************************************************
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        /// <created>UPh,25.10.2015</created>
+        /// <changed>UPh,25.10.2015</changed>
+        // ********************************************************************************
+        public TermBaseSet()
         {
             Files = new List<TermBaseFile>();
+            Query = new TermBaseQuery(this);
         }
 
 
@@ -225,6 +236,9 @@ namespace EasyTermCore
             return null;
         }
 
+        internal List<TermBaseFile> Files { get; private set; }
+
+
     }
 
     // --------------------------------------------------------------------------------
@@ -232,7 +246,7 @@ namespace EasyTermCore
     /// 
     /// </summary>
     // --------------------------------------------------------------------------------
-    public class TermBaseFile
+    internal class TermBaseFile
     {
         public TermBaseFile(string storagePath)
         {

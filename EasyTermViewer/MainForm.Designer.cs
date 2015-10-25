@@ -28,9 +28,14 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.cmdTermBases = new System.Windows.Forms.ToolStripButton();
+            this.txtFindTerm = new System.Windows.Forms.TextBox();
+            this.timerFilter = new System.Windows.Forms.Timer(this.components);
+            this.lstTerms = new EasyTermViewer.TermListBox();
+            this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.toolStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -54,14 +59,51 @@
             this.cmdTermBases.Text = "Termbases...";
             this.cmdTermBases.Click += new System.EventHandler(this.cmdTermBases_Click);
             // 
+            // txtFindTerm
+            // 
+            this.txtFindTerm.Location = new System.Drawing.Point(0, 29);
+            this.txtFindTerm.Name = "txtFindTerm";
+            this.txtFindTerm.Size = new System.Drawing.Size(144, 20);
+            this.txtFindTerm.TabIndex = 2;
+            this.txtFindTerm.TextChanged += new System.EventHandler(this.txtFindTerm_TextChanged);
+            this.txtFindTerm.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtFindTerm_KeyDown);
+            // 
+            // timerFilter
+            // 
+            this.timerFilter.Tick += new System.EventHandler(this.timerFilter_Tick);
+            // 
+            // lstTerms
+            // 
+            this.lstTerms.BackColor = System.Drawing.SystemColors.Window;
+            this.lstTerms.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnHeader1});
+            this.lstTerms.FullRowSelect = true;
+            this.lstTerms.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
+            this.lstTerms.HideSelection = false;
+            this.lstTerms.Location = new System.Drawing.Point(0, 55);
+            this.lstTerms.MultiSelect = false;
+            this.lstTerms.Name = "lstTerms";
+            this.lstTerms.Size = new System.Drawing.Size(144, 455);
+            this.lstTerms.TabIndex = 3;
+            this.lstTerms.UseCompatibleStateImageBehavior = false;
+            this.lstTerms.View = System.Windows.Forms.View.Details;
+            this.lstTerms.VirtualMode = true;
+            // 
+            // columnHeader1
+            // 
+            this.columnHeader1.Width = 96;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(814, 510);
+            this.Controls.Add(this.lstTerms);
+            this.Controls.Add(this.txtFindTerm);
             this.Controls.Add(this.toolStrip1);
             this.Name = "MainForm";
             this.Text = "Easy Term Viewer";
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.MainForm_FormClosed);
             this.toolStrip1.ResumeLayout(false);
             this.toolStrip1.PerformLayout();
             this.ResumeLayout(false);
@@ -73,6 +115,10 @@
 
         private System.Windows.Forms.ToolStrip toolStrip1;
         private System.Windows.Forms.ToolStripButton cmdTermBases;
+        private System.Windows.Forms.TextBox txtFindTerm;
+        private TermListBox lstTerms;
+        private System.Windows.Forms.Timer timerFilter;
+        private System.Windows.Forms.ColumnHeader columnHeader1;
     }
 }
 
