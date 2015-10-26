@@ -78,7 +78,7 @@
             this.lstTerms.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.columnHeader1});
             this.lstTerms.FullRowSelect = true;
-            this.lstTerms.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
+            this.lstTerms.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
             this.lstTerms.HideSelection = false;
             this.lstTerms.Location = new System.Drawing.Point(0, 55);
             this.lstTerms.MultiSelect = false;

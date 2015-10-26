@@ -10,7 +10,7 @@ using System.Windows.Forms;
 
 namespace EasyTermCore
 {
-    public partial class TermBaseSelectionForm : Form
+    internal partial class TermBaseSelectionForm : Form
     {
         TermBaseSet _TermbaseSet;
         bool _DataChanged = false;

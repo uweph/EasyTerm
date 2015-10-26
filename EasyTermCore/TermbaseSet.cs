@@ -16,6 +16,9 @@ namespace EasyTermCore
         // Access for term base queries
         public TermBaseQuery Query{get; private set;}
 
+        internal TermBases TermBases {get; private set;}
+
+
         // ********************************************************************************
         /// <summary>
         /// 
@@ -27,6 +30,7 @@ namespace EasyTermCore
         public TermBaseSet()
         {
             Files = new List<TermBaseFile>();
+            TermBases = new TermBases();
             Query = new TermBaseQuery(this);
         }
 
@@ -87,7 +91,7 @@ namespace EasyTermCore
         /// <created>UPh,28.08.2015</created>
         /// <changed>UPh,28.08.2015</changed>
         // ********************************************************************************
-        public void Load()
+        private void Load()
         {
             ClearData();
             if (!File.Exists(SettingsFile))
@@ -136,6 +140,8 @@ namespace EasyTermCore
             Load();
             if (AddLocalFiles())
                 Save();
+
+            UpdateTermBases();
         }
 
 
@@ -176,7 +182,8 @@ namespace EasyTermCore
                 var filteredFiles = Directory
                     .EnumerateFiles(searchpath)
                     .Where(file => string.Compare(Path.GetExtension(file), ".tbx", true) == 0 ||
-                                   string.Compare(Path.GetExtension(file), ".sdltb", true) == 0)
+                                   string.Compare(Path.GetExtension(file), ".sdltb", true) == 0 || 
+                                   string.Compare(Path.GetExtension(file), ".csv", true) == 0)
                     .ToList();
 
                 // Loop files
@@ -238,6 +245,50 @@ namespace EasyTermCore
 
         internal List<TermBaseFile> Files { get; private set; }
 
+
+
+        // ********************************************************************************
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        /// <created>UPh,25.10.2015</created>
+        /// <changed>UPh,25.10.2015</changed>
+        // ********************************************************************************
+        public void EditTermBases()
+        {
+            Query.PauseRequests();
+
+            try
+            {
+                using (TermBaseSelectionForm form = new TermBaseSelectionForm(this))
+                {
+                    form.ShowDialog();
+                }
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+            finally
+            {
+                Query.ResumeRequests();
+                UpdateTermBases();
+            }
+        }
+
+        // ********************************************************************************
+        /// <summary>
+        /// Updates the actual termbase list to be in sync with this TermBaseFile list
+        /// </summary>
+        /// <returns></returns>
+        /// <created>UPh,25.10.2015</created>
+        /// <changed>UPh,25.10.2015</changed>
+        // ********************************************************************************
+        void UpdateTermBases()
+        {
+            TermBases.Update(this);
+        }
 
     }
 

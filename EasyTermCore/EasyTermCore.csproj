@@ -41,6 +41,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="TermBase.cs" />
+    <Compile Include="TermBaseCSV\TermBaseCSV.cs" />
     <Compile Include="TermBaseFileList.cs">
       <SubType>Component</SubType>
     </Compile>

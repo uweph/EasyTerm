@@ -20,7 +20,7 @@ namespace EasyTermCore
         internal TermBaseQuery(TermBaseSet termbaseSet)
         {
             _TermbaseSet = termbaseSet;
-            _Worker = new TermBaseQueryWorker(this, _TermbaseSet);
+            _Worker = new TermBaseQueryWorker(this,_TermbaseSet.TermBases);
         }
 
 
@@ -99,7 +99,31 @@ namespace EasyTermCore
         }
         
 
+        // ********************************************************************************
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        /// <created>UPh,25.10.2015</created>
+        /// <changed>UPh,25.10.2015</changed>
+        // ********************************************************************************
+        internal void PauseRequests()
+        {
+            _Worker.PauseRequests();
+        }
 
+        // ********************************************************************************
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        /// <created>UPh,25.10.2015</created>
+        /// <changed>UPh,25.10.2015</changed>
+        // ********************************************************************************
+        internal void ResumeRequests()
+        {
+            _Worker.ResumeRequests();
+        }
         
         
 #endregion
@@ -155,7 +179,7 @@ namespace EasyTermCore
     public class TermListItem
     {
         public string Term {get; internal set;}
-        public int TermID {get; set;}
+        public long TermID {get; set;}
     }
 
     // --------------------------------------------------------------------------------

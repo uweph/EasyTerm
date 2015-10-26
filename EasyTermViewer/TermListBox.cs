@@ -70,14 +70,26 @@ namespace EasyTermViewer
 
             _FilterSize = 0;
 
+            // Split to parts
+            string[] parts = word.Split(' ');
+
             for (int i = 0; i < _Items.Count; i++)
             {
                 TermListItem item = _Items[i];
 
-                if (item.Term.IndexOf(word, StringComparison.InvariantCultureIgnoreCase) < 0)
-                    continue;
+                bool bFound = true;
 
-                _Filter[_FilterSize++] = i;
+                foreach (string part in parts)
+                {
+                    if (item.Term.IndexOf(part, StringComparison.InvariantCultureIgnoreCase) < 0)
+                    {
+                        bFound = false;
+                        break;
+                    }
+                }
+
+                if (bFound)
+                    _Filter[_FilterSize++] = i;
             }
 
 

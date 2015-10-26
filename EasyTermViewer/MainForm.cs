@@ -101,10 +101,7 @@ namespace EasyTermViewer
         // ********************************************************************************
         private void cmdTermBases_Click(object sender, EventArgs e)
         {
-            using (TermBaseSelectionForm form = new TermBaseSelectionForm(_TermbaseSet))
-            {
-                form.ShowDialog();
-            }   
+            _TermbaseSet.EditTermBases();
 
             InitializeTermList();
         }

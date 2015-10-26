@@ -14,8 +14,8 @@ namespace EasyTermCore
     // --------------------------------------------------------------------------------
     internal class TermBaseQueryWorker
     {
-        private TermBaseSet _TermbaseSet;
         private TermBaseQuery _TermbaseQuery;
+        private TermBases _TermBases;
         private volatile bool _shouldStop = false;
         private Thread _Thread;
         private AutoResetEvent _DataAvailableEvent;
@@ -29,10 +29,10 @@ namespace EasyTermCore
         /// <created>UPh,25.10.2015</created>
         /// <changed>UPh,25.10.2015</changed>
         // ********************************************************************************
-        internal TermBaseQueryWorker(TermBaseQuery termbaseQuery, TermBaseSet termbaseSet)
+        internal TermBaseQueryWorker(TermBaseQuery termbaseQuery, TermBases termbases)
         {
             _TermbaseQuery = termbaseQuery;
-            _TermbaseSet = termbaseSet;
+            _TermBases = termbases;
         }
 
         // ********************************************************************************
@@ -119,6 +119,14 @@ namespace EasyTermCore
         }
 
         volatile bool _Paused = false;
+        // ********************************************************************************
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        /// <created>UPh,25.10.2015</created>
+        /// <changed>UPh,25.10.2015</changed>
+        // ********************************************************************************
         internal void PauseRequests()
         {
             lock (_NewRequests)
@@ -136,7 +144,7 @@ namespace EasyTermCore
         /// <created>UPh,25.10.2015</created>
         /// <changed>UPh,25.10.2015</changed>
         // ********************************************************************************
-        internal void ContinueQueries()
+        internal void ResumeRequests()
         {
             _Paused = false;
         }
@@ -234,18 +242,15 @@ namespace EasyTermCore
         private void HandleTermListRequest(TermBaseRequest request)
         {
             TermListItems items = new TermListItems();
-            
-            for (int i = 0; i < 10000; i++)
+            foreach (TermBase termbase in _TermBases)
             {
-                if (_Paused || _shouldStop)
-                    return;
+                TermListItems items2 = new TermListItems();
+                termbase.GetTermList(items2);
+                items.AddRange(items2);
+            }
 
-                TermListItem item = new TermListItem();
-                item.Term = string.Format("Term {0}", i);
-
-                items.Add(item);
+            items.Sort((a,b) => string.Compare(a.Term, b.Term, true));
             
-            }  
 
             _TermbaseQuery.FireTermListResult(request.ID, items);
             
