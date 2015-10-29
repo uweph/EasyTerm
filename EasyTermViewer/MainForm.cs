@@ -10,6 +10,7 @@ using System.Windows.Forms;
 using EasyTermCore;
 using System.IO;
 using System.Globalization;
+using EasyTermViewer.Properties;
 
 namespace EasyTermViewer
 {
@@ -35,6 +36,7 @@ namespace EasyTermViewer
 
             _TermListResult = new TermListResultCallback(OnTermListResult);
 
+            InitializeLanguageComboBoxes();
             InitializeLanguageSelection();
         }
 
@@ -88,19 +90,6 @@ namespace EasyTermViewer
             
         }
 
-        class LanguageTag : CultureInfo
-        {
-            public LanguageTag(string name) :
-            base(name)
-            {
-                
-            }
-            public override string ToString()
-            {
-                return DisplayName;
-            }
-        }
-
 
         // ********************************************************************************
         /// <summary>
@@ -112,15 +101,18 @@ namespace EasyTermViewer
         // ********************************************************************************
         private void InitializeLanguageSelection()
         {
-            cmdLanguage1.Items.Add(new LanguageTag("en"));
-            cmdLanguage1.Items.Add(new LanguageTag("de"));
-            cmdLanguage1.Items.Add(new LanguageTag("fr"));
-            cmdLanguage1.Items.Add(new LanguageTag("es"));
+            cmdLanguage1.Items.Add(CultureInfo.GetCultureInfo("en"));
+            cmdLanguage1.Items.Add(CultureInfo.GetCultureInfo("en-gb"));
+            cmdLanguage1.Items.Add(CultureInfo.GetCultureInfo("de"));
+            cmdLanguage1.Items.Add(CultureInfo.GetCultureInfo("fr"));
+            cmdLanguage1.Items.Add(CultureInfo.GetCultureInfo("es"));
+            cmdLanguage1.Items.Add(CultureInfo.GetCultureInfo("it"));
+            cmdLanguage1.Items.Add(CultureInfo.GetCultureInfo("pl"));
+            cmdLanguage1.Items.Add(CultureInfo.GetCultureInfo("pt"));
+            cmdLanguage1.Items.Add(CultureInfo.GetCultureInfo("pt-br"));
 
-            cmdLanguage2.Items.Add(new LanguageTag("en"));
-            cmdLanguage2.Items.Add(new LanguageTag("de"));
-            cmdLanguage2.Items.Add(new LanguageTag("fr"));
-            cmdLanguage2.Items.Add(new LanguageTag("es"));
+            cmdLanguage2.Items.Add(CultureInfo.GetCultureInfo("en"));
+            cmdLanguage2.Items.Add(CultureInfo.GetCultureInfo("de"));
 
             _IgnoreNotification++;
             cmdLanguage1.SelectedIndex = 0;
@@ -280,6 +272,52 @@ namespace EasyTermViewer
             _TermBaseQuery.SetLanguagePair(lang1, lang2);
 
             InitializeTermList();
+        }
+
+
+        // ********************************************************************************
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        /// <created>UPh,29.10.2015</created>
+        /// <changed>UPh,29.10.2015</changed>
+        // ********************************************************************************
+        private void InitializeLanguageComboBoxes()
+        {
+            cmdLanguage1.ComboBox.DrawMode = DrawMode.OwnerDrawFixed;
+            cmdLanguage1.ComboBox.DrawItem += ComboBox_DrawItem;
+
+            cmdLanguage2.ComboBox.DrawMode = DrawMode.OwnerDrawFixed;
+            cmdLanguage2.ComboBox.DrawItem += ComboBox_DrawItem;
+        }
+
+        // ********************************************************************************
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        /// <returns></returns>
+        /// <created>UPh,29.10.2015</created>
+        /// <changed>UPh,29.10.2015</changed>
+        // ********************************************************************************
+        void ComboBox_DrawItem(object sender, DrawItemEventArgs e)
+        {
+            ComboBox cmb = sender as ComboBox;
+            if (cmb == null)
+                return;
+
+            if (e.Index < 0 || e.Index >= cmb.Items.Count)
+                return;
+
+            CultureInfo ci = cmb.Items[e.Index] as CultureInfo;
+            if (ci == null)
+                return;
+
+            e.DrawBackground();
+            EasyTermCore.Tools.DrawLanguageString(e.Graphics, e.Font, e.ForeColor, e.Bounds, ci);
+            e.DrawFocusRectangle();
         }
 
     }

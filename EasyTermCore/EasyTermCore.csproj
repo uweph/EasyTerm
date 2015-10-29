@@ -41,6 +41,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
     <Compile Include="TermBase.cs" />
     <Compile Include="TermBaseCSV\TermBaseCSV.cs" />
     <Compile Include="TermBaseFileList.cs">
@@ -61,9 +66,22 @@
     <Compile Include="Tools\XmlNode.cs" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
     <EmbeddedResource Include="TermBaseSelectionForm.resx">
       <DependentUpon>TermBaseSelectionForm.cs</DependentUpon>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="res\Flags.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="res\ArrowRight.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="res\Data.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
