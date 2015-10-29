@@ -41,7 +41,7 @@ namespace EasyTermCore
         /// <created>UPh,25.10.2015</created>
         /// <changed>UPh,25.10.2015</changed>
         // ********************************************************************************
-        internal void Update(TermBaseSet set)
+        internal void Update(TermBaseSet set, CultureInfo lang1, CultureInfo lang2)
         {
             TermBases newList = new TermBases();
 
@@ -62,6 +62,7 @@ namespace EasyTermCore
                     if (tb != null)
                     {
                         newList.Add(tb);
+                        tb.InitLanguagePair(lang1, lang2);
                     }
                 }
 
@@ -124,10 +125,6 @@ namespace EasyTermCore
             {
                 termBase.File = file;
                 termBase.OnOpenFile();
-
-// Muss woanders hin
-                termBase.InitLanguagePair(CultureInfo.GetCultureInfo("en"), CultureInfo.GetCultureInfo("de"));
-
             }
 
             return termBase;

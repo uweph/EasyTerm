@@ -34,6 +34,8 @@
             this.cmdTermBases = new System.Windows.Forms.ToolStripButton();
             this.txtFindTerm = new System.Windows.Forms.TextBox();
             this.timerFilter = new System.Windows.Forms.Timer(this.components);
+            this.cmdLanguage1 = new System.Windows.Forms.ToolStripComboBox();
+            this.cmdLanguage2 = new System.Windows.Forms.ToolStripComboBox();
             this.lstTerms = new EasyTermViewer.TermListBox();
             this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.toolStrip1.SuspendLayout();
@@ -42,6 +44,8 @@
             // toolStrip1
             // 
             this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.cmdLanguage1,
+            this.cmdLanguage2,
             this.cmdTermBases});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
@@ -71,6 +75,20 @@
             // timerFilter
             // 
             this.timerFilter.Tick += new System.EventHandler(this.timerFilter_Tick);
+            // 
+            // cmdLanguage1
+            // 
+            this.cmdLanguage1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmdLanguage1.Name = "cmdLanguage1";
+            this.cmdLanguage1.Size = new System.Drawing.Size(121, 25);
+            this.cmdLanguage1.SelectedIndexChanged += new System.EventHandler(this.cmdLanguage_SelectedIndexChanged);
+            // 
+            // cmdLanguage2
+            // 
+            this.cmdLanguage2.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmdLanguage2.Name = "cmdLanguage2";
+            this.cmdLanguage2.Size = new System.Drawing.Size(121, 25);
+            this.cmdLanguage2.SelectedIndexChanged += new System.EventHandler(this.cmdLanguage_SelectedIndexChanged);
             // 
             // lstTerms
             // 
@@ -119,6 +137,8 @@
         private TermListBox lstTerms;
         private System.Windows.Forms.Timer timerFilter;
         private System.Windows.Forms.ColumnHeader columnHeader1;
+        private System.Windows.Forms.ToolStripComboBox cmdLanguage1;
+        private System.Windows.Forms.ToolStripComboBox cmdLanguage2;
     }
 }
 

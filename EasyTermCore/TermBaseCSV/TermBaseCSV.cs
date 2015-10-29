@@ -66,6 +66,12 @@ namespace EasyTermCore
             int index1 = FindLanguage(lang1);
             int index2 = FindLanguage(lang2);
 
+            if (index1 < 0 || index2 < 0)
+            {
+                // Reset...
+                return;
+            }
+
             _LangIndex2 = index2;
 
             if (_LangIndex1 != index1)
@@ -107,6 +113,17 @@ namespace EasyTermCore
             }
         }
 
+        static int PRIMARYLANGID(int lgid)
+        {
+            return lgid & 0x3ff;
+        }
+
+
+        static int SUBLANGID(int lgid)
+        {
+            return lgid >> 10;
+        }
+
         // ********************************************************************************
         /// <summary>
         /// 
@@ -118,8 +135,12 @@ namespace EasyTermCore
         // ********************************************************************************
         private int FindLanguage(CultureInfo lang)
         {
+            if (lang == null)
+                return -1;
+
             int iBest = -1;
             int iRate = 0;
+
 
             for (int i = 0; i < _Languages.Count; i++)
             {
@@ -130,6 +151,12 @@ namespace EasyTermCore
                 {
                     iRate2 = 2;
                 }
+                else if ((lang.SubLCID() == 0 || lang2.SubLCID() == 0) &&
+                         (lang.PrimaryLCID() == lang2.PrimaryLCID()))
+                {
+                    iRate2 = 1;                    
+                }
+
 
                 if (iRate2 > iRate)
                 {

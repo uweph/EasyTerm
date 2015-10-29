@@ -287,7 +287,7 @@ namespace EasyTermCore
         // ********************************************************************************
         void UpdateTermBases()
         {
-            TermBases.Update(this);
+            TermBases.Update(this, Query.Language1, Query.Language2);
         }
 
     }

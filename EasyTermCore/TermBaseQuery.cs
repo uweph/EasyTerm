@@ -23,6 +23,8 @@ namespace EasyTermCore
             _Worker = new TermBaseQueryWorker(this,_TermbaseSet.TermBases);
         }
 
+        internal CultureInfo Language1 {get; set;}
+        internal CultureInfo Language2 { get; set; }
 
 
 #region Public query functions
@@ -39,7 +41,15 @@ namespace EasyTermCore
         // ********************************************************************************
         public void SetLanguagePair(CultureInfo lang1, CultureInfo lang2)
         {
-            
+            Language1 = lang1;
+            Language2 = lang2;
+
+
+            // Inform all termbases
+            foreach (TermBase termbase in _TermbaseSet.TermBases)
+            {
+                termbase.InitLanguagePair(Language1, Language2);
+            }
         
         }
 

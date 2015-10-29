@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using EasyTermCore;
 using System.IO;
+using System.Globalization;
 
 namespace EasyTermViewer
 {
@@ -16,6 +17,7 @@ namespace EasyTermViewer
     {
         TermBaseSet _TermbaseSet;
         TermBaseQuery _TermBaseQuery;
+        int _IgnoreNotification = 0;
 
         public MainForm()
         {
@@ -33,8 +35,7 @@ namespace EasyTermViewer
 
             _TermListResult = new TermListResultCallback(OnTermListResult);
 
-
-            InitializeTermList();
+            InitializeLanguageSelection();
         }
 
         delegate void TermListResultCallback(TermListResultArgs e);
@@ -87,7 +88,47 @@ namespace EasyTermViewer
             
         }
 
+        class LanguageTag : CultureInfo
+        {
+            public LanguageTag(string name) :
+            base(name)
+            {
+                
+            }
+            public override string ToString()
+            {
+                return DisplayName;
+            }
+        }
 
+
+        // ********************************************************************************
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        /// <created>UPh,29.10.2015</created>
+        /// <changed>UPh,29.10.2015</changed>
+        // ********************************************************************************
+        private void InitializeLanguageSelection()
+        {
+            cmdLanguage1.Items.Add(new LanguageTag("en"));
+            cmdLanguage1.Items.Add(new LanguageTag("de"));
+            cmdLanguage1.Items.Add(new LanguageTag("fr"));
+            cmdLanguage1.Items.Add(new LanguageTag("es"));
+
+            cmdLanguage2.Items.Add(new LanguageTag("en"));
+            cmdLanguage2.Items.Add(new LanguageTag("de"));
+            cmdLanguage2.Items.Add(new LanguageTag("fr"));
+            cmdLanguage2.Items.Add(new LanguageTag("es"));
+
+            _IgnoreNotification++;
+            cmdLanguage1.SelectedIndex = 0;
+            cmdLanguage2.SelectedIndex = 1;
+            _IgnoreNotification--;
+
+            OnLanguageSelectionChanged();
+        }
 
         // ********************************************************************************
         /// <summary>
@@ -108,7 +149,7 @@ namespace EasyTermViewer
 
         // ********************************************************************************
         /// <summary>
-        /// 
+        /// Rebuild listbox with terms
         /// </summary>
         /// <returns></returns>
         /// <created>UPh,25.10.2015</created>
@@ -206,6 +247,39 @@ namespace EasyTermViewer
                 lstTerms.SelectNextItem(false);
                 e.Handled = true;
             }
+        }
+
+        // ********************************************************************************
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        /// <returns></returns>
+        /// <created>UPh,29.10.2015</created>
+        /// <changed>UPh,29.10.2015</changed>
+        // ********************************************************************************
+        private void cmdLanguage_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            OnLanguageSelectionChanged();
+        }
+
+        // ********************************************************************************
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        /// <created>UPh,29.10.2015</created>
+        /// <changed>UPh,29.10.2015</changed>
+        // ********************************************************************************
+        private void OnLanguageSelectionChanged()
+        {
+            CultureInfo lang1 = cmdLanguage1.SelectedItem as CultureInfo;
+            CultureInfo lang2 = cmdLanguage2.SelectedItem as CultureInfo;
+
+            _TermBaseQuery.SetLanguagePair(lang1, lang2);
+
+            InitializeTermList();
         }
 
     }
