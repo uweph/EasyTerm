@@ -31,14 +31,18 @@
             this.components = new System.ComponentModel.Container();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.cmdLanguage1 = new System.Windows.Forms.ToolStripComboBox();
+            this.toolStripLabel1 = new System.Windows.Forms.ToolStripLabel();
             this.cmdLanguage2 = new System.Windows.Forms.ToolStripComboBox();
             this.cmdTermBases = new System.Windows.Forms.ToolStripButton();
             this.txtFindTerm = new System.Windows.Forms.TextBox();
             this.timerFilter = new System.Windows.Forms.Timer(this.components);
+            this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.lstTerms = new EasyTermViewer.TermListBox();
             this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.toolStripLabel1 = new System.Windows.Forms.ToolStripLabel();
             this.toolStrip1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
+            this.splitContainer1.Panel1.SuspendLayout();
+            this.splitContainer1.SuspendLayout();
             this.SuspendLayout();
             // 
             // toolStrip1
@@ -56,16 +60,26 @@
             // 
             // cmdLanguage1
             // 
+            this.cmdLanguage1.AutoSize = false;
             this.cmdLanguage1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmdLanguage1.Name = "cmdLanguage1";
-            this.cmdLanguage1.Size = new System.Drawing.Size(121, 25);
+            this.cmdLanguage1.Size = new System.Drawing.Size(160, 23);
             this.cmdLanguage1.SelectedIndexChanged += new System.EventHandler(this.cmdLanguage_SelectedIndexChanged);
+            // 
+            // toolStripLabel1
+            // 
+            this.toolStripLabel1.AutoSize = false;
+            this.toolStripLabel1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripLabel1.Image = global::EasyTermViewer.Properties.Resources.ArrowRight;
+            this.toolStripLabel1.Name = "toolStripLabel1";
+            this.toolStripLabel1.Size = new System.Drawing.Size(20, 22);
+            this.toolStripLabel1.Text = "toolStripLabel1";
             // 
             // cmdLanguage2
             // 
             this.cmdLanguage2.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmdLanguage2.Name = "cmdLanguage2";
-            this.cmdLanguage2.Size = new System.Drawing.Size(121, 25);
+            this.cmdLanguage2.Size = new System.Drawing.Size(160, 25);
             this.cmdLanguage2.SelectedIndexChanged += new System.EventHandler(this.cmdLanguage_SelectedIndexChanged);
             // 
             // cmdTermBases
@@ -80,10 +94,12 @@
             // 
             // txtFindTerm
             // 
+            this.txtFindTerm.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.txtFindTerm.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtFindTerm.Location = new System.Drawing.Point(2, 29);
+            this.txtFindTerm.Location = new System.Drawing.Point(2, 4);
             this.txtFindTerm.Name = "txtFindTerm";
-            this.txtFindTerm.Size = new System.Drawing.Size(144, 22);
+            this.txtFindTerm.Size = new System.Drawing.Size(203, 22);
             this.txtFindTerm.TabIndex = 2;
             this.txtFindTerm.TextChanged += new System.EventHandler(this.txtFindTerm_TextChanged);
             this.txtFindTerm.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtFindTerm_KeyDown);
@@ -92,18 +108,36 @@
             // 
             this.timerFilter.Tick += new System.EventHandler(this.timerFilter_Tick);
             // 
+            // splitContainer1
+            // 
+            this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.splitContainer1.Location = new System.Drawing.Point(0, 25);
+            this.splitContainer1.Name = "splitContainer1";
+            // 
+            // splitContainer1.Panel1
+            // 
+            this.splitContainer1.Panel1.Controls.Add(this.lstTerms);
+            this.splitContainer1.Panel1.Controls.Add(this.txtFindTerm);
+            this.splitContainer1.Panel1MinSize = 100;
+            this.splitContainer1.Size = new System.Drawing.Size(814, 485);
+            this.splitContainer1.SplitterDistance = 210;
+            this.splitContainer1.TabIndex = 4;
+            // 
             // lstTerms
             // 
+            this.lstTerms.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.lstTerms.BackColor = System.Drawing.SystemColors.Window;
             this.lstTerms.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.columnHeader1});
             this.lstTerms.FullRowSelect = true;
             this.lstTerms.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
             this.lstTerms.HideSelection = false;
-            this.lstTerms.Location = new System.Drawing.Point(2, 55);
+            this.lstTerms.Location = new System.Drawing.Point(2, 31);
             this.lstTerms.MultiSelect = false;
             this.lstTerms.Name = "lstTerms";
-            this.lstTerms.Size = new System.Drawing.Size(144, 455);
+            this.lstTerms.Size = new System.Drawing.Size(203, 454);
             this.lstTerms.TabIndex = 3;
             this.lstTerms.UseCompatibleStateImageBehavior = false;
             this.lstTerms.View = System.Windows.Forms.View.Details;
@@ -113,27 +147,22 @@
             // 
             this.columnHeader1.Width = 96;
             // 
-            // toolStripLabel1
-            // 
-            this.toolStripLabel1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.toolStripLabel1.Image = global::EasyTermViewer.Properties.Resources.ArrowRight;
-            this.toolStripLabel1.Name = "toolStripLabel1";
-            this.toolStripLabel1.Size = new System.Drawing.Size(16, 22);
-            this.toolStripLabel1.Text = "toolStripLabel1";
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(814, 510);
-            this.Controls.Add(this.lstTerms);
-            this.Controls.Add(this.txtFindTerm);
+            this.Controls.Add(this.splitContainer1);
             this.Controls.Add(this.toolStrip1);
             this.Name = "MainForm";
             this.Text = "Easy Term Viewer";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.MainForm_FormClosed);
             this.toolStrip1.ResumeLayout(false);
             this.toolStrip1.PerformLayout();
+            this.splitContainer1.Panel1.ResumeLayout(false);
+            this.splitContainer1.Panel1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
+            this.splitContainer1.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -150,6 +179,7 @@
         private System.Windows.Forms.ToolStripComboBox cmdLanguage1;
         private System.Windows.Forms.ToolStripComboBox cmdLanguage2;
         private System.Windows.Forms.ToolStripLabel toolStripLabel1;
+        private System.Windows.Forms.SplitContainer splitContainer1;
     }
 }
 

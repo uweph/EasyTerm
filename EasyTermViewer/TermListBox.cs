@@ -1,6 +1,7 @@
 ﻿using EasyTermCore;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -8,16 +9,24 @@ using System.Windows.Forms;
 
 namespace EasyTermViewer
 {
-    class TermListBox : ListView
+    internal class TermListBox : ListView
     {
+        internal TermBaseSet TermBaseSet {get; set;}
+
         TermListItems _Items;
         int[] _Filter;
         int _FilterSize = -1;
+
+        Brush _TextBrush;
+        Brush _SelectedItemBrush;
 
         public TermListBox()
         {
             VirtualMode = true;
             FullRowSelect = true;
+            OwnerDraw = true;
+            _TextBrush = new SolidBrush(Color.Black);
+            _SelectedItemBrush  = new SolidBrush(Color.FromArgb(173, 214, 255));
         }
 
 
@@ -224,6 +233,43 @@ namespace EasyTermViewer
                 _LVICache[i] = CreateLVItemAt(_LVIFirstItem + i);
             }
 
+        }
+        
+        // ********************************************************************************
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="e"></param>
+        /// <returns></returns>
+        /// <created>UPh,31.10.2015</created>
+        /// <changed>UPh,31.10.2015</changed>
+        // ********************************************************************************
+        protected override void OnDrawItem(DrawListViewItemEventArgs e)
+        {
+            if (e.Item.Selected)
+                e.Graphics.FillRectangle(_SelectedItemBrush, e.Bounds);
+            else
+                e.DrawBackground();
+
+            Color tbcolor = Color.Empty;
+            if (TermBaseSet != null)
+            {
+                TermListItem item = GetItemAt(e.ItemIndex);
+                if (item != null)
+                    tbcolor = TermBaseSet.GetDisplayColor(item.TermBaseID);
+            }
+
+            if (tbcolor != Color.Empty)
+            {
+                SolidBrush brush = new SolidBrush(tbcolor);
+                Rectangle rcBar = e.Bounds;
+                rcBar.Width = 4;
+                e.Graphics.FillRectangle(brush, rcBar);
+            }
+
+            e.Graphics.DrawString(e.Item.Text, Font, _TextBrush, e.Bounds.Left + 4.0f, e.Bounds.Top + 2.0f);
+
+            e.DrawFocusRectangle();
         }
 
 

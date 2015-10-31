@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -50,6 +51,45 @@ namespace EasyTermCore
 
         // ********************************************************************************
         /// <summary>
+        /// Find a TermBaseFile by its ID
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        /// <created>UPh,31.10.2015</created>
+        /// <changed>UPh,31.10.2015</changed>
+        // ********************************************************************************
+        internal TermBaseFile FindTermBaseID(int id)
+        {
+            foreach (TermBaseFile file in Files)
+            {
+                if (file.ID == id)
+                    return file;
+            }
+
+            return null;
+        }
+
+
+        // ********************************************************************************
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="termbaseID"></param>
+        /// <returns></returns>
+        /// <created>UPh,31.10.2015</created>
+        /// <changed>UPh,31.10.2015</changed>
+        // ********************************************************************************
+        public Color GetDisplayColor(int termbaseID)
+        {
+            TermBaseFile file = FindTermBaseID(termbaseID);
+            if (file != null)
+                return file.DisplayColor;
+
+            return Color.Empty;
+        }
+
+        // ********************************************************************************
+        /// <summary>
         /// 
         /// </summary>
         /// <param name="path"></param>
@@ -73,6 +113,13 @@ namespace EasyTermCore
                     writer.WriteStartElement("file");
                     writer.WriteAttributeString("path", file.StoragePath);
                     writer.WriteAttributeString("active", file.Active ? "true" : "false");
+
+                    string attColor = string.Format("#{0:X2}{1:X2}{2:X2}",
+                        file.DisplayColor.R,
+                        file.DisplayColor.G,
+                        file.DisplayColor.B);
+                    writer.WriteAttributeString("display_color", attColor);
+
                     writer.WriteEndElement();
                 }
 
@@ -120,7 +167,12 @@ namespace EasyTermCore
                                 file.Active = active;
                                 Files.Add(file);
 
+                                Color displayColor;
+                                if (elTermBase.GetColorAttribute("display_color", out displayColor))
+                                    file.DisplayColor = displayColor;
+
                             }
+
                         }
                     }
                 }
@@ -299,11 +351,16 @@ namespace EasyTermCore
     // --------------------------------------------------------------------------------
     internal class TermBaseFile
     {
+        static int NextID = 1;
+
         public TermBaseFile(string storagePath)
         {
+            ID = NextID++;
             StoragePath = storagePath;
+            DisplayColor = Color.Empty;
         }
 
+        public int ID {get; private set;}
         public string StoragePath {get; private set;}              // Path of file, starts with %local% if loaded automatically
         public string FilePath
         {
@@ -323,5 +380,7 @@ namespace EasyTermCore
         {
             get { return StoragePath.StartsWith("%local%"); }
         }
+
+        public Color DisplayColor { get; set; }
     }
 }

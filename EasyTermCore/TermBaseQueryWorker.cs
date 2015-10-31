@@ -12,7 +12,7 @@ namespace EasyTermCore
     /// 
     /// </summary>
     // --------------------------------------------------------------------------------
-    internal class TermBaseQueryWorker
+    internal class TermBaseQueryWorker : IAbortTermQuery
     {
         private TermBaseQuery _TermbaseQuery;
         private TermBases _TermBases;
@@ -221,7 +221,11 @@ namespace EasyTermCore
                 {
                     HandleTermListRequest(request);
                 }
-                else if (request.Type == RequestType.TermList)
+                else if (request.Type == RequestType.Term)
+                {
+                    HandleTermRequest(request);
+                }
+                else if (request.Type == RequestType.Terminology)
                 {
                     HandleTerminologyRequest(request);
                 }
@@ -244,8 +248,11 @@ namespace EasyTermCore
             TermListItems items = new TermListItems();
             foreach (TermBase termbase in _TermBases)
             {
+                if (_Paused || _shouldStop)
+                    return;
+
                 TermListItems items2 = new TermListItems();
-                termbase.GetTermList(items2);
+                termbase.GetTermList(items2, this);
                 items.AddRange(items2);
             }
 
@@ -260,6 +267,19 @@ namespace EasyTermCore
         /// <summary>
         /// 
         /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        /// <created>UPh,30.10.2015</created>
+        /// <changed>UPh,30.10.2015</changed>
+        // ********************************************************************************
+        private void HandleTermRequest(TermBaseRequest request)
+        {
+        }
+
+        // ********************************************************************************
+        /// <summary>
+        /// 
+        /// </summary>
         /// <returns></returns>
         /// <created>UPh,25.10.2015</created>
         /// <changed>UPh,25.10.2015</changed>
@@ -268,12 +288,26 @@ namespace EasyTermCore
         {
         }
 
+
+        // ********************************************************************************
+        /// <summary>
+        /// I
+        /// </summary>
+        /// <returns></returns>
+        /// <created>UPh,30.10.2015</created>
+        /// <changed>UPh,30.10.2015</changed>
+        // ********************************************************************************
+        public bool Abort()
+        {
+            return _Paused || _shouldStop;
+        }
     }
 
     enum RequestType
     {
-        TermList,
-        Terminology
+        TermList,      // Return list of all terms in current source language
+        Term,          // Return a term with a given id
+        Terminology    // Find matching terms for a given string
     };
 
 
@@ -284,8 +318,16 @@ namespace EasyTermCore
     // --------------------------------------------------------------------------------
     internal class TermBaseRequest
     {   
+        // 
         internal RequestType Type{get; private set;}
+
+        // Term to find
         internal string Term {get; private set;}
+
+        // If a special term is searched
+        internal long TermID {get; private set;}
+
+        // Request ID
         internal int ID {get; set;}
 
         static int _NewRequestID = 100;
@@ -312,6 +354,27 @@ namespace EasyTermCore
         /// 
         /// </summary>
         /// <param name="term"></param>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        /// <created>UPh,30.10.2015</created>
+        /// <changed>UPh,30.10.2015</changed>
+        // ********************************************************************************
+        static internal TermBaseRequest MakeTermRequest(string term, long termid)
+        {
+            TermBaseRequest request = new TermBaseRequest();
+            request.ID = 0;
+            request.Type = RequestType.Term;
+            request.Term = term;
+            request.TermID = termid;
+            return request;
+        }
+
+
+        // ********************************************************************************
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="term"></param>
         /// <returns></returns>
         /// <created>UPh,25.10.2015</created>
         /// <changed>UPh,25.10.2015</changed>
@@ -324,5 +387,10 @@ namespace EasyTermCore
             request.Term = term;
             return request;
         }
+    }
+
+    internal interface IAbortTermQuery
+    {
+        bool Abort();
     }
 }

@@ -20,6 +20,14 @@ namespace EasyTermViewer
         TermBaseQuery _TermBaseQuery;
         int _IgnoreNotification = 0;
 
+        // ********************************************************************************
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        /// <created>UPh,31.10.2015</created>
+        /// <changed>UPh,31.10.2015</changed>
+        // ********************************************************************************
         public MainForm()
         {
             InitializeComponent();
@@ -35,6 +43,8 @@ namespace EasyTermViewer
             _TermBaseQuery.TermListResult    += TermBaseQuery_TermListResult;
 
             _TermListResult = new TermListResultCallback(OnTermListResult);
+
+            lstTerms.TermBaseSet = _TermbaseSet;
 
             InitializeLanguageComboBoxes();
             InitializeLanguageSelection();
@@ -101,20 +111,19 @@ namespace EasyTermViewer
         // ********************************************************************************
         private void InitializeLanguageSelection()
         {
-            cmdLanguage1.Items.Add(CultureInfo.GetCultureInfo("en"));
-            cmdLanguage1.Items.Add(CultureInfo.GetCultureInfo("en-gb"));
-            cmdLanguage1.Items.Add(CultureInfo.GetCultureInfo("de"));
-            cmdLanguage1.Items.Add(CultureInfo.GetCultureInfo("fr"));
-            cmdLanguage1.Items.Add(CultureInfo.GetCultureInfo("es"));
-            cmdLanguage1.Items.Add(CultureInfo.GetCultureInfo("it"));
-            cmdLanguage1.Items.Add(CultureInfo.GetCultureInfo("pl"));
-            cmdLanguage1.Items.Add(CultureInfo.GetCultureInfo("pt"));
-            cmdLanguage1.Items.Add(CultureInfo.GetCultureInfo("pt-br"));
-
-            cmdLanguage2.Items.Add(CultureInfo.GetCultureInfo("en"));
-            cmdLanguage2.Items.Add(CultureInfo.GetCultureInfo("de"));
-
             _IgnoreNotification++;
+
+            cmdLanguage1.Items.Clear();
+            cmdLanguage2.Items.Clear();
+
+            List<CultureInfo> cis = _TermBaseQuery.GetLanguages();
+
+            foreach (CultureInfo ci in cis)
+            {
+                cmdLanguage1.Items.Add(ci);
+                cmdLanguage2.Items.Add(ci);
+            }
+
             cmdLanguage1.SelectedIndex = 0;
             cmdLanguage2.SelectedIndex = 1;
             _IgnoreNotification--;
@@ -136,6 +145,7 @@ namespace EasyTermViewer
         {
             _TermbaseSet.EditTermBases();
 
+            InitializeLanguageSelection();
             InitializeTermList();
         }
 
@@ -253,6 +263,9 @@ namespace EasyTermViewer
         // ********************************************************************************
         private void cmdLanguage_SelectedIndexChanged(object sender, EventArgs e)
         {
+            if (_IgnoreNotification > 0)
+                return;
+
             OnLanguageSelectionChanged();
         }
 

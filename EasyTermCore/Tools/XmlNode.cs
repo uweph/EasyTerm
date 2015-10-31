@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -517,7 +518,6 @@ namespace EasyTermCore
             return false;
         }
 
-
         // ********************************************************************************
         /// <summary>
         /// 
@@ -525,26 +525,32 @@ namespace EasyTermCore
         /// <param name="name"></param>
         /// <param name="value"></param>
         /// <returns></returns>
-        /// <created>UPh,12.11.2013</created>
-        /// <changed>UPh,12.11.2013</changed>
+        /// <created>UPh,31.10.2015</created>
+        /// <changed>UPh,31.10.2015</changed>
         // ********************************************************************************
-        /* TODO
-        bool GetColorAttribute(string name, COLORREF *value)
+        public bool GetColorAttribute(string name, out Color value)
         {
-            int r, g, b;
-            TCHAR text[80] = _T("");
-            if (GetAttribute(name, text, _countof(text)) &&
-                text[0] == '#' &&
-                _stscanf_s(text + 1, _T("%02x%02x%02x"), &r, &g, &b) == 3)
-            {
-                *value = RGB(r, g, b);
-                return true;
-            }
+            value = Color.Empty;
+            string text;
+            if (!GetAttribute(name, out text))
+                return false;
+                
+            if (!text.StartsWith("#"))
+                return false;
+                
 
-            *value = 0; // BLACK
-            return false;
+            int number;
+            if (!int.TryParse(text.Substring(1), System.Globalization.NumberStyles.HexNumber, null, out number))
+                return false;
+            
+            int r = (number >> 16) & 0xFF;
+            int g = (number >> 8) & 0xFF;
+            int b = (number >> 0) & 0xFF;
+            value = Color.FromArgb(r, g, b);
+
+            return true;
         }
-        */
+
 
         // ********************************************************************************
         /// <summary>

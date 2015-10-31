@@ -16,13 +16,12 @@ namespace EasyTermCore
     abstract internal class TermBase
     {
         internal TermBaseFile File {get; set;}
+        internal int TermBaseID {get; set;}
 
         internal abstract void OnOpenFile();
+        internal abstract List<CultureInfo> GetLanguages();
         internal abstract void InitLanguagePair(CultureInfo lang1, CultureInfo lang2);
-        internal abstract void GetTermList(TermListItems items);
-
-
-
+        internal abstract void GetTermList(TermListItems items, IAbortTermQuery abort);
     }
 
     // --------------------------------------------------------------------------------
@@ -47,6 +46,9 @@ namespace EasyTermCore
 
             foreach (TermBaseFile file in set.Files)
             {
+                if (!file.Active)
+                    continue;
+
                 // Check if we already have this file
                 TermBase tb = FindTermBase(file);
                 if (tb != null)
@@ -71,9 +73,6 @@ namespace EasyTermCore
             // Copy new list
             Clear();
             AddRange(newList);
-
-
-
         }
 
         // ********************************************************************************
@@ -96,6 +95,25 @@ namespace EasyTermCore
             return null;
         }
 
+        // ********************************************************************************
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        /// <created>UPh,31.10.2015</created>
+        /// <changed>UPh,31.10.2015</changed>
+        // ********************************************************************************
+        internal TermBase FindTermBase(int id)
+        {
+            foreach (TermBase tb in this)
+            {
+                if (tb.File.ID == id)
+                    return tb;
+            }
+
+            return null;
+        }
     }
 
 
@@ -119,6 +137,10 @@ namespace EasyTermCore
             if (string.Compare(ext, ".csv", true) == 0)
             {
                 termBase = new TermBaseCSV();
+            }
+            else if (string.Compare(ext, ".tbx", true) == 0)
+            {
+                termBase = new TermBaseTBX();
             }
 
             if (termBase != null)

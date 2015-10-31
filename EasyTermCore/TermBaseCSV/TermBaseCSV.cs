@@ -55,6 +55,20 @@ namespace EasyTermCore
         /// <summary>
         /// 
         /// </summary>
+        /// <param name="languages"></param>
+        /// <returns></returns>
+        /// <created>UPh,30.10.2015</created>
+        /// <changed>UPh,30.10.2015</changed>
+        // ********************************************************************************
+        internal override List<CultureInfo> GetLanguages()
+        {
+            return _Languages;
+        }
+
+        // ********************************************************************************
+        /// <summary>
+        /// 
+        /// </summary>
         /// <param name="lang1"></param>
         /// <param name="lang2"></param>
         /// <returns></returns>
@@ -215,7 +229,7 @@ namespace EasyTermCore
         /// <created>UPh,25.10.2015</created>
         /// <changed>UPh,25.10.2015</changed>
         // ********************************************************************************
-        internal override void GetTermList(TermListItems items)
+        internal override void GetTermList(TermListItems items, IAbortTermQuery abort)
         {
             if (_Stream == null)
                 return;      
