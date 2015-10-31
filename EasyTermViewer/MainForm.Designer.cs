@@ -39,9 +39,11 @@
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.lstTerms = new EasyTermViewer.TermListBox();
             this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.termInfoControl = new EasyTermViewer.TermInfoControl();
             this.toolStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
+            this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -119,6 +121,10 @@
             this.splitContainer1.Panel1.Controls.Add(this.lstTerms);
             this.splitContainer1.Panel1.Controls.Add(this.txtFindTerm);
             this.splitContainer1.Panel1MinSize = 100;
+            // 
+            // splitContainer1.Panel2
+            // 
+            this.splitContainer1.Panel2.Controls.Add(this.termInfoControl);
             this.splitContainer1.Size = new System.Drawing.Size(814, 485);
             this.splitContainer1.SplitterDistance = 210;
             this.splitContainer1.TabIndex = 4;
@@ -137,15 +143,25 @@
             this.lstTerms.Location = new System.Drawing.Point(2, 31);
             this.lstTerms.MultiSelect = false;
             this.lstTerms.Name = "lstTerms";
+            this.lstTerms.OwnerDraw = true;
             this.lstTerms.Size = new System.Drawing.Size(203, 454);
             this.lstTerms.TabIndex = 3;
             this.lstTerms.UseCompatibleStateImageBehavior = false;
             this.lstTerms.View = System.Windows.Forms.View.Details;
             this.lstTerms.VirtualMode = true;
+            this.lstTerms.SelectedIndexChanged += new System.EventHandler(this.lstTerms_SelectedIndexChanged);
             // 
             // columnHeader1
             // 
             this.columnHeader1.Width = 96;
+            // 
+            // termInfoControl
+            // 
+            this.termInfoControl.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.termInfoControl.Location = new System.Drawing.Point(0, 0);
+            this.termInfoControl.Name = "termInfoControl";
+            this.termInfoControl.Size = new System.Drawing.Size(600, 485);
+            this.termInfoControl.TabIndex = 0;
             // 
             // MainForm
             // 
@@ -161,6 +177,7 @@
             this.toolStrip1.PerformLayout();
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel1.PerformLayout();
+            this.splitContainer1.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
             this.splitContainer1.ResumeLayout(false);
             this.ResumeLayout(false);
@@ -180,6 +197,7 @@
         private System.Windows.Forms.ToolStripComboBox cmdLanguage2;
         private System.Windows.Forms.ToolStripLabel toolStripLabel1;
         private System.Windows.Forms.SplitContainer splitContainer1;
+        private TermInfoControl termInfoControl;
     }
 }
 

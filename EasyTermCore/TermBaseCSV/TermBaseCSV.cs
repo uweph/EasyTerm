@@ -234,14 +234,46 @@ namespace EasyTermCore
             if (_Stream == null)
                 return;      
                 
-            foreach (var tuple in _Terms)
+            for (int i = 0; i < _Terms.Count; i++)
             {
-                TermListItem item = new TermListItem();
+                var tuple = _Terms[i];
 
-                item.Term = tuple.Item1;
-                items.Add(item);
+                TermListItem item = new TermListItem();
+                items.Add(File.ID, tuple.Item1, i);
             }      
         }
 
+
+        // ********************************************************************************
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="termID"></param>
+        /// <param name="info"></param>
+        /// <returns></returns>
+        /// <created>UPh,31.10.2015</created>
+        /// <changed>UPh,31.10.2015</changed>
+        // ********************************************************************************
+        internal override bool GetTermInfo(int termID, out TermInfo info, IAbortTermQuery abort)
+        {
+            info = null;
+
+            if (_LangIndex1 < 0 || _LangIndex2 < 0)
+                return false;
+
+            if (termID < 0 || termID >= _Terms.Count)
+                return false;
+
+            info = new TermInfo();
+
+            TermInfo.LangSet langset1 = info.AddLanguage(_Languages[_LangIndex1]);
+            langset1.AddTerm(_Terms[termID].Item1);
+
+            TermInfo.LangSet langset2 = info.AddLanguage(_Languages[_LangIndex2]);
+            langset2.AddTerm(_Terms[termID].Item2);
+
+
+            return true;
+        }
     }
 }

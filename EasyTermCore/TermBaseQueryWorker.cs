@@ -221,9 +221,9 @@ namespace EasyTermCore
                 {
                     HandleTermListRequest(request);
                 }
-                else if (request.Type == RequestType.Term)
+                else if (request.Type == RequestType.TermInfo)
                 {
-                    HandleTermRequest(request);
+                    HandleTermInfoRequest(request);
                 }
                 else if (request.Type == RequestType.Terminology)
                 {
@@ -272,8 +272,19 @@ namespace EasyTermCore
         /// <created>UPh,30.10.2015</created>
         /// <changed>UPh,30.10.2015</changed>
         // ********************************************************************************
-        private void HandleTermRequest(TermBaseRequest request)
+        private void HandleTermInfoRequest(TermBaseRequest request)
         {
+            TermBase tb = _TermBases.FindTermBase(request.TermBaseID);
+            if (tb == null)
+                return;
+
+            TermInfo info;
+            if (!tb.GetTermInfo(request.TermID, out info, this))
+                return;
+
+            _TermbaseQuery.FireTermInfoResult(request.ID, info);
+
+
         }
 
         // ********************************************************************************
@@ -306,7 +317,7 @@ namespace EasyTermCore
     enum RequestType
     {
         TermList,      // Return list of all terms in current source language
-        Term,          // Return a term with a given id
+        TermInfo,      // Return a term with a given id
         Terminology    // Find matching terms for a given string
     };
 
@@ -321,11 +332,12 @@ namespace EasyTermCore
         // 
         internal RequestType Type{get; private set;}
 
+        // For TermInfo
+        internal int TermBaseID {get; private set;}
+        internal int TermID { get; private set; }
+
         // Term to find
         internal string Term {get; private set;}
-
-        // If a special term is searched
-        internal long TermID {get; private set;}
 
         // Request ID
         internal int ID {get; set;}
@@ -359,12 +371,12 @@ namespace EasyTermCore
         /// <created>UPh,30.10.2015</created>
         /// <changed>UPh,30.10.2015</changed>
         // ********************************************************************************
-        static internal TermBaseRequest MakeTermRequest(string term, long termid)
+        static internal TermBaseRequest MakeTermInfoRequest(int termbaseID, int termid)
         {
             TermBaseRequest request = new TermBaseRequest();
             request.ID = 0;
-            request.Type = RequestType.Term;
-            request.Term = term;
+            request.Type = RequestType.TermInfo;
+            request.TermBaseID = termbaseID;
             request.TermID = termid;
             return request;
         }

@@ -133,7 +133,7 @@ namespace EasyTermViewer
         /// <created>UPh,25.10.2015</created>
         /// <changed>UPh,25.10.2015</changed>
         // ********************************************************************************
-        TermListItem GetItemAt(int inx)
+        public TermListItem GetItemAt(int inx)
         {
             if (inx < 0)
                 return null;
@@ -151,6 +151,22 @@ namespace EasyTermViewer
 
             return _Items[inx];
 
+        }
+
+        // ********************************************************************************
+        /// <summary>
+        /// Returns the selected TermListItem
+        /// </summary>
+        /// <returns></returns>
+        /// <created>UPh,31.10.2015</created>
+        /// <changed>UPh,31.10.2015</changed>
+        // ********************************************************************************
+        public TermListItem GetSelectedItem()
+        {
+            if (SelectedIndices.Count == 0)
+                return null;
+
+            return GetItemAt(SelectedIndices[0]);
         }
 
         // ********************************************************************************

@@ -39,10 +39,12 @@ namespace EasyTermViewer
             _TermbaseSet.LoadStoredAndLocal();
             _TermBaseQuery = _TermbaseSet.Query;
 
-            _TermBaseQuery.TerminologyResult += TermBaseQuery_TerminologyResult;
             _TermBaseQuery.TermListResult    += TermBaseQuery_TermListResult;
+            _TermBaseQuery.TermInfoResult    += TermBaseQuery_TermInfoResult;
+            _TermBaseQuery.TerminologyResult += TermBaseQuery_TerminologyResult;
 
             _TermListResult = new TermListResultCallback(OnTermListResult);
+            _TermInfoResult = new TermInfoResultCallback(OnTermInfoResult);
 
             lstTerms.TermBaseSet = _TermbaseSet;
 
@@ -50,13 +52,17 @@ namespace EasyTermViewer
             InitializeLanguageSelection();
         }
 
+
         delegate void TermListResultCallback(TermListResultArgs e);
         TermListResultCallback _TermListResult;
+
+        delegate void TermInfoResultCallback(TermInfoResultArgs e);
+        TermInfoResultCallback _TermInfoResult;
 
 
         // ********************************************************************************
         /// <summary>
-        /// Event handler
+        /// Event Handler for results on TermList query
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -69,17 +75,53 @@ namespace EasyTermViewer
             if (InvokeRequired)
             {
                 Invoke(_TermListResult, e);
-
-                int a = e.RequestID;
                 return;     
             }
             else
             {
                 OnTermListResult(e);
             }
+        }
 
+        // ********************************************************************************
+        /// <summary>
+        /// Event Handler for results on TermInfo query
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        /// <returns></returns>
+        /// <created>UPh,31.10.2015</created>
+        /// <changed>UPh,31.10.2015</changed>
+        // ********************************************************************************
+        void TermBaseQuery_TermInfoResult(object sender, TermInfoResultArgs e)
+        {
+            if (InvokeRequired)
+            {
+                Invoke(_TermInfoResult, e);
+                return;
+            }
+            else
+            {
+                OnTermInfoResult(e);
+            }
+        }
+
+        // ********************************************************************************
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        /// <returns></returns>
+        /// <created>UPh,31.10.2015</created>
+        /// <changed>UPh,31.10.2015</changed>
+        // ********************************************************************************
+        void TermBaseQuery_TerminologyResult(object sender, EventArgs e)
+        {
 
         }
+
+
 
         // ********************************************************************************
         /// <summary>
@@ -95,9 +137,18 @@ namespace EasyTermViewer
             lstTerms.Initialize(e.Items);
         }
 
-        void TermBaseQuery_TerminologyResult(object sender, EventArgs e)
+        // ********************************************************************************
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="e"></param>
+        /// <returns></returns>
+        /// <created>UPh,31.10.2015</created>
+        /// <changed>UPh,31.10.2015</changed>
+        // ********************************************************************************
+        void OnTermInfoResult(TermInfoResultArgs e)
         {
-            
+            termInfoControl.SetData("", e.Info);            
         }
 
 
@@ -124,8 +175,10 @@ namespace EasyTermViewer
                 cmdLanguage2.Items.Add(ci);
             }
 
-            cmdLanguage1.SelectedIndex = 0;
-            cmdLanguage2.SelectedIndex = 1;
+            if (cmdLanguage1.Items.Count > 0)
+                cmdLanguage1.SelectedIndex = 0;
+            if (cmdLanguage2.Items.Count > 1)
+                cmdLanguage2.SelectedIndex = 1;
             _IgnoreNotification--;
 
             OnLanguageSelectionChanged();
@@ -285,6 +338,7 @@ namespace EasyTermViewer
             _TermBaseQuery.SetLanguagePair(lang1, lang2);
 
             InitializeTermList();
+            DisplaySelectedTerm();
         }
 
 
@@ -331,6 +385,38 @@ namespace EasyTermViewer
             e.DrawBackground();
             EasyTermCore.Tools.DrawLanguageString(e.Graphics, e.Font, e.ForeColor, e.Bounds, ci);
             e.DrawFocusRectangle();
+        }
+
+        // ********************************************************************************
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        /// <returns></returns>
+        /// <created>UPh,31.10.2015</created>
+        /// <changed>UPh,31.10.2015</changed>
+        // ********************************************************************************
+        private void lstTerms_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            DisplaySelectedTerm();
+        }
+
+        // ********************************************************************************
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        /// <created>UPh,31.10.2015</created>
+        /// <changed>UPh,31.10.2015</changed>
+        // ********************************************************************************
+        private void DisplaySelectedTerm()
+        {
+            TermListItem item = lstTerms.GetSelectedItem();
+            if (item == null)
+                return;
+
+            _TermBaseQuery.RequestTermInfo(item);
         }
 
     }

@@ -54,6 +54,53 @@ namespace EasyTermCore
 
         }
 
+        CultureInfo GetCultureInfoFromAttributeName(string name)
+        {
+            foreach (var pair in _LanguageAttributes)
+            {
+                if (pair.Value == name)
+                    return pair.Key;
+            }
+
+            return null;
+
+        }
+
+        // ********************************************************************************
+        /// <summary>
+        /// SDL TBX does not used correct ISO languages, so we need to search all available cultures to find the correct one
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        /// <created>UPh,31.10.2015</created>
+        /// <changed>UPh,31.10.2015</changed>
+        // ********************************************************************************
+        CultureInfo GetCultureInfoFromName(string name)
+        {
+            try
+            {
+                CultureInfo ci = CultureInfo.GetCultureInfo(name);
+                return ci;
+
+            }
+            catch (Exception)
+            {
+            }
+
+            foreach (CultureInfo ci in CultureInfo.GetCultures(CultureTypes.AllCultures))
+            {
+                if (string.Compare(ci.Name, name, true) == 0)
+                    return ci;
+
+                if (string.Compare(ci.EnglishName, name, true) == 0)
+                    return ci;
+
+                if (string.Compare(ci.DisplayName, name, true) == 0)
+                    return ci;
+            }
+
+            return null;
+        }   
 
         // ********************************************************************************
         /// <summary>
@@ -82,11 +129,11 @@ namespace EasyTermCore
 
                 try
                 {
-                    CultureInfo ci = CultureInfo.GetCultureInfo(att.Value);
+                    CultureInfo ci = GetCultureInfoFromName(att.Value);
+                    if (ci == null)
+                        continue;
 
                     _LanguageAttributes[ci] = att.Value;
-
-
                 }
                 catch (Exception)
                 {
@@ -160,8 +207,70 @@ namespace EasyTermCore
                 if (node != null)
                     items.Add(File.ID, node.InnerText, items.Count);
             }
-            
-            
+        }
+
+        // ********************************************************************************
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="termID"></param>
+        /// <param name="info"></param>
+        /// <returns></returns>
+        /// <created>UPh,31.10.2015</created>
+        /// <changed>UPh,31.10.2015</changed>
+        // ********************************************************************************
+        internal override bool GetTermInfo(int termID, out TermInfo info, IAbortTermQuery abort)
+        {
+            info = null;
+
+            if (termID < 0 || termID >= _Langset1.Count)
+                return false;
+
+            try 
+	        {	        
+		        info = new TermInfo();
+
+                XmlNode nodeLangset1 = _Langset1[termID];
+
+                // Language 1
+                CultureInfo ci1 = GetCultureInfoFromAttributeName(_LangAttribute1);
+                if (ci1 == null)
+                    return false;
+
+                TermInfo.LangSet langset1 = info.AddLanguage(ci1);
+
+                foreach (XmlNode node in nodeLangset1.SelectNodes(".//term"))
+                {
+                    langset1.AddTerm(node.InnerText);  
+                }
+
+
+                // Language 1
+                CultureInfo ci2 = GetCultureInfoFromAttributeName(_LangAttribute2);
+                if (ci2 == null)
+                    return true;
+
+                TermInfo.LangSet langset2 = info.AddLanguage(ci2);
+
+                string xpath = string.Format("./langSet[@xml:lang='{0}']", _LangAttribute2);
+                XmlNode nodeLangset2 = nodeLangset1.ParentNode.SelectSingleNode(xpath, _NamespaceManager);
+
+                if (nodeLangset2 != null)
+                {
+                    foreach (XmlNode node in nodeLangset2.SelectNodes(".//term"))
+                    {
+                        langset2.AddTerm(node.InnerText);
+                    }
+                }
+
+                return true;
+            }
+	        catch (Exception ex)
+	        {
+                info = new TermInfo();
+                info.Description = ex.Message;
+                return true;
+	        }
         }
     }
 }

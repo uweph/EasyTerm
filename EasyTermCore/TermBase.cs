@@ -22,11 +22,12 @@ namespace EasyTermCore
         internal abstract List<CultureInfo> GetLanguages();
         internal abstract void InitLanguagePair(CultureInfo lang1, CultureInfo lang2);
         internal abstract void GetTermList(TermListItems items, IAbortTermQuery abort);
+        internal abstract bool GetTermInfo(int termID, out TermInfo info, IAbortTermQuery abort);
     }
 
     // --------------------------------------------------------------------------------
     /// <summary>
-    /// 
+    /// List of active term bases
     /// </summary>
     // --------------------------------------------------------------------------------
     internal class TermBases : List<TermBase>
@@ -77,7 +78,7 @@ namespace EasyTermCore
 
         // ********************************************************************************
         /// <summary>
-        /// 
+        /// Find a term base given by the attached TermBaseFile
         /// </summary>
         /// <param name="file"></param>
         /// <returns></returns>
@@ -97,7 +98,7 @@ namespace EasyTermCore
 
         // ********************************************************************************
         /// <summary>
-        /// 
+        /// Find a termbase given by it's ID
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
@@ -117,11 +118,16 @@ namespace EasyTermCore
     }
 
 
+    // --------------------------------------------------------------------------------
+    /// <summary>
+    /// Creates the actual term bases
+    /// </summary>
+    // --------------------------------------------------------------------------------
     class TermBaseFactory
     {
         // ********************************************************************************
         /// <summary>
-        /// 
+        /// Create the correct term base instance, depending on the file extension
         /// </summary>
         /// <param name="file"></param>
         /// <returns></returns>

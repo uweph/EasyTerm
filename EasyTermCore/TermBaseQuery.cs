@@ -83,22 +83,6 @@ namespace EasyTermCore
             return cis;
         }
 
-        // ********************************************************************************
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="word"></param>
-        /// <returns></returns>
-        /// <created>UPh,25.10.2015</created>
-        /// <changed>UPh,25.10.2015</changed>
-        // ********************************************************************************
-        public void RequestTerminology(string word)
-        {
-            if (!_Worker.IsStarted)
-                _Worker.Start();
-
-            _Worker.PutRequest(TermBaseRequest.MakeTerminologyRequest(word));
-        }
 
         // ********************************************************************************
         /// <summary>
@@ -116,16 +100,38 @@ namespace EasyTermCore
             _Worker.PutRequest(TermBaseRequest.MakeTermListRequest());
         }
 
-        public void RequestTerm(TermListItem item)
+        // ********************************************************************************
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="item"></param>
+        /// <returns></returns>
+        /// <created>UPh,31.10.2015</created>
+        /// <changed>UPh,31.10.2015</changed>
+        // ********************************************************************************
+        public void RequestTermInfo(TermListItem item)
         {
             if (!_Worker.IsStarted)
                 _Worker.Start();
 
-            _Worker.PutRequest(TermBaseRequest.MakeTermRequest(item.Term, item.TermID));
+            _Worker.PutRequest(TermBaseRequest.MakeTermInfoRequest(item.TermBaseID, item.TermID));
         }
-        public void RequestTerm(string term)
-        {
 
+        // ********************************************************************************
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="word"></param>
+        /// <returns></returns>
+        /// <created>UPh,25.10.2015</created>
+        /// <changed>UPh,25.10.2015</changed>
+        // ********************************************************************************
+        public void RequestTerminology(string word)
+        {
+            if (!_Worker.IsStarted)
+                _Worker.Start();
+
+            _Worker.PutRequest(TermBaseRequest.MakeTerminologyRequest(word));
         }
 
 
@@ -136,8 +142,19 @@ namespace EasyTermCore
         public delegate void TermListResultHandler(object sender, TermListResultArgs e);
         public event TermListResultHandler TermListResult;
 
+        public delegate void TermInfoResultHandler(object sender, TermInfoResultArgs e);
+        public event TermInfoResultHandler TermInfoResult;
 
-        // From worker
+        // ********************************************************************************
+        /// <summary>
+        /// From worker
+        /// </summary>
+        /// <param name="requestid"></param>
+        /// <param name="items"></param>
+        /// <returns></returns>
+        /// <created>UPh,31.10.2015</created>
+        /// <changed>UPh,31.10.2015</changed>
+        // ********************************************************************************
         internal void FireTermListResult(int requestid, TermListItems items)
         {
             if (TermListResult == null)
@@ -149,7 +166,28 @@ namespace EasyTermCore
 
             TermListResult(this, args);
         }
-        
+
+        // ********************************************************************************
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="requestid"></param>
+        /// <param name="items"></param>
+        /// <returns></returns>
+        /// <created>UPh,31.10.2015</created>
+        /// <changed>UPh,31.10.2015</changed>
+        // ********************************************************************************
+        internal void FireTermInfoResult(int requestid, TermInfo info)
+        {
+            if (TermListResult == null)
+                return;
+
+            TermInfoResultArgs args = new TermInfoResultArgs();
+            args.RequestID = requestid;
+            args.Info = info;
+
+            TermInfoResult(this, args);
+        }
 
         // ********************************************************************************
         /// <summary>
@@ -232,19 +270,19 @@ namespace EasyTermCore
     {
         public int TermBaseID {get; internal set;}
         public string Term {get; internal set;}
-        public long TermID {get; internal set;}
+        public int TermID {get; internal set;}
 
         internal TermListItem () {}
     }
 
     // --------------------------------------------------------------------------------
     /// <summary>
-    /// 
+    /// Result from TermList query
     /// </summary>
     // --------------------------------------------------------------------------------
     public class TermListItems : List<TermListItem>
     {
-        public void Add(int termbaseID, string term, long termID = 0)
+        public void Add(int termbaseID, string term, int termID)
         {
             TermListItem item = new TermListItem();
             item.TermBaseID = termbaseID;
@@ -256,6 +294,59 @@ namespace EasyTermCore
 
     // --------------------------------------------------------------------------------
     /// <summary>
+    /// Result from TermInfo Query
+    /// </summary>
+    // --------------------------------------------------------------------------------
+    public class TermInfo
+    {
+        internal TermInfo()
+        {
+            LanguageSets = new List<LangSet>();
+        }
+
+        internal LangSet AddLanguage(CultureInfo language)
+        {
+            LangSet langset = new LangSet();
+            langset.Language = language;
+            LanguageSets.Add(langset);
+
+            return langset;
+        }
+
+        // Common term information
+        public string Description { get; internal set; }
+
+        public class LangSet
+        {
+            internal LangSet()
+            {
+                Terms = new List<Term>();
+            }
+
+            internal void AddTerm(string text, string description = null)
+            {
+                Term term = new Term();
+                term.Text = text;
+                term.Description = description != null ? description : "";
+
+                Terms.Add(term);
+            }
+
+            public CultureInfo Language {get; internal set;}
+            public List<Term> Terms {get; internal set;}
+        }   
+
+        public class Term
+        {
+            public string Text { get; internal set; }
+            public string Description { get; internal set; } // May be HTML
+        }
+
+        public List<LangSet> LanguageSets {get; internal set;}
+    }
+
+    // --------------------------------------------------------------------------------
+    /// <summary>
     /// 
     /// </summary>
     // --------------------------------------------------------------------------------
@@ -263,6 +354,18 @@ namespace EasyTermCore
     {
         public int RequestID {get; set;}
         public TermListItems Items {get; internal set;}
+    }
+
+    // --------------------------------------------------------------------------------
+    /// <summary>
+    /// 
+    /// </summary>
+    // --------------------------------------------------------------------------------
+    public class TermInfoResultArgs : EventArgs
+    {
+        public int RequestID {get; set;}
+        public TermInfo Info {get; internal set;}
+
     }
 
 }
