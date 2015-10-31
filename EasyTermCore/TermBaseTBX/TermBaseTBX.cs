@@ -197,16 +197,108 @@ namespace EasyTermCore
             if (_Doc == null)
                 return;
 
-            foreach (XmlNode langSet in _Langset1)
+            for (int iLangset = 0; iLangset < _Langset1.Count; iLangset++)
             {
-                XmlNode node = langSet.SelectSingleNode(".//term");
-                if (node == null)
-                    node = langSet.SelectSingleNode(".//ntig/termGrp/term");
+                XmlNode langSet = _Langset1[iLangset];
+                foreach (XmlNode node in langSet.SelectNodes(".//term"))
+                {
+                    items.Add(File.ID, node.InnerText, iLangset);
+                }
 
-                // Index of node is TermListItem ID
-                if (node != null)
-                    items.Add(File.ID, node.InnerText, items.Count);
+                //XmlNode node = langSet.SelectSingleNode(".//term");
+                //if (node == null)
+                //    node = langSet.SelectSingleNode(".//ntig/termGrp/term");
+
+                //if (node != null)
+                //    items.Add(File.ID, node.InnerText, items.Count);
             }
+        }
+
+
+        // ********************************************************************************
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="node"></param>
+        /// <param name="props"></param>
+        /// <returns></returns>
+        /// <created>UPh,31.10.2015</created>
+        /// <changed>UPh,31.10.2015</changed>
+        // ********************************************************************************
+        private void ReadProps(XmlNode node, ref TermInfo.Properties props)
+        {
+            foreach (XmlNode nodeDescrip in node.SelectNodes("./descripGrp/descrip"))
+            {
+                XmlAttribute attType = nodeDescrip.Attributes["type"];
+                if (attType == null)
+                    continue;
+
+                if (props == null)
+                    props = new TermInfo.Properties();
+
+                if (string.Compare(attType.InnerText, "definition", true) == 0)
+                    props.Definition = nodeDescrip.InnerText;
+                else
+                    props.AddValue(attType.InnerText, nodeDescrip.InnerText);
+            }
+
+            foreach (XmlNode nodeDescrip in node.SelectNodes("./descrip"))
+            {
+                XmlAttribute attType = nodeDescrip.Attributes["type"];
+                if (attType == null)
+                    continue;
+
+                if (props == null)
+                    props = new TermInfo.Properties();
+
+                if (string.Compare(attType.InnerText, "definition", true) == 0)
+                    props.Definition = nodeDescrip.InnerText;
+                else
+                    props.AddValue(attType.InnerText, nodeDescrip.InnerText);
+            }
+
+        }
+
+        // ********************************************************************************
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="nodeLangset"></param>
+        /// <param name="langset"></param>
+        /// <returns></returns>
+        /// <created>UPh,31.10.2015</created>
+        /// <changed>UPh,31.10.2015</changed>
+        // ********************************************************************************
+        private void ReadLangset(XmlNode nodeLangset, TermInfo.LangSet langset)
+        {
+            // Read description
+            ReadProps(nodeLangset, ref langset._Props);
+
+
+            // Read terms
+            foreach (XmlNode nodeTig in nodeLangset.SelectNodes("./tig"))
+            {
+                XmlNode nodeTerm = nodeTig.SelectSingleNode("./term");
+                if (nodeTerm == null)
+                    return;
+
+                TermInfo.Term term = langset.AddTerm(nodeTerm.InnerText);
+
+                ReadProps(nodeTig, ref term._Props);
+            }
+
+            // Read terms
+            foreach (XmlNode nodeTig in nodeLangset.SelectNodes("./ntig"))
+            {
+                XmlNode nodeTerm = nodeTig.SelectSingleNode("./termGrp/term");
+                if (nodeTerm == null)
+                    return;
+
+                TermInfo.Term term = langset.AddTerm(nodeTerm.InnerText);
+
+                ReadProps(nodeTig, ref term._Props);
+            }
+
         }
 
         // ********************************************************************************
@@ -232,17 +324,17 @@ namespace EasyTermCore
 
                 XmlNode nodeLangset1 = _Langset1[termID];
 
+                // Entry
+                XmlNode nodeEntry = nodeLangset1.ParentNode;
+                ReadProps(nodeEntry, ref info._Props);
+
                 // Language 1
                 CultureInfo ci1 = GetCultureInfoFromAttributeName(_LangAttribute1);
                 if (ci1 == null)
                     return false;
 
                 TermInfo.LangSet langset1 = info.AddLanguage(ci1);
-
-                foreach (XmlNode node in nodeLangset1.SelectNodes(".//term"))
-                {
-                    langset1.AddTerm(node.InnerText);  
-                }
+                ReadLangset(nodeLangset1, langset1);
 
 
                 // Language 1
@@ -250,17 +342,14 @@ namespace EasyTermCore
                 if (ci2 == null)
                     return true;
 
-                TermInfo.LangSet langset2 = info.AddLanguage(ci2);
 
                 string xpath = string.Format("./langSet[@xml:lang='{0}']", _LangAttribute2);
                 XmlNode nodeLangset2 = nodeLangset1.ParentNode.SelectSingleNode(xpath, _NamespaceManager);
 
                 if (nodeLangset2 != null)
                 {
-                    foreach (XmlNode node in nodeLangset2.SelectNodes(".//term"))
-                    {
-                        langset2.AddTerm(node.InnerText);
-                    }
+                    TermInfo.LangSet langset2 = info.AddLanguage(ci2);
+                    ReadLangset(nodeLangset2, langset2);
                 }
 
                 return true;
@@ -268,7 +357,8 @@ namespace EasyTermCore
 	        catch (Exception ex)
 	        {
                 info = new TermInfo();
-                info.Description = ex.Message;
+                info._Props = new TermInfo.Properties();
+                info._Props.Definition = ex.Message;
                 return true;
 	        }
         }

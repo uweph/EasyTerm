@@ -67,20 +67,25 @@ namespace EasyTermViewer
         {
             HTMLBuilder hb = new HTMLBuilder();
 
-            if (!string.IsNullOrWhiteSpace(info.Description))
-                hb.AppendText(info.Description);
+            hb.AppendHeader();
+
+            hb.AppendProperties(info.Props);
 
             foreach (TermInfo.LangSet langset in info.LanguageSets)
             {
                 hb.AppendHeader1(langset.Language.DisplayName);
 
+                hb.AppendProperties(langset.Props);
+
 
                 foreach (TermInfo.Term term in langset.Terms)
                 {
                     hb.AppendHeader2(term.Text);
-                    hb.AppendText(term.Description);
+                    hb.AppendProperties(term.Props);
                 }
             }
+
+            hb.AppendFooter();
                 
             return hb.ToString();
         }
@@ -96,6 +101,70 @@ namespace EasyTermViewer
     {
         StringBuilder _SB = new StringBuilder();
 
+        public void AppendHeader()
+        {
+            _SB.Append("<html>");
+            _SB.Append("<head>");
+            _SB.Append("<style>");
+            _SB.Append("h1 {font: bold 18px Arial; color: blue;}");
+            _SB.Append("h2 {font: bold 15px Arial;}");
+            _SB.Append("p.def {font: italic 12px Arial;}");
+            _SB.Append("span.key {font: bold italic 12px Arial; color=DimGray;}");
+            _SB.Append("span.value {font: italic 12px Arial; color=DimGray;}");
+            _SB.Append("</style>");
+            _SB.Append("</head>");
+            _SB.Append("<body>");
+        }
+
+        public void AppendFooter()
+        {
+            _SB.Append("</body></html>");
+        }
+
+        // ********************************************************************************
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="props"></param>
+        /// <returns></returns>
+        /// <created>UPh,31.10.2015</created>
+        /// <changed>UPh,31.10.2015</changed>
+        // ********************************************************************************
+        public void AppendProperties(TermInfo.Properties props)
+        {
+            if (props == null)
+                return;
+            if (!string.IsNullOrEmpty(props.Definition))
+                AppendDefinition(props.Definition);
+            if (props.Values != null)
+            {
+                foreach (var value in props.Values)
+                {
+                    AppendValue(value.Key, value.Value);
+                }
+            }
+
+        }
+
+        public void AppendDefinition(string definition)
+        {
+            _SB.Append("<p class='def'>");
+            _SB.Append(definition);
+            _SB.Append("</p>");
+        }
+
+        public void AppendValue(string key, string value)
+        {
+            _SB.Append("<span class='key'>");
+            _SB.Append(key);
+            _SB.Append(": ");
+            _SB.Append("</span><span class='value'>");
+            _SB.Append(value);
+            _SB.Append("</span><br/>");
+    
+
+        }
+
         public void AppendHeader1(string text)
         {
             AppendTag("h1", text);
@@ -106,7 +175,7 @@ namespace EasyTermViewer
             AppendTag("h2", text);
         }
 
-        public void AppendText(string text)
+        public void AppendParagraph(string text)
         {
             AppendTag("p", text);
         }

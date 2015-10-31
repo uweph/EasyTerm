@@ -304,6 +304,12 @@ namespace EasyTermCore
             LanguageSets = new List<LangSet>();
         }
 
+
+        internal Properties _Props = null;
+        public Properties Props { get { return _Props; } }
+
+
+        // Add new LangSet
         internal LangSet AddLanguage(CultureInfo language)
         {
             LangSet langset = new LangSet();
@@ -313,9 +319,31 @@ namespace EasyTermCore
             return langset;
         }
 
-        // Common term information
-        public string Description { get; internal set; }
+        // --------------------------------------------------------------------------------
+        /// <summary>
+        /// Additional properties for TermInfo,LangSet or Term
+        /// </summary>
+        // --------------------------------------------------------------------------------
+        public class Properties
+        {
+            public string Definition {get; internal set;}
+            public List<KeyValuePair<string,string>> Values;
 
+            // Adds new key/value 
+            internal void AddValue(string key, string value)
+            {
+                if (Values == null)
+                    Values = new List<KeyValuePair<string,string>>();
+                Values.Add(new KeyValuePair<string,string>(key, value));
+            }
+
+        }
+
+        // --------------------------------------------------------------------------------
+        /// <summary>
+        /// A language set
+        /// </summary>
+        // --------------------------------------------------------------------------------
         public class LangSet
         {
             internal LangSet()
@@ -323,23 +351,35 @@ namespace EasyTermCore
                 Terms = new List<Term>();
             }
 
-            internal void AddTerm(string text, string description = null)
+
+            // Adds new term
+            internal Term AddTerm(string text)
             {
                 Term term = new Term();
                 term.Text = text;
-                term.Description = description != null ? description : "";
 
                 Terms.Add(term);
+
+                return term;
             }
 
+
             public CultureInfo Language {get; internal set;}
-            public List<Term> Terms {get; internal set;}
+            internal Properties _Props = null;
+            public Properties Props{ get {return _Props;}}
+            public List<Term> Terms { get; internal set; }
         }   
 
+        // --------------------------------------------------------------------------------
+        /// <summary>
+        /// 
+        /// </summary>
+        // --------------------------------------------------------------------------------
         public class Term
         {
             public string Text { get; internal set; }
-            public string Description { get; internal set; } // May be HTML
+            internal Properties _Props = null;
+            public Properties Props { get { return _Props; } }
         }
 
         public List<LangSet> LanguageSets {get; internal set;}
