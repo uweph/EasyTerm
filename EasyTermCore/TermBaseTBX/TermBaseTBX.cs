@@ -13,6 +13,14 @@ namespace EasyTermCore
         XmlDocument _Doc;
         XmlNamespaceManager _NamespaceManager;
 
+        // ********************************************************************************
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        /// <created>UPh,01.11.2015</created>
+        /// <changed>UPh,01.11.2015</changed>
+        // ********************************************************************************
         internal override void OnOpenFile()
         {
             try
@@ -37,6 +45,22 @@ namespace EasyTermCore
         /// <summary>
         /// 
         /// </summary>
+        /// <returns></returns>
+        /// <created>UPh,01.11.2015</created>
+        /// <changed>UPh,01.11.2015</changed>
+        // ********************************************************************************
+        internal override void OnCloseFile()
+        {
+            if (_Doc == null)
+                return;
+
+            _Doc = null;
+        }
+
+        // ********************************************************************************
+        /// <summary>
+        /// 
+        /// </summary>
         /// <param name="languages"></param>
         /// <returns></returns>
         /// <created>UPh,30.10.2015</created>
@@ -54,6 +78,15 @@ namespace EasyTermCore
 
         }
 
+        // ********************************************************************************
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        /// <created>UPh,01.11.2015</created>
+        /// <changed>UPh,01.11.2015</changed>
+        // ********************************************************************************
         CultureInfo GetCultureInfoFromAttributeName(string name)
         {
             foreach (var pair in _LanguageAttributes)

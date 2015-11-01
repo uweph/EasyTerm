@@ -51,6 +51,7 @@
     </Compile>
     <Compile Include="TermBase.cs" />
     <Compile Include="TermBaseCSV\TermBaseCSV.cs" />
+    <Compile Include="TermBaseDB\TermBaseDB.cs" />
     <Compile Include="TermBaseFileList.cs">
       <SubType>Component</SubType>
     </Compile>

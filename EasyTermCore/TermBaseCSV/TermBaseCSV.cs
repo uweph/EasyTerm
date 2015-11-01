@@ -55,6 +55,23 @@ namespace EasyTermCore
         /// <summary>
         /// 
         /// </summary>
+        /// <returns></returns>
+        /// <created>UPh,01.11.2015</created>
+        /// <changed>UPh,01.11.2015</changed>
+        // ********************************************************************************
+        internal override void OnCloseFile()
+        {
+            if (_Stream == null)
+                return;
+
+            _Stream.Dispose();
+            _Stream = null;
+        }
+
+        // ********************************************************************************
+        /// <summary>
+        /// 
+        /// </summary>
         /// <param name="languages"></param>
         /// <returns></returns>
         /// <created>UPh,30.10.2015</created>

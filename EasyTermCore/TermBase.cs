@@ -19,6 +19,7 @@ namespace EasyTermCore
         internal int TermBaseID {get; set;}
 
         internal abstract void OnOpenFile();
+        internal abstract void OnCloseFile();
         internal abstract List<CultureInfo> GetLanguages();
         internal abstract void InitLanguagePair(CultureInfo lang1, CultureInfo lang2);
         internal abstract void GetTermList(TermListItems items, IAbortTermQuery abort);
@@ -147,6 +148,10 @@ namespace EasyTermCore
             else if (string.Compare(ext, ".tbx", true) == 0)
             {
                 termBase = new TermBaseTBX();
+            }
+            else if (string.Compare(ext, ".sdltb", true) == 0)
+            {
+                termBase = new TermBaseDB();
             }
 
             if (termBase != null)
