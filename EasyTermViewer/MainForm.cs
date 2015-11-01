@@ -163,6 +163,42 @@ namespace EasyTermViewer
             termInfoControl.SetData(name, e.Info);            
         }
 
+        // ********************************************************************************
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="ci1"></param>
+        /// <param name="ci2"></param>
+        /// <returns></returns>
+        /// <created>UPh,01.11.2015</created>
+        /// <changed>UPh,01.11.2015</changed>
+        // ********************************************************************************
+        private void GetCurrentLanguagePair(out CultureInfo ci1, out CultureInfo ci2)
+        {
+            if (_TermBaseQuery.GetLanguagePair(out ci1, out ci2))
+                return;
+
+            // Use previous selection
+            
+            
+            string name1 = PlProfile.GetString("Settings", "Language1", "en");
+            string name2 = PlProfile.GetString("Settings", "Language2", "de");
+
+            try
+            {
+                ci1 = CultureInfo.GetCultureInfo(name1);
+                ci2 = CultureInfo.GetCultureInfo(name2);
+                return;
+            }
+            catch (Exception)
+            {
+
+            }
+
+            ci1 = CultureInfo.GetCultureInfo("en");
+            ci2 = CultureInfo.GetCultureInfo("de");
+        }
+
 
         // ********************************************************************************
         /// <summary>
@@ -179,18 +215,37 @@ namespace EasyTermViewer
             cmdLanguage1.Items.Clear();
             cmdLanguage2.Items.Clear();
 
+            CultureInfo lang1 = null;
+            CultureInfo lang2 = null;
+            GetCurrentLanguagePair(out lang1, out lang2);
+
+            int select1 = -1;
+            int select2 = -1;
+
             List<CultureInfo> cis = _TermBaseQuery.GetLanguages();
+
+            cis.Sort((a,b) => string.Compare(a.DisplayName, b.DisplayName, true));
 
             foreach (CultureInfo ci in cis)
             {
+                if (lang1.Name == ci.Name)
+                    select1 = cmdLanguage1.Items.Count;
+                if (lang2.Name == ci.Name)
+                    select2 = cmdLanguage1.Items.Count;
+
                 cmdLanguage1.Items.Add(ci);
                 cmdLanguage2.Items.Add(ci);
             }
 
-            if (cmdLanguage1.Items.Count > 0)
-                cmdLanguage1.SelectedIndex = 0;
-            if (cmdLanguage2.Items.Count > 1)
-                cmdLanguage2.SelectedIndex = 1;
+            if (select1 < 0)
+                select1 = Math.Min(0, cmdLanguage1.Items.Count - 1);
+            if (select2 < 0)
+                select2 = Math.Min(1, cmdLanguage2.Items.Count - 1);
+
+            if (select1 >= 0)
+                cmdLanguage1.SelectedIndex = select1;
+            if (select2 >= 0)
+                cmdLanguage2.SelectedIndex = select2;
             _IgnoreNotification--;
 
             OnLanguageSelectionChanged();
@@ -226,6 +281,7 @@ namespace EasyTermViewer
         {
             try
             {
+                lstTerms.SelectedIndices.Clear();
                 lstTerms.Clear();
                 _TermBaseQuery.RequestTermList();
 
@@ -348,6 +404,12 @@ namespace EasyTermViewer
             CultureInfo lang2 = cmdLanguage2.SelectedItem as CultureInfo;
 
             _TermBaseQuery.SetLanguagePair(lang1, lang2);
+
+            if (lang1 != null && lang2 != null)
+            {
+                PlProfile.WriteString("Settings", "Language1", lang1.Name);
+                PlProfile.WriteString("Settings", "Language2", lang2.Name);
+            }
 
             InitializeTermList();
             DisplaySelectedTerm();

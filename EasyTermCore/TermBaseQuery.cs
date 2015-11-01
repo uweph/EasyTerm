@@ -57,6 +57,25 @@ namespace EasyTermCore
         /// <summary>
         /// 
         /// </summary>
+        /// <param name="lang1"></param>
+        /// <param name="lang2"></param>
+        /// <returns></returns>
+        /// <created>UPh,01.11.2015</created>
+        /// <changed>UPh,01.11.2015</changed>
+        // ********************************************************************************
+        public bool GetLanguagePair(out CultureInfo lang1, out CultureInfo lang2)
+        {
+            lang1 = Language1;
+            lang2 = Language2;
+
+            return lang1 != null && lang2 != null;
+        }
+
+
+        // ********************************************************************************
+        /// <summary>
+        /// 
+        /// </summary>
         /// <typeparam name="CultureInfo"></typeparam>
         /// <returns></returns>
         /// <created>UPh,30.10.2015</created>

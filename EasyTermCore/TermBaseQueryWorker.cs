@@ -169,6 +169,17 @@ namespace EasyTermCore
 
             lock (_NewRequests)
             {
+                if (_NewRequests.Count > 0 && _NewRequests[0].Type == RequestType.TermList)
+                {
+                    // Don't throw TermList request away
+                    if (_NewRequests.Count > 1)
+                        _NewRequests.RemoveAt(1);
+
+                    _NewRequests.Add(request);
+                    _DataAvailableEvent.Set();
+                    return;
+                }
+
                 _NewRequests.Clear();      // Clear all outstanding requests
                 _NewRequests.Add(request); 
                 _DataAvailableEvent.Set();
@@ -215,7 +226,6 @@ namespace EasyTermCore
                 TermBaseRequest request = GetRequest();
                 if (request == null)
                     continue;
-
 
                 if (request.Type == RequestType.TermList)
                 {
