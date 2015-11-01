@@ -59,7 +59,6 @@ namespace EasyTermCore
 
             Graphics g = e.Graphics;
 
-
             if ((e.State & DrawItemState.Selected) != 0)
             {
                 g.FillRectangle(_BkBrushSel, e.Bounds);
@@ -79,6 +78,12 @@ namespace EasyTermCore
 
             if (file != null)
             {
+                Rectangle rcColor = e.Bounds;
+                rcColor.Width = 4;
+                SolidBrush brush = new SolidBrush(file.DisplayColor);
+                e.Graphics.FillRectangle(brush, rcColor);
+
+
                 DrawCheckBox(e, file);
                 DrawText(e, file);
             }

@@ -30,13 +30,15 @@
         {
             this.btnAdd = new System.Windows.Forms.Button();
             this.btnClose = new System.Windows.Forms.Button();
+            this.btnDisplayColor = new System.Windows.Forms.Button();
+            this.btnRemove = new System.Windows.Forms.Button();
             this.lstFiles = new EasyTermCore.TermBaseFileList();
             this.SuspendLayout();
             // 
             // btnAdd
             // 
             this.btnAdd.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.btnAdd.Location = new System.Drawing.Point(13, 265);
+            this.btnAdd.Location = new System.Drawing.Point(12, 265);
             this.btnAdd.Name = "btnAdd";
             this.btnAdd.Size = new System.Drawing.Size(75, 23);
             this.btnAdd.TabIndex = 1;
@@ -55,6 +57,28 @@
             this.btnClose.UseVisualStyleBackColor = true;
             this.btnClose.Click += new System.EventHandler(this.btnClose_Click);
             // 
+            // btnDisplayColor
+            // 
+            this.btnDisplayColor.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.btnDisplayColor.Location = new System.Drawing.Point(174, 265);
+            this.btnDisplayColor.Name = "btnDisplayColor";
+            this.btnDisplayColor.Size = new System.Drawing.Size(75, 23);
+            this.btnDisplayColor.TabIndex = 1;
+            this.btnDisplayColor.Text = "Color...";
+            this.btnDisplayColor.UseVisualStyleBackColor = true;
+            this.btnDisplayColor.Click += new System.EventHandler(this.btnDisplayColor_Click);
+            // 
+            // btnRemove
+            // 
+            this.btnRemove.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.btnRemove.Location = new System.Drawing.Point(93, 265);
+            this.btnRemove.Name = "btnRemove";
+            this.btnRemove.Size = new System.Drawing.Size(75, 23);
+            this.btnRemove.TabIndex = 1;
+            this.btnRemove.Text = "Remove";
+            this.btnRemove.UseVisualStyleBackColor = true;
+            this.btnRemove.Click += new System.EventHandler(this.btnRemove_Click);
+            // 
             // lstFiles
             // 
             this.lstFiles.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -65,8 +89,9 @@
             this.lstFiles.ItemHeight = 39;
             this.lstFiles.Location = new System.Drawing.Point(12, 12);
             this.lstFiles.Name = "lstFiles";
-            this.lstFiles.Size = new System.Drawing.Size(435, 238);
+            this.lstFiles.Size = new System.Drawing.Size(436, 238);
             this.lstFiles.TabIndex = 4;
+            this.lstFiles.SelectedIndexChanged += new System.EventHandler(this.lstFiles_SelectedIndexChanged);
             // 
             // TermBaseSelectionForm
             // 
@@ -75,9 +100,14 @@
             this.ClientSize = new System.Drawing.Size(460, 300);
             this.Controls.Add(this.lstFiles);
             this.Controls.Add(this.btnClose);
+            this.Controls.Add(this.btnDisplayColor);
+            this.Controls.Add(this.btnRemove);
             this.Controls.Add(this.btnAdd);
+            this.MinimizeBox = false;
             this.MinimumSize = new System.Drawing.Size(450, 300);
             this.Name = "TermBaseSelectionForm";
+            this.ShowIcon = false;
+            this.ShowInTaskbar = false;
             this.Text = "Term Bases";
             this.ResumeLayout(false);
 
@@ -88,5 +118,7 @@
         private System.Windows.Forms.Button btnAdd;
         private System.Windows.Forms.Button btnClose;
         private TermBaseFileList lstFiles;
+        private System.Windows.Forms.Button btnDisplayColor;
+        private System.Windows.Forms.Button btnRemove;
     }
 }

@@ -37,6 +37,8 @@ namespace EasyTermViewer
             Thread.CurrentThread.CurrentCulture = ci;
             Thread.CurrentThread.CurrentUICulture = ci;
 
+            Icon = Resources.app;
+
             string inipath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
             inipath = Path.Combine(inipath, "EasyTermViewer\\profile.ini");
             PlProfile.SetProfileName(inipath, PlProfile.ProfileType.IniFile);

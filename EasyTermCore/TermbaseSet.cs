@@ -226,29 +226,48 @@ namespace EasyTermCore
         // ********************************************************************************
         private bool AddLocalFiles()
         {
-            string termbasepath = ConfigurationManager.AppSettings["TermBaseFolder"];
-            // TODO
-
             string localdir = Path.GetDirectoryName(Assembly.GetCallingAssembly().Location);
             bool bChanged = false;
 
-            List<string> reldirs = new List<string>();
-            reldirs.Add("TermBases");
-            reldirs.Add("..\\TermBases");
-            reldirs.Add("..");
+            List<string> searchfolders = new List<string>();
+            for(int n = 1; n < 8; n++)
+            {
+                string pathvar = string.Format("TermBaseFolder{0}", n);
+                string path = ConfigurationManager.AppSettings[pathvar];
+                if (string.IsNullOrEmpty(path))
+                    break;
+
+
+
+                string searchpath;
+                if (path.StartsWith("."))
+                    searchpath = Path.GetFullPath(Path.Combine(localdir, path));
+                else
+                    searchpath = path;
+
+                searchfolders.Add(searchpath);
+
+                Environment.SetEnvironmentVariable(pathvar, searchpath);
+            }
 
             // Hold local files to find which one can be deleted
             List<TermBaseFile> localFiles = new List<TermBaseFile>();
             foreach (TermBaseFile file in Files)
             {
-                if (file.IsLocal)
+                if (file.IsAutomatic)
                     localFiles.Add(file);
             }
 
             // Loop directories where we expect termbases
-            foreach (string reldir in reldirs)
+            for (int iRelDir = 0; iRelDir < searchfolders.Count; iRelDir++)
             {
-                string searchpath = Path.GetFullPath(Path.Combine(localdir, reldir));
+                string reldir = searchfolders[iRelDir];
+
+                string searchpath;
+                if (reldir.StartsWith("."))
+                    searchpath = Path.GetFullPath(Path.Combine(localdir, reldir));
+                else
+                    searchpath = reldir;
                 if (!Directory.Exists(searchpath))
                     continue;
 
@@ -263,7 +282,8 @@ namespace EasyTermCore
                 // Loop files
                 foreach (string filepath in filteredFiles)
                 {
-                    string storagePath = "%local%\\" + Tools.MakeRelativePath(localdir + "\\x", filepath);
+                    string storagePath = string.Format("%TermBaseFolder{0}%\\{1}", iRelDir + 1,
+                        Path.GetFileName(filepath));
                     
                     TermBaseFile existingFile = FindStoragePath(storagePath);
                     if (existingFile == null)
@@ -388,19 +408,14 @@ namespace EasyTermCore
         {
             get
             {
-                if (!IsLocal)
-                    return StoragePath;
-
-                string dir = Path.GetDirectoryName(Assembly.GetCallingAssembly().Location);
-                string path = dir + StoragePath.Substring(7);
-                path = Path.GetFullPath(path);
+                string path = Environment.ExpandEnvironmentVariables(StoragePath);
                 return path;
             }
         }
         public bool Active { get; set; }    // True = file is active
-        public bool IsLocal
+        public bool IsAutomatic
         {
-            get { return StoragePath.StartsWith("%local%"); }
+            get { return StoragePath.StartsWith("%TermBaseFolder", StringComparison.InvariantCultureIgnoreCase); }
         }
 
         public Color DisplayColor { get; set; }
