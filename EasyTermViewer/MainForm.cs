@@ -12,6 +12,7 @@ using System.IO;
 using System.Globalization;
 using EasyTermViewer.Properties;
 using PassLib;
+using System.Threading;
 
 namespace EasyTermViewer
 {
@@ -32,6 +33,10 @@ namespace EasyTermViewer
         // ********************************************************************************
         public MainForm()
         {
+            CultureInfo ci = new CultureInfo("en-US");
+            Thread.CurrentThread.CurrentCulture = ci;
+            Thread.CurrentThread.CurrentUICulture = ci;
+
             string inipath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
             inipath = Path.Combine(inipath, "EasyTermViewer\\profile.ini");
             PlProfile.SetProfileName(inipath, PlProfile.ProfileType.IniFile);

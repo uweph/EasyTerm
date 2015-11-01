@@ -7,6 +7,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
+using System.Configuration;
 
 namespace EasyTermCore
 {
@@ -225,6 +226,8 @@ namespace EasyTermCore
         // ********************************************************************************
         private bool AddLocalFiles()
         {
+            string termbasepath = ConfigurationManager.AppSettings["TermBaseFolder"];
+            // TODO
 
             string localdir = Path.GetDirectoryName(Assembly.GetCallingAssembly().Location);
             bool bChanged = false;
@@ -232,6 +235,7 @@ namespace EasyTermCore
             List<string> reldirs = new List<string>();
             reldirs.Add("TermBases");
             reldirs.Add("..\\TermBases");
+            reldirs.Add("..");
 
             // Hold local files to find which one can be deleted
             List<TermBaseFile> localFiles = new List<TermBaseFile>();
