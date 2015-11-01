@@ -65,7 +65,7 @@ namespace EasyTermViewer
         // ********************************************************************************
         private string MakeHTML(TermInfo info)
         {
-            HTMLBuilder hb = new HTMLBuilder();
+            TermInfoHTMLBuilder hb = new TermInfoHTMLBuilder();
 
             hb.AppendHeader();
 
@@ -73,14 +73,14 @@ namespace EasyTermViewer
 
             foreach (TermInfo.LangSet langset in info.LanguageSets)
             {
-                hb.AppendHeader1(langset.Language.DisplayName);
+                hb.AppendLanguage(langset.Language.DisplayName);
 
                 hb.AppendProperties(langset.Props);
 
 
                 foreach (TermInfo.Term term in langset.Terms)
                 {
-                    hb.AppendHeader2(term.Text);
+                    hb.AppendTerm(term.Text);
                     hb.AppendProperties(term.Props);
                 }
             }
@@ -97,7 +97,7 @@ namespace EasyTermViewer
     /// 
     /// </summary>
     // --------------------------------------------------------------------------------
-    class HTMLBuilder
+    class TermInfoHTMLBuilder
     {
         StringBuilder _SB = new StringBuilder();
 
@@ -106,11 +106,12 @@ namespace EasyTermViewer
             _SB.Append("<html>");
             _SB.Append("<head>");
             _SB.Append("<style>");
-            _SB.Append("h1 {font: bold 18px Arial; color: blue;}");
-            _SB.Append("h2 {font: bold 15px Arial;}");
-            _SB.Append("p.def {font: italic 12px Arial;}");
-            _SB.Append("span.key {font: bold italic 12px Arial; color=DimGray;}");
-            _SB.Append("span.value {font: italic 12px Arial; color=DimGray;}");
+            _SB.Append("h1.lang {font: bold 18px Arial; color: blue; margin-bottom: 3px;}");
+            _SB.Append("h2.term {font: bold 15px Arial; margin-bottom: 3px;}");
+            _SB.Append("p.def {font: italic 12px Arial; margin-top: 3px;}");
+            _SB.Append("p.value {font: italic 12px Arial; color: DimGray; margin-bottom: 3px; margin-top: 3px;}");
+            _SB.Append("span.key {font-weight: bold;}");
+            //_SB.Append("span.value {font: italic 12px Arial; color=DimGray;}");
             _SB.Append("</style>");
             _SB.Append("</head>");
             _SB.Append("<body>");
@@ -146,6 +147,15 @@ namespace EasyTermViewer
 
         }
 
+        // ********************************************************************************
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="definition"></param>
+        /// <returns></returns>
+        /// <created>UPh,01.11.2015</created>
+        /// <changed>UPh,01.11.2015</changed>
+        // ********************************************************************************
         public void AppendDefinition(string definition)
         {
             _SB.Append("<p class='def'>");
@@ -153,36 +163,93 @@ namespace EasyTermViewer
             _SB.Append("</p>");
         }
 
+        // ********************************************************************************
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        /// <created>UPh,01.11.2015</created>
+        /// <changed>UPh,01.11.2015</changed>
+        // ********************************************************************************
         public void AppendValue(string key, string value)
         {
-            _SB.Append("<span class='key'>");
+            _SB.Append("<p class='value'><span class='key'>");
             _SB.Append(key);
             _SB.Append(": ");
             _SB.Append("</span><span class='value'>");
             _SB.Append(value);
-            _SB.Append("</span><br/>");
+            _SB.Append("</span></p>");
     
 
         }
 
-        public void AppendHeader1(string text)
+        // ********************************************************************************
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="text"></param>
+        /// <returns></returns>
+        /// <created>UPh,01.11.2015</created>
+        /// <changed>UPh,01.11.2015</changed>
+        // ********************************************************************************
+        public void AppendLanguage(string text)
         {
-            AppendTag("h1", text);
+            _SB.Append("<h1 class='lang'>");
+            AppendText(text);
+            _SB.Append("</h1>");
         }
 
-        public void AppendHeader2(string text)
+        // ********************************************************************************
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="text"></param>
+        /// <returns></returns>
+        /// <created>UPh,01.11.2015</created>
+        /// <changed>UPh,01.11.2015</changed>
+        // ********************************************************************************
+        public void AppendTerm(string text)
         {
-            AppendTag("h2", text);
+            _SB.Append("<h2 class='term'>");
+            AppendText(text);
+            _SB.Append("</h2>");
         }
 
+        // ********************************************************************************
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="text"></param>
+        /// <returns></returns>
+        /// <created>UPh,01.11.2015</created>
+        /// <changed>UPh,01.11.2015</changed>
+        // ********************************************************************************
         public void AppendParagraph(string text)
         {
             AppendTag("p", text);
         }
 
+        // ********************************************************************************
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="tag"></param>
+        /// <param name="text"></param>
+        /// <returns></returns>
+        /// <created>UPh,01.11.2015</created>
+        /// <changed>UPh,01.11.2015</changed>
+        // ********************************************************************************
         public void AppendTag(string tag, string text)
         {
             _SB.AppendFormat("<{0}>{1}</{0}>", tag, text);
+        }
+
+        public void AppendText(string text)
+        {
+            text = text.Replace("<", "&lt;");
+            _SB.Append(text);
         }
 
 

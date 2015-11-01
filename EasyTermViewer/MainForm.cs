@@ -11,6 +11,7 @@ using EasyTermCore;
 using System.IO;
 using System.Globalization;
 using EasyTermViewer.Properties;
+using PassLib;
 
 namespace EasyTermViewer
 {
@@ -19,6 +20,7 @@ namespace EasyTermViewer
         TermBaseSet _TermbaseSet;
         TermBaseQuery _TermBaseQuery;
         int _IgnoreNotification = 0;
+        private PlStorePosition _StorePosition;
 
         // ********************************************************************************
         /// <summary>
@@ -30,6 +32,14 @@ namespace EasyTermViewer
         // ********************************************************************************
         public MainForm()
         {
+            string inipath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+            inipath = Path.Combine(inipath, "EasyTermViewer\\profile.ini");
+            PlProfile.SetProfileName(inipath, PlProfile.ProfileType.IniFile);
+            EasyTermCoreSettings.ProfilePath = inipath;
+
+            _StorePosition = new PlStorePosition();
+            _StorePosition.Initialize(this);
+
             InitializeComponent();
 
             _TermbaseSet = new TermBaseSet();
@@ -148,7 +158,9 @@ namespace EasyTermViewer
         // ********************************************************************************
         void OnTermInfoResult(TermInfoResultArgs e)
         {
-            termInfoControl.SetData("", e.Info);            
+            string name = _TermbaseSet.GetDisplayName(e.TermBaseID);
+
+            termInfoControl.SetData(name, e.Info);            
         }
 
 

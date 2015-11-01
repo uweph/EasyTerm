@@ -177,13 +177,14 @@ namespace EasyTermCore
         /// <created>UPh,31.10.2015</created>
         /// <changed>UPh,31.10.2015</changed>
         // ********************************************************************************
-        internal void FireTermInfoResult(int requestid, TermInfo info)
+        internal void FireTermInfoResult(int requestid, int termbaseID, TermInfo info)
         {
             if (TermListResult == null)
                 return;
 
             TermInfoResultArgs args = new TermInfoResultArgs();
             args.RequestID = requestid;
+            args.TermBaseID = termbaseID;
             args.Info = info;
 
             TermInfoResult(this, args);
@@ -404,6 +405,7 @@ namespace EasyTermCore
     public class TermInfoResultArgs : EventArgs
     {
         public int RequestID {get; set;}
+        public int TermBaseID {get; set;}
         public TermInfo Info {get; internal set;}
 
     }

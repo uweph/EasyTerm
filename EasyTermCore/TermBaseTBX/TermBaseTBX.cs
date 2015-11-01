@@ -126,7 +126,6 @@ namespace EasyTermCore
             {
                 XmlAttribute att = langset.Attributes["xml:lang"];
 
-
                 try
                 {
                     CultureInfo ci = GetCultureInfoFromName(att.Value);

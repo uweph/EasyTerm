@@ -92,6 +92,24 @@ namespace EasyTermCore
         /// <summary>
         /// 
         /// </summary>
+        /// <param name="termbaseID"></param>
+        /// <returns></returns>
+        /// <created>UPh,01.11.2015</created>
+        /// <changed>UPh,01.11.2015</changed>
+        // ********************************************************************************
+        public string GetDisplayName(int termbaseID)
+        {
+            TermBaseFile file = FindTermBaseID(termbaseID);
+            if (file != null)
+                return file.DisplayName;
+
+            return "";
+        }
+
+        // ********************************************************************************
+        /// <summary>
+        /// 
+        /// </summary>
         /// <param name="path"></param>
         /// <returns></returns>
         /// <created>UPh,28.08.2015</created>
@@ -382,5 +400,13 @@ namespace EasyTermCore
         }
 
         public Color DisplayColor { get; set; }
+
+        public string DisplayName
+        {
+            get
+            {
+                return Path.GetFileName(StoragePath);
+            }
+        }
     }
 }

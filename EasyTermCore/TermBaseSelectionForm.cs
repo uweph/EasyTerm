@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PassLib;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -10,10 +11,11 @@ using System.Windows.Forms;
 
 namespace EasyTermCore
 {
-    internal partial class TermBaseSelectionForm : Form
+    public partial class TermBaseSelectionForm : Form
     {
         TermBaseSet _TermbaseSet;
         bool _DataChanged = false;
+        private PlStorePosition _StorePosition;
 
         // ********************************************************************************
         /// <summary>
@@ -26,10 +28,16 @@ namespace EasyTermCore
         // ********************************************************************************
         public TermBaseSelectionForm(TermBaseSet set)
         {
+            if (PlProfile.Type != PlProfile.ProfileType.Unknown)
+            {
+                _StorePosition = new PlStorePosition();
+                _StorePosition.Initialize(this);
+            }
             InitializeComponent();
             _TermbaseSet = set;
 
             lstFiles.FillList(_TermbaseSet);
+            lstFiles.ActiveChanged += lstFiles_ActiveChanged;
         }
 
         // ********************************************************************************
@@ -69,9 +77,6 @@ namespace EasyTermCore
         {
             _DataChanged = true;
         }
-
-
-
     }
 
 

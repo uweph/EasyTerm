@@ -282,7 +282,7 @@ namespace EasyTermCore
             if (!tb.GetTermInfo(request.TermID, out info, this))
                 return;
 
-            _TermbaseQuery.FireTermInfoResult(request.ID, info);
+            _TermbaseQuery.FireTermInfoResult(request.ID, request.TermBaseID, info);
 
 
         }

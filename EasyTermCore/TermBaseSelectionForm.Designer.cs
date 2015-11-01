@@ -67,7 +67,6 @@
             this.lstFiles.Name = "lstFiles";
             this.lstFiles.Size = new System.Drawing.Size(435, 238);
             this.lstFiles.TabIndex = 4;
-            this.lstFiles.ActiveChanged += new EasyTermCore.TermBaseFileList.ActiveChangedHandler(this.lstFiles_ActiveChanged);
             // 
             // TermBaseSelectionForm
             // 

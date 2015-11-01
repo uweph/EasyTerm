@@ -50,10 +50,14 @@
             // 
             // txtTermBaseInfo
             // 
-            this.txtTermBaseInfo.Location = new System.Drawing.Point(0, 0);
+            this.txtTermBaseInfo.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtTermBaseInfo.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.txtTermBaseInfo.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtTermBaseInfo.Location = new System.Drawing.Point(0, 7);
             this.txtTermBaseInfo.Name = "txtTermBaseInfo";
             this.txtTermBaseInfo.ReadOnly = true;
-            this.txtTermBaseInfo.Size = new System.Drawing.Size(549, 20);
+            this.txtTermBaseInfo.Size = new System.Drawing.Size(549, 19);
             this.txtTermBaseInfo.TabIndex = 3;
             // 
             // TermInfoControl
