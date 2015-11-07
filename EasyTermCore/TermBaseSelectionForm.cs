@@ -168,6 +168,57 @@ namespace EasyTermCore
             _DataChanged = true;
         }
 
+
+        // ********************************************************************************
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        /// <returns></returns>
+        /// <created>UPh,07.11.2015</created>
+        /// <changed>UPh,07.11.2015</changed>
+        // ********************************************************************************
+        void picker_ColorSelected(object sender, ColorSelectedEventArgs e)
+        {
+            TermBaseFile file = lstFiles.SelectedItem as TermBaseFile;
+            if (file == null)
+                return;
+
+            file.DisplayColor = e.Color;
+            lstFiles.Invalidate();
+            
+            _DataChanged = true;
+        }   
+
+
+        ToolStripDropDown _ColorPopup;
+        ToolStripDropDown ColorPopup
+        {
+            get
+            {
+                if (_ColorPopup == null)
+                {
+                    _ColorPopup = new ToolStripDropDown();
+                    _ColorPopup.Margin = Padding.Empty;
+                    _ColorPopup.Padding = Padding.Empty;
+
+                    EasyColorPicker picker = new EasyColorPicker();
+                    picker.ColorSelected += picker_ColorSelected;
+
+                    ToolStripControlHost host = new ToolStripControlHost(picker);
+                    host.Margin = Padding.Empty;
+                    host.Padding = Padding.Empty;
+                    _ColorPopup.Items.Add(host);
+
+
+                }
+
+                return _ColorPopup;
+            }
+        }
+
+
         // ********************************************************************************
         /// <summary>
         /// 
@@ -184,18 +235,10 @@ namespace EasyTermCore
             if (file == null)
                 return;
 
-            using (ColorDialog dlg = new ColorDialog())
-            {
-                dlg.Color = file.DisplayColor;
-                dlg.FullOpen = true;
-                if (dlg.ShowDialog() != DialogResult.OK)
-                    return;
+            Rectangle rc = btnDisplayColor.Bounds;
+            rc = RectangleToScreen(rc);
 
-                file.DisplayColor = dlg.Color;
-                lstFiles.Invalidate();
-            }   
-
-            _DataChanged = true;
+            ColorPopup.Show(new Point(rc.Right, rc.Bottom), ToolStripDropDownDirection.BelowLeft);
         }
 
         // ********************************************************************************

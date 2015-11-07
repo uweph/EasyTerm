@@ -72,6 +72,12 @@
     <Compile Include="TermBaseSet.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TermBaseTBX\TermBaseTBX.cs" />
+    <Compile Include="Tools\EasyColorPicker.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Tools\EasyColorPicker.designer.cs">
+      <DependentUpon>EasyColorPicker.cs</DependentUpon>
+    </Compile>
     <Compile Include="Tools\Extensions.cs" />
     <Compile Include="Tools\Tools.cs" />
     <Compile Include="Tools\XmlNode.cs" />
@@ -83,6 +89,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="TermBaseSelectionForm.resx">
       <DependentUpon>TermBaseSelectionForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Tools\EasyColorPicker.resx">
+      <DependentUpon>EasyColorPicker.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
