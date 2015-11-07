@@ -322,7 +322,10 @@ namespace EasyTermCore
         internal TermInfo()
         {
             LanguageSets = new List<LangSet>();
+            TermID = null;
         }
+
+        public int? TermID {get; internal set;}
 
 
         internal Properties _Props = null;

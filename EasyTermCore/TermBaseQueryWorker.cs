@@ -292,6 +292,8 @@ namespace EasyTermCore
             if (!tb.GetTermInfo(request.TermID, out info, this))
                 return;
 
+            info.TermID = request.TermID;
+
             _TermbaseQuery.FireTermInfoResult(request.ID, request.TermBaseID, info);
 
 

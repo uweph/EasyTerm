@@ -133,10 +133,6 @@ namespace EasyTermCore
 
             g.DrawString(file.Active ? "\u2611" : "\u2610",
                 _CheckBoxFont, _FgBrush, rcCheck);
-
-            
-
-
         }
 
 

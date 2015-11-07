@@ -30,6 +30,7 @@
         {
             this.webControl = new System.Windows.Forms.WebBrowser();
             this.txtTermBaseInfo = new System.Windows.Forms.TextBox();
+            this.txtID = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // webControl
@@ -47,6 +48,7 @@
             this.webControl.Size = new System.Drawing.Size(549, 464);
             this.webControl.TabIndex = 2;
             this.webControl.WebBrowserShortcutsEnabled = false;
+            this.webControl.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.webControl_PreviewKeyDown);
             // 
             // txtTermBaseInfo
             // 
@@ -57,13 +59,25 @@
             this.txtTermBaseInfo.Location = new System.Drawing.Point(0, 7);
             this.txtTermBaseInfo.Name = "txtTermBaseInfo";
             this.txtTermBaseInfo.ReadOnly = true;
-            this.txtTermBaseInfo.Size = new System.Drawing.Size(549, 19);
+            this.txtTermBaseInfo.Size = new System.Drawing.Size(480, 19);
             this.txtTermBaseInfo.TabIndex = 3;
+            // 
+            // txtID
+            // 
+            this.txtID.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtID.ForeColor = System.Drawing.SystemColors.ControlDark;
+            this.txtID.Location = new System.Drawing.Point(486, 7);
+            this.txtID.Name = "txtID";
+            this.txtID.Size = new System.Drawing.Size(60, 21);
+            this.txtID.TabIndex = 4;
+            this.txtID.Text = "<ID>";
+            this.txtID.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             // 
             // TermInfoControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.txtID);
             this.Controls.Add(this.txtTermBaseInfo);
             this.Controls.Add(this.webControl);
             this.Name = "TermInfoControl";
@@ -77,5 +91,6 @@
 
         private System.Windows.Forms.WebBrowser webControl;
         private System.Windows.Forms.TextBox txtTermBaseInfo;
+        private System.Windows.Forms.Label txtID;
     }
 }

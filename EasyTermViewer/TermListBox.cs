@@ -11,7 +11,7 @@ namespace EasyTermViewer
 {
     internal class TermListBox : ListView
     {
-        internal TermBaseSet TermBaseSet {get; set;}
+        internal TermBaseSet TermBaseSet { get; set; }
 
         TermListItems _Items;
         int[] _Filter;
@@ -26,7 +26,7 @@ namespace EasyTermViewer
             FullRowSelect = true;
             OwnerDraw = true;
             _TextBrush = new SolidBrush(Color.Black);
-            _SelectedItemBrush  = new SolidBrush(Color.FromArgb(173, 214, 255));
+            _SelectedItemBrush = new SolidBrush(Color.FromArgb(173, 214, 255));
         }
 
 
@@ -60,6 +60,76 @@ namespace EasyTermViewer
         /// <summary>
         /// 
         /// </summary>
+        /// <typeparam name="String"></typeparam>
+        /// <param name="line"></param>
+        /// <param name="delimiter"></param>
+        /// <param name="textQualifier"></param>
+        /// <returns></returns>
+        /// <created>UPh,04.11.2015</created>
+        /// <changed>UPh,04.11.2015</changed>
+        // ********************************************************************************
+        public static List<String> ParseText(String line, Char delimiter, Char textQualifier)
+        {
+            List<string> parts = new List<string>();
+
+            if (line == null)
+                return parts;
+
+            Char prevChar = '\0';
+            Char nextChar = '\0';
+            Char currentChar = '\0';
+
+            Boolean inString = false;
+
+            StringBuilder token = new StringBuilder();
+
+            for (int i = 0; i < line.Length; i++)
+            {
+                currentChar = line[i];
+
+                if (i > 0)
+                    prevChar = line[i - 1];
+                else
+                    prevChar = '\0';
+
+                if (i + 1 < line.Length)
+                    nextChar = line[i + 1];
+                else
+                    nextChar = '\0';
+
+                if (currentChar == textQualifier && (prevChar == '\0' || prevChar == delimiter) && !inString)
+                {
+                    inString = true;
+                    continue;
+                }
+
+                if (currentChar == textQualifier && (nextChar == '\0' || nextChar == delimiter) && inString)
+                {
+                    inString = false;
+                    continue;
+                }
+
+                if (currentChar == delimiter && !inString)
+                {
+                    parts.Add(token.ToString());
+                    token = token.Remove(0, token.Length);
+                    continue;
+                }
+
+                token = token.Append(currentChar);
+
+            }
+
+            parts.Add(token.ToString());
+
+            return parts;
+        }
+
+
+        // ********************************************************************************
+        /// <summary>
+        /// 
+        /// </summary>
         /// <param name="word"></param>
         /// <returns></returns>
         /// <created>UPh,25.10.2015</created>
@@ -80,7 +150,7 @@ namespace EasyTermViewer
             _FilterSize = 0;
 
             // Split to parts
-            string[] parts = word.Split(' ');
+            var parts = ParseText(word, ' ', '\"');
 
             for (int i = 0; i < _Items.Count; i++)
             {
@@ -250,7 +320,7 @@ namespace EasyTermViewer
             }
 
         }
-        
+
         // ********************************************************************************
         /// <summary>
         /// 

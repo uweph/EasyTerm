@@ -35,6 +35,8 @@ namespace EasyTermViewer
                 txtTermBaseInfo.ForeColor = Color.Black;
                 txtTermBaseInfo.Text = termbaseInfo;
 
+                txtID.Text = info.TermID == null ? "" : info.TermID.ToString();
+
                 string html = MakeHTML(info);
                 if (webControl.Document == null)
                 {
@@ -88,6 +90,21 @@ namespace EasyTermViewer
             hb.AppendFooter();
                 
             return hb.ToString();
+        }
+
+        private void webControl_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
+        {
+            if (e.Control && e.KeyCode == Keys.C)
+            {
+                webControl.Document.ExecCommand("COPY", false, null); 
+                return;
+            }
+
+            if (e.Control && e.KeyCode == Keys.P)
+            {
+                webControl.ShowPrintDialog();
+                return;
+            }
         }
     }
 
