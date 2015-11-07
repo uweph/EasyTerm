@@ -58,15 +58,19 @@ namespace EasyTermCore
         {
             switch(name.ToLower())
             {
-                case "en":    return 1;
-                case "en-gb": return 2;
-                case "de": return 3;
-                case "fr": return 4;
-                case "es": return 5;
-                case "pt": return 6;
-                case "pt-br": return 7;
-                case "it": return 8;
-                case "pl": return 9;
+                case "en":    return 1;     // English
+                case "en-gb": return 2;     // English, Great Britain
+                case "de": return 3;        // German
+                case "fr": return 4;        // French
+                case "es": return 5;        // Spanish
+                case "pt": return 6;        // Portuguese
+                case "pt-br": return 7;     // Portuguese, Brazil
+                case "it": return 8;        // Italian
+                case "pl": return 9;        // Polish
+                case "tr": return 10;       // Turkish
+                case "zh": return 11;       // Chinese
+                case "ja": return 12;       // Japanese
+                case "sv": return 13;       // Svedish
             }
 
             return -1;

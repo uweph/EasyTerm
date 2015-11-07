@@ -103,11 +103,11 @@ namespace EasyTermCore
                 return;
             }
 
-            _LangIndex2 = index2;
-
-            if (_LangIndex1 != index1)
+            if (_LangIndex1 != index1 ||
+                _LangIndex2 != index2)
             {
                 _LangIndex1 = index1;
+                _LangIndex2 = index2;
                 ParseLines();
             }
         }
@@ -216,13 +216,16 @@ namespace EasyTermCore
 
             using (StreamReader reader = new StreamReader(_Stream, Encoding.Default, true, 1024, true))
             {
-                for(;;)
+                for(int n = 0; ;n++)
                 {
                     long pos = _Stream.Position;
 
                     string line = reader.ReadLine();
                     if (line == null)
                         break;
+
+                    if (n == 0)
+                        continue; // First line contains language names
 
                     string [] fields = line.Split('\t');
                     if (_LangIndex1 >= fields.Length ||

@@ -399,7 +399,7 @@ namespace EasyTermCore
         {
             ID = NextID++;
             StoragePath = storagePath;
-            DisplayColor = Color.Empty;
+            DisplayColor = Color.White;
         }
 
         public int ID {get; private set;}

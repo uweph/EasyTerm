@@ -18,10 +18,11 @@ namespace EasyTermViewer
         public TermInfoControl()
         {
             InitializeComponent();
+            txtTermBaseInfo.Text = "";
+            txtID.Text = "";
 
 #if DEBUG
             webControl.IsWebBrowserContextMenuEnabled = true;
-            webControl.AllowNavigation = true;
 #endif
         }
 
@@ -49,6 +50,11 @@ namespace EasyTermViewer
                 txtID.Text = info.TermID == null ? "" : info.TermID.ToString();
 
                 string html = MakeHTML(info);
+#if true
+                webControl.DocumentText = html;
+#else
+                // When AllowNavigation is set to false we need to use OpenNew/Write to replace existing content
+                // But this steals the focus 
                 if (webControl.Document == null)
                 {
                     webControl.DocumentText = html;
@@ -58,6 +64,7 @@ namespace EasyTermViewer
                     webControl.Document.OpenNew(true);
                     webControl.Document.Write(html);
                 }
+#endif
 
             }
             catch (Exception ex)
@@ -157,6 +164,21 @@ namespace EasyTermViewer
                 }
                 e.Cancel = true;
             }
+        }
+
+        // ********************************************************************************
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        /// <returns></returns>
+        /// <created>UPh,07.11.2015</created>
+        /// <changed>UPh,07.11.2015</changed>
+        // ********************************************************************************
+        private void webControl_DocumentCompleted(object sender, WebBrowserDocumentCompletedEventArgs e)
+        {
+            
         }
     }
 

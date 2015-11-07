@@ -31,13 +31,13 @@
             this.components = new System.ComponentModel.Container();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.cmdLanguage1 = new System.Windows.Forms.ToolStripComboBox();
+            this.toolStripLabel1 = new System.Windows.Forms.ToolStripLabel();
             this.cmdLanguage2 = new System.Windows.Forms.ToolStripComboBox();
+            this.cmdTermBases = new System.Windows.Forms.ToolStripButton();
             this.txtFindTerm = new System.Windows.Forms.TextBox();
             this.timerFilter = new System.Windows.Forms.Timer(this.components);
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
-            this.toolStripLabel1 = new System.Windows.Forms.ToolStripLabel();
-            this.cmdTermBases = new System.Windows.Forms.ToolStripButton();
             this.lstTerms = new EasyTermViewer.TermListBox();
             this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.termInfoControl = new EasyTermViewer.TermInfoControl();
@@ -68,14 +68,33 @@
             this.cmdLanguage1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmdLanguage1.Name = "cmdLanguage1";
             this.cmdLanguage1.Size = new System.Drawing.Size(160, 23);
-            this.cmdLanguage1.SelectedIndexChanged += new System.EventHandler(this.cmdLanguage_SelectedIndexChanged);
+            this.cmdLanguage1.SelectedIndexChanged += new System.EventHandler(this.cmdLanguage1_SelectedIndexChanged);
+            // 
+            // toolStripLabel1
+            // 
+            this.toolStripLabel1.AutoSize = false;
+            this.toolStripLabel1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripLabel1.Image = global::EasyTermViewer.Properties.Resources.ArrowRight;
+            this.toolStripLabel1.Name = "toolStripLabel1";
+            this.toolStripLabel1.Size = new System.Drawing.Size(20, 22);
+            this.toolStripLabel1.Text = "toolStripLabel1";
             // 
             // cmdLanguage2
             // 
             this.cmdLanguage2.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmdLanguage2.Name = "cmdLanguage2";
             this.cmdLanguage2.Size = new System.Drawing.Size(160, 25);
-            this.cmdLanguage2.SelectedIndexChanged += new System.EventHandler(this.cmdLanguage_SelectedIndexChanged);
+            this.cmdLanguage2.SelectedIndexChanged += new System.EventHandler(this.cmdLanguage2_SelectedIndexChanged);
+            // 
+            // cmdTermBases
+            // 
+            this.cmdTermBases.AccessibleRole = System.Windows.Forms.AccessibleRole.OutlineButton;
+            this.cmdTermBases.Image = global::EasyTermViewer.Properties.Resources.Data;
+            this.cmdTermBases.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.cmdTermBases.Name = "cmdTermBases";
+            this.cmdTermBases.Size = new System.Drawing.Size(92, 22);
+            this.cmdTermBases.Text = "Termbases...";
+            this.cmdTermBases.Click += new System.EventHandler(this.cmdTermBases_Click);
             // 
             // txtFindTerm
             // 
@@ -121,25 +140,6 @@
             this.pictureBox1.Size = new System.Drawing.Size(21, 22);
             this.pictureBox1.TabIndex = 4;
             this.pictureBox1.TabStop = false;
-            // 
-            // toolStripLabel1
-            // 
-            this.toolStripLabel1.AutoSize = false;
-            this.toolStripLabel1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.toolStripLabel1.Image = global::EasyTermViewer.Properties.Resources.ArrowRight;
-            this.toolStripLabel1.Name = "toolStripLabel1";
-            this.toolStripLabel1.Size = new System.Drawing.Size(20, 22);
-            this.toolStripLabel1.Text = "toolStripLabel1";
-            // 
-            // cmdTermBases
-            // 
-            this.cmdTermBases.AccessibleRole = System.Windows.Forms.AccessibleRole.OutlineButton;
-            this.cmdTermBases.Image = global::EasyTermViewer.Properties.Resources.Data;
-            this.cmdTermBases.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.cmdTermBases.Name = "cmdTermBases";
-            this.cmdTermBases.Size = new System.Drawing.Size(92, 22);
-            this.cmdTermBases.Text = "Termbases...";
-            this.cmdTermBases.Click += new System.EventHandler(this.cmdTermBases_Click);
             // 
             // lstTerms
             // 

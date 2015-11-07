@@ -255,7 +255,7 @@ namespace EasyTermViewer
                 cmdLanguage2.SelectedIndex = select2;
             _IgnoreNotification--;
 
-            OnLanguageSelectionChanged();
+            OnLanguageSelectionChanged(true);
         }
 
         // ********************************************************************************
@@ -391,21 +391,49 @@ namespace EasyTermViewer
         // ********************************************************************************
         private void cmdLanguage_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (_IgnoreNotification > 0)
-                return;
 
-            OnLanguageSelectionChanged();
         }
 
         // ********************************************************************************
         /// <summary>
         /// 
         /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        /// <returns></returns>
+        /// <created>UPh,07.11.2015</created>
+        /// <changed>UPh,07.11.2015</changed>
+        // ********************************************************************************
+        private void cmdLanguage1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            OnLanguageSelectionChanged(true);
+        }
+
+        // ********************************************************************************
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        /// <returns></returns>
+        /// <created>UPh,07.11.2015</created>
+        /// <changed>UPh,07.11.2015</changed>
+        // ********************************************************************************
+        private void cmdLanguage2_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            OnLanguageSelectionChanged(false);
+        }
+
+        // ********************************************************************************
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="bLang1"></param>
         /// <returns></returns>
         /// <created>UPh,29.10.2015</created>
-        /// <changed>UPh,29.10.2015</changed>
+        /// <changed>UPh,07.11.2015</changed>
         // ********************************************************************************
-        private void OnLanguageSelectionChanged()
+        private void OnLanguageSelectionChanged(bool bLang1)
         {
             CultureInfo lang1 = cmdLanguage1.SelectedItem as CultureInfo;
             CultureInfo lang2 = cmdLanguage2.SelectedItem as CultureInfo;
@@ -418,7 +446,9 @@ namespace EasyTermViewer
                 PlProfile.WriteString("Settings", "Language2", lang2.Name);
             }
 
-            InitializeTermList();
+            if (bLang1)
+                InitializeTermList();
+
             DisplaySelectedTerm();
         }
 
@@ -499,6 +529,7 @@ namespace EasyTermViewer
 
             _TermBaseQuery.RequestTermInfo(item);
         }
+
 
     }
 }
