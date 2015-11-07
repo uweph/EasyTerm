@@ -48,6 +48,7 @@
             this.webControl.Size = new System.Drawing.Size(549, 464);
             this.webControl.TabIndex = 2;
             this.webControl.WebBrowserShortcutsEnabled = false;
+            this.webControl.Navigating += new System.Windows.Forms.WebBrowserNavigatingEventHandler(this.webControl_Navigating);
             this.webControl.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.webControl_PreviewKeyDown);
             // 
             // txtTermBaseInfo

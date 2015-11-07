@@ -30,6 +30,10 @@
     <WarningLevel>4</WarningLevel>
     <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
+  <PropertyGroup>
+    <Win32Resource>
+    </Win32Resource>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
@@ -89,6 +93,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="res\Data.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="res\check.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="res\uncheck.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

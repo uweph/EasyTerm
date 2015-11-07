@@ -427,5 +427,7 @@ namespace EasyTermCore
                 return Path.GetFileName(StoragePath);
             }
         }
+
+        public string OpenError{get; internal set;}
     }
 }

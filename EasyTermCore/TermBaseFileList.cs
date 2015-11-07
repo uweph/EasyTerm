@@ -1,4 +1,5 @@
-﻿using System;
+﻿using EasyTermCore.Properties;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -28,13 +29,12 @@ namespace EasyTermCore
         // ********************************************************************************
         public TermBaseFileList()
         {
-            DrawMode = DrawMode.OwnerDrawFixed;
-            ItemHeight *= 3;
+            DrawMode = DrawMode.OwnerDrawVariable;
 
             _BkBrush = new SolidBrush(Color.White);
             _BkBrushSel = new SolidBrush(Color.FromArgb(173, 214, 255));
             _FgBrush = new SolidBrush(Color.Black);
-
+            _FgBrushError = new SolidBrush(Color.Red);
         }
 
         Font _BoldFont;
@@ -42,6 +42,41 @@ namespace EasyTermCore
         SolidBrush _BkBrush;
         SolidBrush _BkBrushSel;
         SolidBrush _FgBrush;
+        SolidBrush _FgBrushError;
+        int _TextHeight = 0;
+
+        // ********************************************************************************
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="e"></param>
+        /// <returns></returns>
+        /// <created>UPh,07.11.2015</created>
+        /// <changed>UPh,07.11.2015</changed>
+        // ********************************************************************************
+        protected override void OnMeasureItem(MeasureItemEventArgs e)
+        {
+            if (DesignMode)
+                return;
+
+            if (_TextHeight == 0)
+            {
+                SizeF size = e.Graphics.MeasureString("X", Font);
+                _TextHeight = (int) (2 + size.Height);
+            }
+
+            if (e.Index >= 0)
+            {
+                TermBaseFile file = Items[e.Index] as TermBaseFile;
+
+                if (!string.IsNullOrEmpty(file.OpenError))
+                    e.ItemHeight = 5 + 3 * _TextHeight;
+                else
+                    e.ItemHeight = 5 + 2 * _TextHeight;
+
+            }
+
+        }
 
         // ********************************************************************************
         /// <summary>
@@ -104,8 +139,8 @@ namespace EasyTermCore
         {
             Rectangle rc = GetItemRectangle(inx);
 
-            rc.X += 2;
-            rc.Y += 2;
+            rc.X += 8;
+            rc.Y += 3;
             rc.Width = 18;
             rc.Height = 18;
 
@@ -124,15 +159,10 @@ namespace EasyTermCore
         // ********************************************************************************
         private void DrawCheckBox(DrawItemEventArgs e, TermBaseFile file)
         {
-            if (_CheckBoxFont == null)
-                _CheckBoxFont = new Font("Arial", 14);
-
             Rectangle rcCheck = GetCheckBoxRect(e.Index);
 
             Graphics g = e.Graphics;
-
-            g.DrawString(file.Active ? "\u2611" : "\u2610",
-                _CheckBoxFont, _FgBrush, rcCheck);
+            g.DrawImage(file.Active ? Resources.ImgageCheck : Resources.ImageUnCheck, rcCheck.Left, rcCheck.Top);
         }
 
 
@@ -152,18 +182,33 @@ namespace EasyTermCore
             Rectangle rcText = e.Bounds;
             Graphics g = e.Graphics;
 
-            rcText.X += 24;
-            rcText.Y += 2;
+            using (Region rgnClip = new Region(e.Bounds))
+            {
+                g.Clip = rgnClip;
 
-            string name = Path.GetFileName(file.FilePath);
-            string dir = Path.GetDirectoryName(file.FilePath);
+                rcText.X += 30;
+                rcText.Y += 2;
 
-            SizeF size = g.MeasureString(name, _BoldFont);
+                bool bError = !string.IsNullOrEmpty(file.OpenError);
 
-            g.DrawString(name, _BoldFont, _FgBrush, rcText);
+                string name = Path.GetFileName(file.FilePath);
+                string dir = Path.GetDirectoryName(file.FilePath);
 
-            rcText.Y += (int)(size.Height + 2);
-            g.DrawString(dir, e.Font, _FgBrush, rcText);
+                SizeF size = g.MeasureString(name, _BoldFont);
+
+                g.DrawString(name, _BoldFont, _FgBrush, rcText);
+
+                rcText.Y += (int)(size.Height + 2);
+                g.DrawString(dir, e.Font, _FgBrush, rcText);
+
+                if (bError)
+                {
+                    rcText.Y += (int)(size.Height + 2);
+                    g.DrawString(file.OpenError, e.Font, _FgBrushError, rcText);
+                }
+
+                g.ResetClip();
+            }
         }
 
         // ********************************************************************************
@@ -247,6 +292,7 @@ namespace EasyTermCore
             Items.Clear();
             
             Items.AddRange(set.Files.ToArray());            
+
         }
 
         internal delegate void ActiveChangedHandler(object sender, ActiveChangedEventArgs e);

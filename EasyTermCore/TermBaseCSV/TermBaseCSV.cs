@@ -47,7 +47,7 @@ namespace EasyTermCore
             {
                 _Stream = null;
                 _Languages = null;
-                                
+                throw;                                
             }                         
         }
 

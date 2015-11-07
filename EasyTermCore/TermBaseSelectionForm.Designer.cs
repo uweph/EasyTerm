@@ -84,7 +84,7 @@
             this.lstFiles.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.lstFiles.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawFixed;
+            this.lstFiles.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawVariable;
             this.lstFiles.FormattingEnabled = true;
             this.lstFiles.ItemHeight = 39;
             this.lstFiles.Location = new System.Drawing.Point(12, 12);

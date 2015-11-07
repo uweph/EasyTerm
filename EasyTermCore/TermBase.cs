@@ -48,6 +48,8 @@ namespace EasyTermCore
 
             foreach (TermBaseFile file in set.Files)
             {
+                file.OpenError = "";
+
                 if (!file.Active)
                     continue;
 
@@ -137,31 +139,44 @@ namespace EasyTermCore
         // ********************************************************************************
         static public TermBase CreateTermBase(TermBaseFile file)
         {
-            TermBase termBase = null;
-
-            string ext = Path.GetExtension(file.StoragePath);
-
-            if (string.Compare(ext, ".csv", true) == 0)
+            try
             {
-                termBase = new TermBaseCSV();
-            }
-            else if (string.Compare(ext, ".tbx", true) == 0)
-            {
-                termBase = new TermBaseTBX();
-            }
-            else if (string.Compare(ext, ".sdltb", true) == 0)
-            {
-                termBase = new TermBaseDB();
-            }
+                file.OpenError = "";
+                TermBase termBase = null;
 
-            if (termBase != null)
-            {
-                termBase.File = file;
-                termBase.OnOpenFile();
+                string ext = Path.GetExtension(file.StoragePath);
+
+                if (string.Compare(ext, ".csv", true) == 0)
+                {
+                    termBase = new TermBaseCSV();
+                }
+                else if (string.Compare(ext, ".tbx", true) == 0)
+                {
+                    termBase = new TermBaseTBX();
+                }
+                else if (string.Compare(ext, ".sdltb", true) == 0)
+                {
+                    termBase = new TermBaseDB();
+                }
+
+                if (termBase != null)
+                {
+                    termBase.File = file;
+                    termBase.OnOpenFile();
+                }
+                else
+                {
+                    file.OpenError = string.Format("Unknown term base type: {0}", ext);
+                }
+
+                return termBase;
+
             }
-
-            return termBase;
-
+            catch (Exception ex)
+            {
+                file.OpenError = ex.Message;
+                return null;
+            }
         }
     }
 

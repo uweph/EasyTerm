@@ -30,7 +30,7 @@ namespace EasyTermCore
             try
             {
                 string connectionstring =
-            string.Format("Provider=Microsoft.ACE.OLEDB.12.0;Data Source={0};Persist Security Info=False;", File.FilePath);
+                    string.Format("Provider=Microsoft.ACE.OLEDB.12.0;Data Source={0};Persist Security Info=False;", File.FilePath);
 
                 _DataBase = new OleDbConnection(connectionstring);
                 _DataBase.Open();
@@ -39,6 +39,7 @@ namespace EasyTermCore
             catch (Exception)
             {
                 _DataBase = null;
+                throw;
             }            
 
             CollectLanguageAttributes();

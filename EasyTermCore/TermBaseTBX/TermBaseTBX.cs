@@ -38,6 +38,7 @@ namespace EasyTermCore
             catch (Exception)
             {
                 _Doc = null;
+                throw;
             }
         }
 
