@@ -314,7 +314,7 @@ namespace EasyTermCore
 
         // ********************************************************************************
         /// <summary>
-        /// I
+        /// Used from term base functions to ask if operation should be stopped
         /// </summary>
         /// <returns></returns>
         /// <created>UPh,30.10.2015</created>

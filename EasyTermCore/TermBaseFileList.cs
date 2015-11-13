@@ -38,7 +38,6 @@ namespace EasyTermCore
         }
 
         Font _BoldFont;
-        Font _CheckBoxFont;
         SolidBrush _BkBrush;
         SolidBrush _BkBrushSel;
         SolidBrush _FgBrush;

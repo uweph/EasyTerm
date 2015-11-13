@@ -27,6 +27,7 @@ namespace EasyTermCore
         internal CultureInfo Language2 { get; set; }
 
 
+
 #region Public query functions
 
         // ********************************************************************************
@@ -41,6 +42,8 @@ namespace EasyTermCore
         // ********************************************************************************
         public void SetLanguagePair(CultureInfo lang1, CultureInfo lang2)
         {
+            // TODO reset term index if lang1 changes
+
             Language1 = lang1;
             Language2 = lang2;
 
@@ -52,6 +55,30 @@ namespace EasyTermCore
             }
         
         }
+
+        // ********************************************************************************
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="lcid1"></param>
+        /// <param name="lcid2"></param>
+        /// <returns></returns>
+        /// <created>UPh,07.11.2015</created>
+        /// <changed>UPh,07.11.2015</changed>
+        // ********************************************************************************
+        public void SetLanguagePair(int lcid1, int lcid2)
+        {
+            try
+            {
+                SetLanguagePair(CultureInfo.GetCultureInfo(lcid1), CultureInfo.GetCultureInfo(lcid2));
+            }
+            catch (Exception)
+            {
+                
+                
+            }
+        }
+
 
         // ********************************************************************************
         /// <summary>
@@ -214,10 +241,23 @@ namespace EasyTermCore
         /// 
         /// </summary>
         /// <returns></returns>
+        /// <created>UPh,08.11.2015</created>
+        /// <changed>UPh,08.11.2015</changed>
+        // ********************************************************************************
+        public void StopRequests()
+        {
+            _Worker.Stop();
+        }
+
+        // ********************************************************************************
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         /// <created>UPh,25.10.2015</created>
         /// <changed>UPh,25.10.2015</changed>
         // ********************************************************************************
-        internal void PauseRequests()
+        public void PauseRequests()
         {
             _Worker.PauseRequests();
         }
@@ -230,7 +270,7 @@ namespace EasyTermCore
         /// <created>UPh,25.10.2015</created>
         /// <changed>UPh,25.10.2015</changed>
         // ********************************************************************************
-        internal void ResumeRequests()
+        public void ResumeRequests()
         {
             _Worker.ResumeRequests();
         }
