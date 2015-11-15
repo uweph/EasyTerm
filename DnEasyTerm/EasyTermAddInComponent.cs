@@ -43,6 +43,7 @@ namespace DnEasyTerm
                 _TermBaseSet = new TermBaseSet();
                 string dataFolder = addin.GetDataFolder();
                 _TermBaseSet.SettingsFile = Path.Combine(dataFolder, "settings.xml");
+                _TermBaseSet.LoadStoredAndLocal();
             }
 
             return 0;

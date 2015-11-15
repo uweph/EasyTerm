@@ -20,7 +20,7 @@ namespace DnEasyTerm
         }
 
         // ********************************************************************************
-        /// <summary>
+        /// <summary>                       
         /// 
         /// </summary>
         /// <param name="transData"></param>
@@ -50,17 +50,13 @@ namespace DnEasyTerm
             if (_AddInComponent == null)
                 return;
 
+
+
             _TermBaseSet = _AddInComponent._TermBaseSet;
             _Query = _TermBaseSet.Query;
 
-            _Query.TermListResult += Query_TermListResult;
+            _Query.TerminologyResult += Query_TerminologyResult;
         }
-
-
-        int _Lcid1 = -1;
-        int _Lcid2 = -1;
-        TermListItems _Items = null;
-
 
         // ********************************************************************************
         /// <summary>
@@ -69,13 +65,16 @@ namespace DnEasyTerm
         /// <param name="sender"></param>
         /// <param name="e"></param>
         /// <returns></returns>
-        /// <created>UPh,07.11.2015</created>
-        /// <changed>UPh,07.11.2015</changed>
+        /// <created>UPh,14.11.2015</created>
+        /// <changed>UPh,14.11.2015</changed>
         // ********************************************************************************
-        void Query_TermListResult(object sender, TermListResultArgs e)
+        void Query_TerminologyResult(object sender, TerminologyResultArgs e)
         {
-            _Items = e.Items;
+            _AddInComponent.ApplicationTools.SendTerminology(PAIAddIn, (int) e.RequestID, e.FindFrom, e.FindLen, e.Term1, e.Term2, e.Origin, e.Description);
         }
+
+        int _LCID1 = -1;
+        int _LCID2 = -1;
 
         // ********************************************************************************
         /// <summary>
@@ -100,20 +99,14 @@ namespace DnEasyTerm
             int lcid2 = -1;
             trans.GetLanguages(ref lcid1, ref lcid2);
 
-            if (lcid1 != _Lcid1)
+            if (_LCID1 != lcid1 || _LCID2 != lcid2)
             {
-                _Lcid1 = lcid1;
-                _Lcid2 = lcid2;
-                _Query.SetLanguagePair(_Lcid1, _Lcid2);
-                _Query.RequestTermList();       // Sollte query behalten und damit arbeiten
-            }
-            else if (lcid2 != _Lcid2)
-            {
-                _Lcid2 = lcid2;
-                _Query.SetLanguagePair(_Lcid1, _Lcid2);
+                _Query.SetLanguagePair(lcid1, lcid2);
+                _LCID1 = lcid1;
+                _LCID2 = lcid2;
             }
 
-
+            _Query.RequestTerminology(str, cookie);
 
             return 0;
         }

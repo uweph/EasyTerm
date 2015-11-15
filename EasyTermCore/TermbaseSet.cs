@@ -8,6 +8,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
 using System.Configuration;
+using System.Runtime.CompilerServices;
+
+[assembly: InternalsVisibleTo("EasyTermUnitTests")]
 
 namespace EasyTermCore
 {

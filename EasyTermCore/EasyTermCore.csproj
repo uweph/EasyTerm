@@ -48,6 +48,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="EasyTermCoreSettings.cs" />
+    <Compile Include="TermIndex.cs" />
     <Compile Include="Passlib\PlProfile.cs" />
     <Compile Include="Passlib\PlStorePosition.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
@@ -80,6 +81,7 @@
     </Compile>
     <Compile Include="Tools\Extensions.cs" />
     <Compile Include="Tools\Tools.cs" />
+    <Compile Include="Tools\WordSegments.cs" />
     <Compile Include="Tools\XmlNode.cs" />
   </ItemGroup>
   <ItemGroup>

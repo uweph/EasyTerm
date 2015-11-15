@@ -19,6 +19,7 @@ namespace EasyTermCore
         private volatile bool _shouldStop = false;
         private Thread _Thread;
         private AutoResetEvent _DataAvailableEvent;
+        private TermIndex _Index;
 
         // ********************************************************************************
         /// <summary>
@@ -33,6 +34,7 @@ namespace EasyTermCore
         {
             _TermbaseQuery = termbaseQuery;
             _TermBases = termbases;
+            _Index = new TermIndex();
         }
 
         // ********************************************************************************
@@ -245,9 +247,10 @@ namespace EasyTermCore
 
         }
 
+
         // ********************************************************************************
         /// <summary>
-        /// 
+        /// Handle request to get term list items
         /// </summary>
         /// <returns></returns>
         /// <created>UPh,25.10.2015</created>
@@ -255,16 +258,12 @@ namespace EasyTermCore
         // ********************************************************************************
         private void HandleTermListRequest(TermBaseRequest request)
         {
-            TermListItems items = new TermListItems();
-            foreach (TermBase termbase in _TermBases)
-            {
-                if (_Paused || _shouldStop)
-                    return;
+            TermListItems items = RetrieveTermList();
+            if (items == null)
+                return;
 
-                TermListItems items2 = new TermListItems();
-                termbase.GetTermList(items2, this);
-                items.AddRange(items2);
-            }
+            if (_Paused || _shouldStop)
+                return;
 
             items.Sort((a,b) => string.Compare(a.Term, b.Term, true));
             
@@ -275,7 +274,7 @@ namespace EasyTermCore
 
         // ********************************************************************************
         /// <summary>
-        /// 
+        /// Handle request for a single term
         /// </summary>
         /// <param name="request"></param>
         /// <returns></returns>
@@ -299,9 +298,10 @@ namespace EasyTermCore
 
         }
 
+
         // ********************************************************************************
         /// <summary>
-        /// 
+        /// Handle request for terminology
         /// </summary>
         /// <returns></returns>
         /// <created>UPh,25.10.2015</created>
@@ -309,6 +309,98 @@ namespace EasyTermCore
         // ********************************************************************************
         private void HandleTerminologyRequest(TermBaseRequest request)
         {
+            // Build index if necessary
+            if (_Index.Language != _TermbaseQuery.Language1.Name)
+            {
+                TermListItems items = RetrieveTermList();
+                if (_shouldStop)
+                    return;
+
+                // Index from items
+                _Index.BuildIndex(_TermbaseQuery.Language1.Name, items);
+            }
+
+            
+            WordSegments wordSegments = new WordSegments(request.Term);
+
+            int nWords = wordSegments.Count;
+            if (nWords == 0)
+                return;
+
+            // Loop all 1 to 3 word ranges
+            for (int iWord0 = 0; iWord0 < nWords; iWord0++)
+            {
+                for (int iWord1 = iWord0; iWord1 < nWords && iWord1 < iWord0 + 3; iWord1++)
+                {
+                    int from = wordSegments.GetWordStart(iWord0);
+                    int to   = wordSegments.GetWordEnd(iWord1);
+
+                    foreach (IndexItem match in _Index.Matches(request.Term, from, to - from))
+                    {
+                        HandleTerminologyMatch(request.ID, match, from, to - from);
+                        //_TermbaseQuery.FireTerminologyResult(request.ID, 100, info);
+                    }
+                }
+            }
+        }
+
+        // ********************************************************************************
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="match"></param>
+        /// <returns></returns>
+        /// <created>UPh,14.11.2015</created>
+        /// <changed>UPh,14.11.2015</changed>
+        // ********************************************************************************
+        private void HandleTerminologyMatch(long requestid, IndexItem match, int from, int len)
+        {
+            // Get TermInfo
+            TermBase termbase = _TermBases.FindTermBase(match.TermBaseID);
+            if (termbase == null)
+                return;
+
+            TermInfo terminfo = null;
+            if (!termbase.GetTermInfo(match.TermID, out terminfo, this))
+                return;
+
+            if (terminfo.LanguageSets.Count != 2)
+                return;
+
+
+            // Compare source term
+            // TODO ...
+
+            foreach (TermInfo.Term term in terminfo.LanguageSets[1].Terms)
+            {
+                _TermbaseQuery.FireTerminologyResult(requestid, 100, from, len, "", term.Text, termbase.File.DisplayName, "");
+            }
+
+
+        }
+
+        // ********************************************************************************
+        /// <summary>
+        /// Loops all term bases and collects terms in current language
+        /// </summary>
+        /// <returns></returns>
+        /// <created>UPh,14.11.2015</created>
+        /// <changed>UPh,14.11.2015</changed>
+        // ********************************************************************************
+        private TermListItems RetrieveTermList()
+        {
+            TermListItems items = new TermListItems();
+            foreach (TermBase termbase in _TermBases)
+            {
+                if (_Paused || _shouldStop)
+                    return null;
+
+                TermListItems items2 = new TermListItems();
+                termbase.GetTermList(items2, this);
+                items.AddRange(items2);
+            }
+
+            return items;
         }
 
 
@@ -352,9 +444,7 @@ namespace EasyTermCore
         internal string Term {get; private set;}
 
         // Request ID
-        internal int ID {get; set;}
-
-        static int _NewRequestID = 100;
+        internal long ID {get; set;}
 
         // ********************************************************************************
         /// <summary>
@@ -364,11 +454,10 @@ namespace EasyTermCore
         /// <created>UPh,25.10.2015</created>
         /// <changed>UPh,25.10.2015</changed>
         // ********************************************************************************
-        static internal TermBaseRequest MakeTermListRequest()
+        static internal TermBaseRequest MakeTermListRequest(long requestid)
         {
             TermBaseRequest request = new TermBaseRequest();
-            Interlocked.Increment(ref _NewRequestID);
-            request.ID = _NewRequestID;
+            request.ID = requestid;
             request.Type = RequestType.TermList;
             return request;
         }
@@ -383,10 +472,10 @@ namespace EasyTermCore
         /// <created>UPh,30.10.2015</created>
         /// <changed>UPh,30.10.2015</changed>
         // ********************************************************************************
-        static internal TermBaseRequest MakeTermInfoRequest(int termbaseID, int termid)
+        static internal TermBaseRequest MakeTermInfoRequest(int termbaseID, int termid, long requestid)
         {
             TermBaseRequest request = new TermBaseRequest();
-            request.ID = 0;
+            request.ID = requestid;
             request.Type = RequestType.TermInfo;
             request.TermBaseID = termbaseID;
             request.TermID = termid;
@@ -403,10 +492,10 @@ namespace EasyTermCore
         /// <created>UPh,25.10.2015</created>
         /// <changed>UPh,25.10.2015</changed>
         // ********************************************************************************
-        static internal TermBaseRequest MakeTerminologyRequest(string term)
+        static internal TermBaseRequest MakeTerminologyRequest(string term, long requestid)
         {
             TermBaseRequest request = new TermBaseRequest();
-            request.ID = 0;
+            request.ID = requestid;
             request.Type = RequestType.Terminology;
             request.Term = term;
             return request;

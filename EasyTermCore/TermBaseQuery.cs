@@ -42,8 +42,6 @@ namespace EasyTermCore
         // ********************************************************************************
         public void SetLanguagePair(CultureInfo lang1, CultureInfo lang2)
         {
-            // TODO reset term index if lang1 changes
-
             Language1 = lang1;
             Language2 = lang2;
 
@@ -138,12 +136,12 @@ namespace EasyTermCore
         /// <created>UPh,25.10.2015</created>
         /// <changed>UPh,25.10.2015</changed>
         // ********************************************************************************
-        public void RequestTermList()
+        public void RequestTermList(long requestid)
         {
             if (!_Worker.IsStarted)
                 _Worker.Start();
 
-            _Worker.PutRequest(TermBaseRequest.MakeTermListRequest());
+            _Worker.PutRequest(TermBaseRequest.MakeTermListRequest(requestid));
         }
 
         // ********************************************************************************
@@ -155,41 +153,40 @@ namespace EasyTermCore
         /// <created>UPh,31.10.2015</created>
         /// <changed>UPh,31.10.2015</changed>
         // ********************************************************************************
-        public void RequestTermInfo(TermListItem item)
+        public void RequestTermInfo(TermListItem item, long requestid)
         {
             if (!_Worker.IsStarted)
                 _Worker.Start();
 
-            _Worker.PutRequest(TermBaseRequest.MakeTermInfoRequest(item.TermBaseID, item.TermID));
+            _Worker.PutRequest(TermBaseRequest.MakeTermInfoRequest(item.TermBaseID, item.TermID, requestid));
         }
 
         // ********************************************************************************
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="word"></param>
+        /// <param name="text"></param>
         /// <returns></returns>
         /// <created>UPh,25.10.2015</created>
         /// <changed>UPh,25.10.2015</changed>
         // ********************************************************************************
-        public void RequestTerminology(string word)
+        public void RequestTerminology(string text, long requestid)
         {
             if (!_Worker.IsStarted)
                 _Worker.Start();
 
-            _Worker.PutRequest(TermBaseRequest.MakeTerminologyRequest(word));
+            _Worker.PutRequest(TermBaseRequest.MakeTerminologyRequest(text, requestid));
         }
 
-
-        // TODO needs EventArgs
-        public delegate void TerminologyResultHandler(object sender, EventArgs e);
-        public event TerminologyResultHandler TerminologyResult;
 
         public delegate void TermListResultHandler(object sender, TermListResultArgs e);
         public event TermListResultHandler TermListResult;
 
         public delegate void TermInfoResultHandler(object sender, TermInfoResultArgs e);
         public event TermInfoResultHandler TermInfoResult;
+
+        public delegate void TerminologyResultHandler(object sender, TerminologyResultArgs e);
+        public event TerminologyResultHandler TerminologyResult;
 
         // ********************************************************************************
         /// <summary>
@@ -201,7 +198,7 @@ namespace EasyTermCore
         /// <created>UPh,31.10.2015</created>
         /// <changed>UPh,31.10.2015</changed>
         // ********************************************************************************
-        internal void FireTermListResult(int requestid, TermListItems items)
+        internal void FireTermListResult(long requestid, TermListItems items)
         {
             if (TermListResult == null)
                 return;
@@ -223,7 +220,7 @@ namespace EasyTermCore
         /// <created>UPh,31.10.2015</created>
         /// <changed>UPh,31.10.2015</changed>
         // ********************************************************************************
-        internal void FireTermInfoResult(int requestid, int termbaseID, TermInfo info)
+        internal void FireTermInfoResult(long requestid, int termbaseID, TermInfo info)
         {
             if (TermListResult == null)
                 return;
@@ -234,6 +231,35 @@ namespace EasyTermCore
             args.Info = info;
 
             TermInfoResult(this, args);
+        }
+
+        // ********************************************************************************
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="requestid"></param>
+        /// <param name="rate"></param>
+        /// <param name="info"></param>
+        /// <returns></returns>
+        /// <created>UPh,14.11.2015</created>
+        /// <changed>UPh,14.11.2015</changed>
+        // ********************************************************************************
+        internal void FireTerminologyResult(long requestid, int rate, int from, int len, string term1, string term2, string origin, string description)
+        {
+            if (TerminologyResult == null)
+                return;
+
+            TerminologyResultArgs args = new TerminologyResultArgs();
+
+            args.RequestID = requestid;
+            args.FindFrom = from;
+            args.FindLen = len;
+            args.Term1 = term1;
+            args.Term2 = term2;
+            args.Origin = origin;
+            args.Description = description;
+
+            TerminologyResult(this, args);
         }
 
         // ********************************************************************************
@@ -455,7 +481,7 @@ namespace EasyTermCore
     // --------------------------------------------------------------------------------
     public class TermListResultArgs : EventArgs
     {
-        public int RequestID {get; set;}
+        public long RequestID {get; set;}
         public TermListItems Items {get; internal set;}
     }
 
@@ -466,10 +492,26 @@ namespace EasyTermCore
     // --------------------------------------------------------------------------------
     public class TermInfoResultArgs : EventArgs
     {
-        public int RequestID {get; set;}
+        public long RequestID { get; set; }
         public int TermBaseID {get; set;}
         public TermInfo Info {get; internal set;}
 
     }
 
+    // --------------------------------------------------------------------------------
+    /// <summary>
+    /// 
+    /// </summary>
+    // --------------------------------------------------------------------------------
+    public class TerminologyResultArgs : EventArgs
+    {
+        public long RequestID { get; set; }
+        public int TermBaseID { get; set; }
+        public int FindFrom {get; set;} // Position of term in request string
+        public int FindLen { get; set; } // Length of term in request string
+        public string Term1 { get; set; } // Source term
+        public string Term2 { get; set; } // Target term
+        public string Origin { get; set; } // Origin of term (which Termbase)
+        public string Description { get; set; } // Description of term
+    }
 }

@@ -133,9 +133,9 @@ namespace EasyTermViewer
         /// <created>UPh,31.10.2015</created>
         /// <changed>UPh,31.10.2015</changed>
         // ********************************************************************************
-        void TermBaseQuery_TerminologyResult(object sender, EventArgs e)
+        void TermBaseQuery_TerminologyResult(object sender, TerminologyResultArgs e)
         {
-
+            
         }
 
 
@@ -290,7 +290,7 @@ namespace EasyTermViewer
             {
                 lstTerms.SelectedIndices.Clear();
                 lstTerms.Clear();
-                _TermBaseQuery.RequestTermList();
+                _TermBaseQuery.RequestTermList(0);
 
             }
             catch (Exception ex)
@@ -527,9 +527,7 @@ namespace EasyTermViewer
             if (item == null)
                 return;
 
-            _TermBaseQuery.RequestTermInfo(item);
+            _TermBaseQuery.RequestTermInfo(item, 0);
         }
-
-
     }
 }
