@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -135,7 +136,28 @@ namespace EasyTermCore
             {
                 _NewRequests.Clear();
                 _Paused = true;
+
+                // TODO Make sure, that thread is paused as well
             }
+        }
+
+        // ********************************************************************************
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        /// <created>UPh,15.11.2015</created>
+        /// <changed>UPh,15.11.2015</changed>
+        // ********************************************************************************
+        internal void ResetIndex()
+        {
+            if (!_Paused)
+            {
+                Debug.Assert(false);
+                return;
+            }
+
+            _Index.ClearIndex();
         }
 
         // ********************************************************************************
@@ -301,23 +323,26 @@ namespace EasyTermCore
 
         // ********************************************************************************
         /// <summary>
-        /// Handle request for terminology
+        /// Handle request for terminology 
         /// </summary>
+        /// <param name="request"></param>
         /// <returns></returns>
         /// <created>UPh,25.10.2015</created>
-        /// <changed>UPh,25.10.2015</changed>
+        /// <changed>UPh,17.11.2015</changed>
         // ********************************************************************************
-        private void HandleTerminologyRequest(TermBaseRequest request)
+        internal void HandleTerminologyRequest(TermBaseRequest request, List<TerminologyResultArgs> result = null)
         {
+            bool bSync = (result != null);
+
             // Build index if necessary
-            if (_Index.Language != _TermbaseQuery.Language1.Name)
+            if (_Index.LCID != _TermbaseQuery.LCID1)
             {
                 TermListItems items = RetrieveTermList();
-                if (_shouldStop)
+                if (!bSync && _shouldStop)
                     return;
 
                 // Index from items
-                _Index.BuildIndex(_TermbaseQuery.Language1.Name, items);
+                _Index.BuildIndex(_TermbaseQuery.LCID1, items);
             }
 
             
@@ -337,12 +362,83 @@ namespace EasyTermCore
 
                     foreach (IndexItem match in _Index.Matches(request.Term, from, to - from))
                     {
-                        HandleTerminologyMatch(request.ID, match, from, to - from);
-                        //_TermbaseQuery.FireTerminologyResult(request.ID, 100, info);
+                        HandleTerminologyMatch(request.ID, match, from, to - from, result);
                     }
                 }
             }
         }
+
+        // ********************************************************************************
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="result"></param>
+        /// <returns></returns>
+        /// <created>UPh,17.11.2015</created>
+        /// <changed>UPh,17.11.2015</changed>
+        // ********************************************************************************
+        internal void HandleSingleTermRequest(TermBaseRequest request, List<TerminologyResultArgs> result = null)
+        {
+            bool bSync = (result != null);
+
+            // Build index if necessary
+            if (_Index.LCID != _TermbaseQuery.LCID1)
+            {
+                TermListItems items = RetrieveTermList();
+                if (!bSync && _shouldStop)
+                    return;
+
+                // Index from items
+                _Index.BuildIndex(_TermbaseQuery.LCID1, items);
+            }
+
+            foreach (IndexItem match in _Index.Matches(request.Term))
+            {
+                HandleTerminologyMatch(request.ID, match, 0, request.Term.Length, result);
+            }
+        }
+
+        // ********************************************************************************
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="term"></param>
+        /// <param name="infos"></param>
+        /// <returns></returns>
+        /// <created>UPh,17.11.2015</created>
+        /// <changed>UPh,17.11.2015</changed>
+        // ********************************************************************************
+        internal void HandleTermInfosRequest(string term, List<TermInfo> infos = null)
+        {
+            bool bSync = (infos != null);
+
+            // Build index if necessary
+            if (_Index.LCID != _TermbaseQuery.LCID1)
+            {
+                TermListItems items = RetrieveTermList();
+                if (!bSync && _shouldStop)
+                    return;
+
+                // Index from items
+                _Index.BuildIndex(_TermbaseQuery.LCID1, items);
+            }
+
+            foreach (IndexItem match in _Index.Matches(term))
+            {
+                // Get TermInfo
+                TermBase termbase = _TermBases.FindTermBase(match.TermBaseID);
+                if (termbase == null)
+                    continue;
+
+                TermInfo terminfo = null;
+                if (!termbase.GetTermInfo(match.TermID, out terminfo, this))
+                    return;
+
+                infos.Add(terminfo);
+            }
+        }
+
 
         // ********************************************************************************
         /// <summary>
@@ -353,7 +449,7 @@ namespace EasyTermCore
         /// <created>UPh,14.11.2015</created>
         /// <changed>UPh,14.11.2015</changed>
         // ********************************************************************************
-        private void HandleTerminologyMatch(long requestid, IndexItem match, int from, int len)
+        private void HandleTerminologyMatch(long requestid, IndexItem match, int from, int len, List<TerminologyResultArgs> result = null)
         {
             // Get TermInfo
             TermBase termbase = _TermBases.FindTermBase(match.TermBaseID);
@@ -367,13 +463,44 @@ namespace EasyTermCore
             if (terminfo.LanguageSets.Count != 2)
                 return;
 
+            TermInfo.Term srcterm = null;
 
-            // Compare source term
-            // TODO ...
+            foreach (TermInfo.Term term in terminfo.LanguageSets[0].Terms)
+            {
+                ulong hash = TermIndex.MakeGlossaryHashCode(term.Text);
+                if (match.Hash != hash)
+                    continue;
+
+                srcterm = term;
+                break;
+            }
+
+            if (srcterm == null)
+                return;
+
+            string definition = terminfo.Definition;
+
 
             foreach (TermInfo.Term term in terminfo.LanguageSets[1].Terms)
             {
-                _TermbaseQuery.FireTerminologyResult(requestid, 100, from, len, "", term.Text, termbase.File.DisplayName, "");
+                TerminologyResultArgs args = new TerminologyResultArgs();
+
+                args.RequestID = requestid;
+                args.FindFrom = from;
+                args.FindLen = len;
+                args.Term1 = srcterm.Text;
+                args.Term2 = term.Text;
+                args.Origin = termbase.File.DisplayName;
+                args.Description = definition;
+
+                if (result != null)
+                {
+                    result.Add(args);
+                }
+                else
+                {
+                    _TermbaseQuery.FireTerminologyResult(args);
+                }
             }
 
 

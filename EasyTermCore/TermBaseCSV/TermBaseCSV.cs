@@ -12,7 +12,8 @@ namespace EasyTermCore
     {
         FileStream _Stream;
 
-        List<CultureInfo> _Languages;
+        // List of languages per column
+        List<int> _Languages;
         int _LangIndex1 = -1;
         int _LangIndex2 = -1;
 
@@ -77,7 +78,7 @@ namespace EasyTermCore
         /// <created>UPh,30.10.2015</created>
         /// <changed>UPh,30.10.2015</changed>
         // ********************************************************************************
-        internal override List<CultureInfo> GetLanguages()
+        internal override List<int> GetLanguages()
         {
             return _Languages;
         }
@@ -92,10 +93,10 @@ namespace EasyTermCore
         /// <created>UPh,25.10.2015</created>
         /// <changed>UPh,25.10.2015</changed>
         // ********************************************************************************
-        internal override void InitLanguagePair(CultureInfo lang1, CultureInfo lang2)
+        internal override void InitLanguagePair(int lcid1, int lcid2)
         {
-            int index1 = FindLanguage(lang1);
-            int index2 = FindLanguage(lang2);
+            int index1 = FindLanguage(lcid1);
+            int index2 = FindLanguage(lcid2);
 
             if (index1 < 0 || index2 < 0)
             {
@@ -124,23 +125,21 @@ namespace EasyTermCore
         // ********************************************************************************
         private void ParseLanguages(string line)
         {
-            _Languages = new List<CultureInfo>();
+            _Languages = new List<int>();
             string [] fields = line.Split('\t');
 
             foreach (string field in fields)
             {
-                CultureInfo info;
-
                 try
                 {
-                    info  = CultureInfo.GetCultureInfo(field);
+                    CultureInfo info  = CultureInfo.GetCultureInfo(field);
+                    _Languages.Add(info.LCID);
                 }
                 catch (Exception)
                 {
-                    info = null;
+                    _Languages.Add(-1);
                 }
 
-                _Languages.Add(info);
             }
         }
 
@@ -164,9 +163,9 @@ namespace EasyTermCore
         /// <created>UPh,25.10.2015</created>
         /// <changed>UPh,25.10.2015</changed>
         // ********************************************************************************
-        private int FindLanguage(CultureInfo lang)
+        private int FindLanguage(int lcid)
         {
-            if (lang == null)
+            if (lcid < 0)
                 return -1;
 
             int iBest = -1;
@@ -175,19 +174,7 @@ namespace EasyTermCore
 
             for (int i = 0; i < _Languages.Count; i++)
             {
-                int iRate2 = 0;
-                CultureInfo lang2 = _Languages[i];
-
-                if (lang.LCID == lang2.LCID)
-                {
-                    iRate2 = 2;
-                }
-                else if ((lang.SubLCID() == 0 || lang2.SubLCID() == 0) &&
-                         (lang.PrimaryLCID() == lang2.PrimaryLCID()))
-                {
-                    iRate2 = 1;                    
-                }
-
+                int iRate2 = Tools.GetLanguageMatch(lcid, _Languages[i]);
 
                 if (iRate2 > iRate)
                 {
@@ -287,11 +274,16 @@ namespace EasyTermCore
             info = new TermInfo();
 
             TermInfo.LangSet langset1 = info.AddLanguage(_Languages[_LangIndex1]);
+            if (langset1 == null)
+                return false;
+
             langset1.AddTerm(_Terms[termID].Item1);
 
             TermInfo.LangSet langset2 = info.AddLanguage(_Languages[_LangIndex2]);
-            langset2.AddTerm(_Terms[termID].Item2);
+            if (langset2 == null)
+                return false;
 
+            langset2.AddTerm(_Terms[termID].Item2);
 
             return true;
         }

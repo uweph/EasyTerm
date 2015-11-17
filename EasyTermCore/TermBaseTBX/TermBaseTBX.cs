@@ -67,12 +67,12 @@ namespace EasyTermCore
         /// <created>UPh,30.10.2015</created>
         /// <changed>UPh,30.10.2015</changed>
         // ********************************************************************************
-        internal override List<CultureInfo> GetLanguages()
+        internal override List<int> GetLanguages()
         {
             if (_LanguageAttributes == null)
                 return null;
 
-            List<CultureInfo> cis = new List<CultureInfo>();
+            List<int> cis = new List<int>();
             cis.AddRange(_LanguageAttributes.Keys);
 
             return cis;
@@ -88,7 +88,7 @@ namespace EasyTermCore
         /// <created>UPh,01.11.2015</created>
         /// <changed>UPh,01.11.2015</changed>
         // ********************************************************************************
-        CultureInfo GetCultureInfoFromAttributeName(string name)
+        int GetLCIDFromAttributeName(string name)
         {
             foreach (var pair in _LanguageAttributes)
             {
@@ -96,7 +96,7 @@ namespace EasyTermCore
                     return pair.Key;
             }
 
-            return null;
+            return -1;
 
         }
 
@@ -109,12 +109,12 @@ namespace EasyTermCore
         /// <created>UPh,31.10.2015</created>
         /// <changed>UPh,31.10.2015</changed>
         // ********************************************************************************
-        CultureInfo GetCultureInfoFromName(string name)
+        int GetLCIDFromName(string name)
         {
             try
             {
                 CultureInfo ci = CultureInfo.GetCultureInfo(name);
-                return ci;
+                return ci.LCID;
 
             }
             catch (Exception)
@@ -124,16 +124,16 @@ namespace EasyTermCore
             foreach (CultureInfo ci in CultureInfo.GetCultures(CultureTypes.AllCultures))
             {
                 if (string.Compare(ci.Name, name, true) == 0)
-                    return ci;
+                    return ci.LCID;
 
                 if (string.Compare(ci.EnglishName, name, true) == 0)
-                    return ci;
+                    return ci.LCID;
 
                 if (string.Compare(ci.DisplayName, name, true) == 0)
-                    return ci;
+                    return ci.LCID;
             }
 
-            return null;
+            return -1;
         }   
 
         // ********************************************************************************
@@ -150,7 +150,7 @@ namespace EasyTermCore
                 return;
 
             if (_LanguageAttributes == null)
-                _LanguageAttributes = new Dictionary<CultureInfo,string>();
+                _LanguageAttributes = new Dictionary<int,string>();
 
             _LanguageAttributes.Clear();
 
@@ -162,11 +162,11 @@ namespace EasyTermCore
 
                 try
                 {
-                    CultureInfo ci = GetCultureInfoFromName(att.Value);
-                    if (ci == null)
+                    int lcid = GetLCIDFromName(att.Value);
+                    if (lcid < 0)
                         continue;
 
-                    _LanguageAttributes[ci] = att.Value;
+                    _LanguageAttributes[lcid] = att.Value;
                 }
                 catch (Exception)
                 {
@@ -175,7 +175,11 @@ namespace EasyTermCore
         }
 
         List<XmlNode> _Langset1;
-        Dictionary<CultureInfo, string> _LanguageAttributes;
+
+        // Maps LCIDs to language names used in TBX file (SDL does not use ISO locales)
+        Dictionary<int, string> _LanguageAttributes;
+
+        // Currently used language names
         string _LangAttribute1;
         string _LangAttribute2;
 
@@ -189,31 +193,70 @@ namespace EasyTermCore
         /// <created>UPh,29.10.2015</created>
         /// <changed>UPh,29.10.2015</changed>
         // ********************************************************************************
-        internal override void InitLanguagePair(System.Globalization.CultureInfo lang1, System.Globalization.CultureInfo lang2)
+        internal override void InitLanguagePair(int lcid1, int lcid2)
         {
             if (_Doc == null)
                 return;
 
-
             if (_Langset1 == null)
                 _Langset1 = new List<XmlNode>();
-            _Langset1.Clear();
 
-            if (lang1 == null || lang2 == null)
+            if (lcid1 < 0 || lcid2 < 0)
                 return;
 
-            _LanguageAttributes.TryGetValue(lang1, out _LangAttribute1);
-            _LanguageAttributes.TryGetValue(lang2, out _LangAttribute2);
-            if (_LangAttribute1 == null)
-                return;
+            string langAttribute1 = FindLanguage(lcid1);
+            string langAttribute2 = FindLanguage(lcid2);
 
-
-            string xpath = string.Format("/martif/text/body/termEntry/langSet[@xml:lang='{0}']", _LangAttribute1);
-
-            foreach (XmlNode langset in _Doc.SelectNodes(xpath, _NamespaceManager))
+            if (langAttribute1 == null)
             {
-                _Langset1.Add(langset);
+                _Langset1.Clear();
+                _LangAttribute1 = null;
+                _LangAttribute2 = null;
+                return;
             }
+
+            if (langAttribute1 != _LangAttribute1)
+            {
+                _LangAttribute1 = langAttribute1;
+                string xpath = string.Format("/martif/text/body/termEntry/langSet[@xml:lang='{0}']", _LangAttribute1);
+
+                _Langset1.Clear();
+                foreach (XmlNode langset in _Doc.SelectNodes(xpath, _NamespaceManager))
+                {
+                    _Langset1.Add(langset);
+                }
+            }
+
+            if (langAttribute2 != _LangAttribute2)
+            {
+                _LangAttribute2 = langAttribute2;
+            }
+        }
+
+        // ********************************************************************************
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="lcid"></param>
+        /// <returns></returns>
+        /// <created>UPh,15.11.2015</created>
+        /// <changed>UPh,15.11.2015</changed>
+        // ********************************************************************************
+        string FindLanguage(int lcid)
+        {
+            string bestMatch = null;
+            int bestRate = 0;
+
+            foreach (var att in _LanguageAttributes)
+            {
+                int rate = Tools.GetLanguageMatch(att.Key, lcid);
+                if (rate > bestRate)
+                {
+                    bestMatch = att.Value;
+                }
+            }
+
+            return bestMatch;
         }
 
         // ********************************************************************************
@@ -362,17 +405,17 @@ namespace EasyTermCore
                 ReadProps(nodeEntry, ref info._Props);
 
                 // Language 1
-                CultureInfo ci1 = GetCultureInfoFromAttributeName(_LangAttribute1);
-                if (ci1 == null)
+                int lcid1 = GetLCIDFromAttributeName(_LangAttribute1);
+                if (lcid1 < 0)
                     return false;
 
-                TermInfo.LangSet langset1 = info.AddLanguage(ci1);
+                TermInfo.LangSet langset1 = info.AddLanguage(lcid1);
                 ReadLangset(nodeLangset1, langset1);
 
 
-                // Language 1
-                CultureInfo ci2 = GetCultureInfoFromAttributeName(_LangAttribute2);
-                if (ci2 == null)
+                // Language 2
+                int lcid2 = GetLCIDFromAttributeName(_LangAttribute2);
+                if (lcid2 < 0)
                     return true;
 
 
@@ -381,7 +424,7 @@ namespace EasyTermCore
 
                 if (nodeLangset2 != null)
                 {
-                    TermInfo.LangSet langset2 = info.AddLanguage(ci2);
+                    TermInfo.LangSet langset2 = info.AddLanguage(lcid2);
                     ReadLangset(nodeLangset2, langset2);
                 }
 

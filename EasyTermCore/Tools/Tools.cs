@@ -76,6 +76,15 @@ namespace EasyTermCore
             return -1;
         }
 
+        // ********************************************************************************
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="ci"></param>
+        /// <returns></returns>
+        /// <created>UPh,15.11.2015</created>
+        /// <changed>UPh,15.11.2015</changed>
+        // ********************************************************************************
         static int GetFlagIndex(CultureInfo ci)
         {
             int inx = GetFlagIndex(ci.Name);
@@ -115,6 +124,52 @@ namespace EasyTermCore
                 Rectangle rcFlag = new Rectangle(rect.Left + 2, rect.Top + 1, 16, 16);
                 g.DrawImage(Resources.Flags, rcFlag, 16 * inx, 0, 16, 16, GraphicsUnit.Pixel, null);
             }
+        }
+
+        public static int GetPrimaryLangID(int lcid)
+        {
+            return lcid & 0x3ff;
+        }
+
+        public static int GetSubLangID(int lcid)
+        {
+            return lcid >> 10;
+        }
+
+        public static int GetNeutralLCID(int lcid)
+        {
+            return MakeLangID(GetPrimaryLangID(lcid), 0);
+        }
+
+        public static int MakeLangID(int primary, int sub)
+        {
+            return (((ushort)sub) << 10) | ((ushort)primary);
+        }
+
+
+        // ********************************************************************************
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="lcid1"></param>
+        /// <param name="lcid2"></param>
+        /// <returns>0: no match, 1: Primary language matches, 2: Full match</returns>
+        /// <created>UPh,15.11.2015</created>
+        /// <changed>UPh,15.11.2015</changed>
+        // ********************************************************************************
+        public static int GetLanguageMatch(int lcid1, int lcid2)
+        {
+            if (lcid1 == lcid2)
+                return 2;
+
+            if (GetSubLangID(lcid1) != 0 && GetSubLangID(lcid2) != 0)
+                return 0; // Both LCIDs have different country
+
+            // One LCID is neutral
+            if (GetPrimaryLangID(lcid1) == GetPrimaryLangID(lcid2))
+                return 1;
+
+            return 0;
         }
     }
 }

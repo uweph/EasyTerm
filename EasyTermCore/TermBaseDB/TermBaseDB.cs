@@ -11,7 +11,8 @@ namespace EasyTermCore
 {
     class TermBaseDB : TermBase
     {
-        Dictionary<CultureInfo, string> _LanguageAttributes;
+        // Maps LCIDs to the language names used in the DB
+        Dictionary<int, string> _LanguageAttributes;
         string _LangAttribute1;
         string _LangAttribute2;
 
@@ -72,12 +73,12 @@ namespace EasyTermCore
         /// <created>UPh,01.11.2015</created>
         /// <changed>UPh,01.11.2015</changed>
         // ********************************************************************************
-        internal override List<System.Globalization.CultureInfo> GetLanguages()
+        internal override List<int> GetLanguages()
         {
             if (_LanguageAttributes == null)
                 return null;
 
-            List<CultureInfo> cis = new List<CultureInfo>();
+            List<int> cis = new List<int>();
             cis.AddRange(_LanguageAttributes.Keys);
 
             return cis;
@@ -93,19 +94,47 @@ namespace EasyTermCore
         /// <created>UPh,01.11.2015</created>
         /// <changed>UPh,01.11.2015</changed>
         // ********************************************************************************
-        internal override void InitLanguagePair(System.Globalization.CultureInfo lang1, System.Globalization.CultureInfo lang2)
+        internal override void InitLanguagePair(int lcid1, int lcid2)
         {
             if (_DataBase == null)
                 return;
 
-            if (lang1 == null || lang2 == null)
+            if (lcid1 < 0 || lcid2 < 0)
                 return;
 
-            _LanguageAttributes.TryGetValue(lang1, out _LangAttribute1);
-            _LanguageAttributes.TryGetValue(lang2, out _LangAttribute2);
+            _LangAttribute1 = FindLanguage(lcid1);
+            _LangAttribute2 = FindLanguage(lcid2);
+
             if (_LangAttribute1 == null)
                 return;
         }
+
+        // ********************************************************************************
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="lcid"></param>
+        /// <returns></returns>
+        /// <created>UPh,15.11.2015</created>
+        /// <changed>UPh,15.11.2015</changed>
+        // ********************************************************************************
+        string FindLanguage(int lcid)
+        {
+            string bestMatch = null;
+            int bestRate = 0;
+
+            foreach (var att in _LanguageAttributes)
+            {
+                int rate = Tools.GetLanguageMatch(att.Key, lcid);
+                if (rate > bestRate)
+                {
+                    bestMatch = att.Value;
+                }
+            }
+
+            return bestMatch;
+        }
+
 
         // ********************************************************************************
         /// <summary>
@@ -208,10 +237,10 @@ namespace EasyTermCore
 
                     if (nodeLangset1 != null)
                     {
-                        CultureInfo ci1 = GetCultureInfoFromAttributeName(_LangAttribute1);
-                        if (ci1 != null)
+                        int lcid1 = GetLCIDFromAttributeName(_LangAttribute1);
+                        if (lcid1 >= 0)
                         {
-                            TermInfo.LangSet langset1 = info.AddLanguage(ci1);
+                            TermInfo.LangSet langset1 = info.AddLanguage(lcid1);
                             ReadLangset(nodeLangset1.ParentNode, langset1);
                         }
                     }
@@ -223,10 +252,10 @@ namespace EasyTermCore
 
                     if (nodeLangset2 != null)
                     {
-                        CultureInfo ci2 = GetCultureInfoFromAttributeName(_LangAttribute2);
-                        if (ci2 != null)
+                        int lcid2 = GetLCIDFromAttributeName(_LangAttribute2);
+                        if (lcid2 >= 0)
                         {
-                            TermInfo.LangSet langset2 = info.AddLanguage(ci2);
+                            TermInfo.LangSet langset2 = info.AddLanguage(lcid2);
                             ReadLangset(nodeLangset2.ParentNode, langset2);
                         }
                     }
@@ -251,7 +280,7 @@ namespace EasyTermCore
         /// <created>UPh,01.11.2015</created>
         /// <changed>UPh,01.11.2015</changed>
         // ********************************************************************************
-        CultureInfo GetCultureInfoFromAttributeName(string name)
+        int GetLCIDFromAttributeName(string name)
         {
             foreach (var pair in _LanguageAttributes)
             {
@@ -259,7 +288,7 @@ namespace EasyTermCore
                     return pair.Key;
             }
 
-            return null;
+            return -1;
 
         }
 
@@ -277,7 +306,7 @@ namespace EasyTermCore
                 return;
 
             if (_LanguageAttributes == null)
-                _LanguageAttributes = new Dictionary<CultureInfo, string>();
+                _LanguageAttributes = new Dictionary<int, string>();
 
             _LanguageAttributes.Clear();
 
@@ -293,7 +322,7 @@ namespace EasyTermCore
                     string name = reader[0].ToString();
                     string locale = reader[1].ToString();
                     CultureInfo ci = CultureInfo.GetCultureInfo(locale);
-                    _LanguageAttributes[ci] = name;
+                    _LanguageAttributes[ci.LCID] = name;
                 }
                 catch (Exception)
                 {

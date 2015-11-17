@@ -20,8 +20,8 @@ namespace EasyTermCore
 
         internal abstract void OnOpenFile();
         internal abstract void OnCloseFile();
-        internal abstract List<CultureInfo> GetLanguages();
-        internal abstract void InitLanguagePair(CultureInfo lang1, CultureInfo lang2);
+        internal abstract List<int> GetLanguages();
+        internal abstract void InitLanguagePair(int lcid1, int lcid2);
         internal abstract void GetTermList(TermListItems items, IAbortTermQuery abort);
         internal abstract bool GetTermInfo(int termID, out TermInfo info, IAbortTermQuery abort);
     }
@@ -42,7 +42,7 @@ namespace EasyTermCore
         /// <created>UPh,25.10.2015</created>
         /// <changed>UPh,25.10.2015</changed>
         // ********************************************************************************
-        internal void Update(TermBaseSet set, CultureInfo lang1, CultureInfo lang2)
+        internal void Update(TermBaseSet set, int lcid1, int lcid2)
         {
             TermBases newList = new TermBases();
 
@@ -68,7 +68,7 @@ namespace EasyTermCore
                     if (tb != null)
                     {
                         newList.Add(tb);
-                        tb.InitLanguagePair(lang1, lang2);
+                        tb.InitLanguagePair(lcid1, lcid2);
                     }
                 }
 

@@ -21,10 +21,12 @@ namespace EasyTermCore
         {
             _TermbaseSet = termbaseSet;
             _Worker = new TermBaseQueryWorker(this,_TermbaseSet.TermBases);
+            LCID1 = -1;
+            LCID2 = -1;
         }
 
-        internal CultureInfo Language1 {get; set;}
-        internal CultureInfo Language2 { get; set; }
+        internal int LCID1 {get; set;}
+        internal int LCID2 {get; set; }
 
 
 
@@ -40,41 +42,38 @@ namespace EasyTermCore
         /// <created>UPh,24.10.2015</created>
         /// <changed>UPh,24.10.2015</changed>
         // ********************************************************************************
-        public void SetLanguagePair(CultureInfo lang1, CultureInfo lang2)
+        public void SetLanguagePair(int lcid1, int lcid2)
         {
-            Language1 = lang1;
-            Language2 = lang2;
+            if (LCID1 == lcid1 &&
+                LCID2 == lcid2)
+                return;
+
+            LCID1 = lcid1;
+            LCID2 = lcid2;
 
 
             // Inform all termbases
             foreach (TermBase termbase in _TermbaseSet.TermBases)
             {
-                termbase.InitLanguagePair(Language1, Language2);
+                termbase.InitLanguagePair(lcid1, lcid2);
             }
-        
         }
 
         // ********************************************************************************
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="lcid1"></param>
-        /// <param name="lcid2"></param>
+        /// <param name="lang1"></param>
+        /// <param name="lang2"></param>
         /// <returns></returns>
-        /// <created>UPh,07.11.2015</created>
-        /// <changed>UPh,07.11.2015</changed>
+        /// <created>UPh,15.11.2015</created>
+        /// <changed>UPh,15.11.2015</changed>
         // ********************************************************************************
-        public void SetLanguagePair(int lcid1, int lcid2)
+        public void SetLanguagePair(CultureInfo lang1, CultureInfo lang2)
         {
-            try
-            {
-                SetLanguagePair(CultureInfo.GetCultureInfo(lcid1), CultureInfo.GetCultureInfo(lcid2));
-            }
-            catch (Exception)
-            {
-                
-                
-            }
+            if (lang1 == null || lang2 == null)
+                return;
+            SetLanguagePair(lang1.LCID, lang2.LCID);
         }
 
 
@@ -90,8 +89,23 @@ namespace EasyTermCore
         // ********************************************************************************
         public bool GetLanguagePair(out CultureInfo lang1, out CultureInfo lang2)
         {
-            lang1 = Language1;
-            lang2 = Language2;
+            try
+            {
+                if (LCID1 == -1)
+                    lang1 = null;
+                else
+                    lang1 = CultureInfo.GetCultureInfo(LCID1);
+
+                if (LCID1 == -1)
+                    lang2 = null;
+                else
+                    lang2 = CultureInfo.GetCultureInfo(LCID2);
+            }
+            catch (Exception)
+            {
+                lang1 = null;
+                lang2 = null;
+            }
 
             return lang1 != null && lang2 != null;
         }
@@ -112,14 +126,24 @@ namespace EasyTermCore
 
             foreach (TermBase termbase in _TermbaseSet.TermBases)
             {
-                List<CultureInfo> cis2 = termbase.GetLanguages();
-                if (cis2 == null)
+                List<int> lcids = termbase.GetLanguages();
+                if (lcids == null)
                     continue;
 
-                foreach (CultureInfo ci2 in cis2)
+                foreach (int lcid in lcids)
                 {
-                    if (cis.IndexOf(ci2) < 0)
-                        cis.Add(ci2);
+                    try
+                    {
+                        CultureInfo ci2 = CultureInfo.GetCultureInfo(lcid);
+                        if (cis.IndexOf(ci2) < 0)
+
+                            cis.Add(ci2);
+
+                    }
+                    catch (Exception)
+                    {
+                        
+                    }
                 }
 
             }
@@ -163,7 +187,7 @@ namespace EasyTermCore
 
         // ********************************************************************************
         /// <summary>
-        /// 
+        /// Put terminology request to FiFo
         /// </summary>
         /// <param name="text"></param>
         /// <returns></returns>
@@ -176,6 +200,62 @@ namespace EasyTermCore
                 _Worker.Start();
 
             _Worker.PutRequest(TermBaseRequest.MakeTerminologyRequest(text, requestid));
+        }
+
+        // ********************************************************************************
+        /// <summary>
+        /// Return terminology items synchroniously
+        /// </summary>
+        /// <param name="text"></param>
+        /// <returns></returns>
+        /// <created>UPh,17.11.2015</created>
+        /// <changed>UPh,17.11.2015</changed>
+        // ********************************************************************************
+        public List<TerminologyResultArgs> RequestSyncTerminology(string text, long requestid)
+        {
+            List<TerminologyResultArgs> result = new List<TerminologyResultArgs>();
+
+            _Worker.HandleTerminologyRequest(TermBaseRequest.MakeTerminologyRequest(text, requestid), result);
+
+            return result;
+        }
+
+        // ********************************************************************************
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="TerminologyResultArgs"></typeparam>
+        /// <param name="term"></param>
+        /// <param name="requestid"></param>
+        /// <returns></returns>
+        /// <created>UPh,17.11.2015</created>
+        /// <changed>UPh,17.11.2015</changed>
+        // ********************************************************************************
+        public List<TerminologyResultArgs> RequestSyncSingleTerm(string term, long requestid)
+        {
+            List<TerminologyResultArgs> result = new List<TerminologyResultArgs>();
+
+            _Worker.HandleSingleTermRequest(TermBaseRequest.MakeTerminologyRequest(term, requestid), result);
+
+            return result;
+        }
+
+        // ********************************************************************************
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="TermInfo"></typeparam>
+        /// <param name="term"></param>
+        /// <returns></returns>
+        /// <created>UPh,17.11.2015</created>
+        /// <changed>UPh,17.11.2015</changed>
+        // ********************************************************************************
+        public List<TermInfo> RequestSyncTermInfos(string term)
+        {
+            List<TermInfo> infos = new List<TermInfo>();
+            _Worker.HandleTermInfosRequest(term, infos);
+
+            return infos;
         }
 
 
@@ -244,20 +324,10 @@ namespace EasyTermCore
         /// <created>UPh,14.11.2015</created>
         /// <changed>UPh,14.11.2015</changed>
         // ********************************************************************************
-        internal void FireTerminologyResult(long requestid, int rate, int from, int len, string term1, string term2, string origin, string description)
+        internal void FireTerminologyResult(TerminologyResultArgs args)
         {
             if (TerminologyResult == null)
                 return;
-
-            TerminologyResultArgs args = new TerminologyResultArgs();
-
-            args.RequestID = requestid;
-            args.FindFrom = from;
-            args.FindLen = len;
-            args.Term1 = term1;
-            args.Term2 = term2;
-            args.Origin = origin;
-            args.Description = description;
 
             TerminologyResult(this, args);
         }
@@ -286,6 +356,19 @@ namespace EasyTermCore
         public void PauseRequests()
         {
             _Worker.PauseRequests();
+        }
+
+        // ********************************************************************************
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        /// <created>UPh,15.11.2015</created>
+        /// <changed>UPh,15.11.2015</changed>
+        // ********************************************************************************
+        public void ResetIndex()
+        {
+            _Worker.ResetIndex();
         }
 
         // ********************************************************************************
@@ -406,6 +489,44 @@ namespace EasyTermCore
             LanguageSets.Add(langset);
 
             return langset;
+        }
+
+        public string Definition
+        {
+            get
+            {
+                if (LanguageSets.Count == 2 && LanguageSets[1].Props != null && !string.IsNullOrEmpty(LanguageSets[1].Props.Definition))
+                    return LanguageSets[1].Props.Definition;
+
+                if (LanguageSets.Count >= 1 && LanguageSets[0].Props != null && !string.IsNullOrEmpty(LanguageSets[0].Props.Definition))
+                    return LanguageSets[0].Props.Definition;
+
+                if (Props != null && !string.IsNullOrEmpty(Props.Definition))
+                    return Props.Definition;
+
+                return "";
+            }
+        }
+
+        // ********************************************************************************
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="lcid"></param>
+        /// <returns></returns>
+        /// <created>UPh,15.11.2015</created>
+        /// <changed>UPh,15.11.2015</changed>
+        // ********************************************************************************
+        internal LangSet AddLanguage(int lcid)
+        {
+            try
+            {
+                return AddLanguage(CultureInfo.GetCultureInfo(lcid));
+            }
+            catch (Exception)
+            {
+                return null;
+            }
         }
 
         // --------------------------------------------------------------------------------

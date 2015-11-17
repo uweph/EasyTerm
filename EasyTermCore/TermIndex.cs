@@ -18,7 +18,7 @@ namespace EasyTermCore
     {           
 
         IndexItem[] _Items;
-        public string Language {get; private set;}
+        public int LCID {get; private set;}
 
         // ********************************************************************************
         /// <summary>
@@ -31,6 +31,7 @@ namespace EasyTermCore
         public TermIndex()
         {
             _Items = null;
+            LCID = -1;
         }
 
         int CompareHash(IndexItem item1, IndexItem item2)
@@ -47,14 +48,29 @@ namespace EasyTermCore
         /// <summary>
         /// 
         /// </summary>
+        /// <returns></returns>
+        /// <created>UPh,15.11.2015</created>
+        /// <changed>UPh,15.11.2015</changed>
+        // ********************************************************************************
+        public void ClearIndex()
+        {
+            _Items = null;
+            LCID = -1;
+        }
+
+
+        // ********************************************************************************
+        /// <summary>
+        /// 
+        /// </summary>
         /// <param name="items"></param>
         /// <returns></returns>
         /// <created>UPh,14.11.2015</created>
         /// <changed>UPh,14.11.2015</changed>
         // ********************************************************************************
-        public void BuildIndex(string language, TermListItems items)
+        public void BuildIndex(int lcid, TermListItems items)
         {
-            Language = language;
+            LCID = lcid;
             int count = items.Count;
             _Items = new IndexItem[count];
 
@@ -115,7 +131,7 @@ namespace EasyTermCore
         /// <created>UPh,14.11.2015</created>
         /// <changed>UPh,14.11.2015</changed>
         // ********************************************************************************
-        ulong MakeGlossaryHashCode(string text, int from = -1, int len = 0)
+        public static ulong MakeGlossaryHashCode(string text, int from = -1, int len = 0)
         {
             ulong code = 0;
             ulong n = 1;

@@ -355,12 +355,17 @@ namespace EasyTermCore
         public void EditTermBases()
         {
             Query.PauseRequests();
+            Query.ResetIndex();
+
+            bool bDataChanged = false;
 
             try
             {
                 using (TermBaseSelectionForm form = new TermBaseSelectionForm(this))
                 {
                     form.ShowDialog();
+
+                    // TODO: bDataChanged = form.DataChanged
                 }
             }
             catch (Exception)
@@ -369,6 +374,7 @@ namespace EasyTermCore
             }
             finally
             {
+                Query.ResetIndex();
                 Query.ResumeRequests();
                 UpdateTermBases();
             }
@@ -384,7 +390,7 @@ namespace EasyTermCore
         // ********************************************************************************
         void UpdateTermBases()
         {
-            TermBases.Update(this, Query.Language1, Query.Language2);
+            TermBases.Update(this, Query.LCID1, Query.LCID2);
         }
 
     }
