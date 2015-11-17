@@ -225,6 +225,7 @@ namespace EasyTermCore
 
 
                     info = new TermInfo();
+                info.TermID = termID;
 
                     XmlNode nodeProps = doc.SelectSingleNode("./cG");
                     if (nodeProps != null)
@@ -261,7 +262,6 @@ namespace EasyTermCore
                     }
 
                 }
-
             }
             catch (Exception)
             {

@@ -31,8 +31,7 @@
     <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup>
-    <Win32Resource>
-    </Win32Resource>
+    <Win32Resource>D:\Sources\EasyTerm\EasyTermRes\obj\Release\EasyTermRes.res</Win32Resource>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -48,6 +47,18 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="EasyTermCoreSettings.cs" />
+    <Compile Include="Lookup\LookupForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Lookup\LookupForm.Designer.cs">
+      <DependentUpon>LookupForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Lookup\TermInfoControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Lookup\TermInfoControl.designer.cs">
+      <DependentUpon>TermInfoControl.cs</DependentUpon>
+    </Compile>
     <Compile Include="TermIndex.cs" />
     <Compile Include="Passlib\PlProfile.cs" />
     <Compile Include="Passlib\PlStorePosition.cs" />
@@ -85,6 +96,12 @@
     <Compile Include="Tools\XmlNode.cs" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Lookup\LookupForm.resx">
+      <DependentUpon>LookupForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Lookup\TermInfoControl.resx">
+      <DependentUpon>TermInfoControl.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>

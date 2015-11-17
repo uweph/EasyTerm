@@ -250,9 +250,9 @@ namespace EasyTermCore
         /// <created>UPh,17.11.2015</created>
         /// <changed>UPh,17.11.2015</changed>
         // ********************************************************************************
-        public List<TermInfo> RequestSyncTermInfos(string term)
+        public List<TermInfoResultArgs> RequestSyncTermInfos(string term)
         {
-            List<TermInfo> infos = new List<TermInfo>();
+            List<TermInfoResultArgs> infos = new List<TermInfoResultArgs>();
             _Worker.HandleTermInfosRequest(term, infos);
 
             return infos;
@@ -474,6 +474,7 @@ namespace EasyTermCore
             TermID = null;
         }
 
+        public long TermBaseID {get; internal set;}
         public int? TermID {get; internal set;}
 
 

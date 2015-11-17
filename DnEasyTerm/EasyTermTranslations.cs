@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace DnEasyTerm
 {
@@ -212,6 +213,9 @@ namespace DnEasyTerm
             return 0;
         }
 
+        LookupForm _LookupForm = null;
+
+
         // ********************************************************************************
         /// <summary>
         /// 
@@ -228,11 +232,36 @@ namespace DnEasyTerm
             if (!PrepareRequest(lcid1, lcid2))
                 return 1;
 
-            List<TermInfo> items = _Query.RequestSyncTermInfos(str);
-            if (items == null || items.Count == 0)
+            List<TermInfoResultArgs> result = _Query.RequestSyncTermInfos(str);
+            if (result == null || result.Count == 0)
                 return 1;
 
+
+            if (_LookupForm == null)
+            {
+                _LookupForm = new LookupForm();
+                _LookupForm.FormClosed += LookupForm_FormClosed;
+            }
+
+            _LookupForm.Show();
+            _LookupForm.SetData(str, _TermBaseSet, result);
+
             return 0;
+        }
+
+        // ********************************************************************************
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        /// <returns></returns>
+        /// <created>UPh,17.11.2015</created>
+        /// <changed>UPh,17.11.2015</changed>
+        // ********************************************************************************
+        void LookupForm_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            _LookupForm = null;
         }
 
         // ********************************************************************************

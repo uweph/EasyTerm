@@ -409,9 +409,9 @@ namespace EasyTermCore
         /// <created>UPh,17.11.2015</created>
         /// <changed>UPh,17.11.2015</changed>
         // ********************************************************************************
-        internal void HandleTermInfosRequest(string term, List<TermInfo> infos = null)
+        internal void HandleTermInfosRequest(string term, List<TermInfoResultArgs> result = null)
         {
-            bool bSync = (infos != null);
+            bool bSync = (result != null);
 
             // Build index if necessary
             if (_Index.LCID != _TermbaseQuery.LCID1)
@@ -435,7 +435,12 @@ namespace EasyTermCore
                 if (!termbase.GetTermInfo(match.TermID, out terminfo, this))
                     return;
 
-                infos.Add(terminfo);
+                TermInfoResultArgs item = new TermInfoResultArgs();
+                item.RequestID = 0;
+                item.TermBaseID = match.TermBaseID;
+                item.Info = terminfo;
+
+                result.Add(item);
             }
         }
 

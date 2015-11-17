@@ -272,6 +272,7 @@ namespace EasyTermCore
                 return false;
 
             info = new TermInfo();
+            info.TermID = termID;
 
             TermInfo.LangSet langset1 = info.AddLanguage(_Languages[_LangIndex1]);
             if (langset1 == null)
@@ -284,6 +285,7 @@ namespace EasyTermCore
                 return false;
 
             langset2.AddTerm(_Terms[termID].Item2);
+
 
             return true;
         }

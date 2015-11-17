@@ -397,6 +397,7 @@ namespace EasyTermCore
             try 
 	        {	        
 		        info = new TermInfo();
+                info.TermID = termID;
 
                 XmlNode nodeLangset1 = _Langset1[termID];
 
@@ -427,6 +428,7 @@ namespace EasyTermCore
                     TermInfo.LangSet langset2 = info.AddLanguage(lcid2);
                     ReadLangset(nodeLangset2, langset2);
                 }
+
 
                 return true;
             }
