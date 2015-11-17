@@ -40,7 +40,7 @@
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.lstTerms = new EasyTermViewer.TermListBox();
             this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.termInfoControl = new EasyTermViewer.TermInfoControl();
+            this.termInfoControl = new EasyTermCore.TermInfoControl();
             this.toolStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -211,8 +211,8 @@
         private System.Windows.Forms.ToolStripComboBox cmdLanguage2;
         private System.Windows.Forms.ToolStripLabel toolStripLabel1;
         private System.Windows.Forms.SplitContainer splitContainer1;
-        private TermInfoControl termInfoControl;
         private System.Windows.Forms.PictureBox pictureBox1;
+        private EasyTermCore.TermInfoControl termInfoControl;
     }
 }
 
