@@ -100,8 +100,12 @@ namespace EasyTermCore
 
             if (index1 < 0 || index2 < 0)
             {
-                // Reset...
+                _LangIndex1 = -1;
+                _LangIndex2 = -1;
+                // Reset
+                _Terms.Clear();
                 return;
+
             }
 
             if (_LangIndex1 != index1 ||
@@ -111,6 +115,20 @@ namespace EasyTermCore
                 _LangIndex2 = index2;
                 ParseLines();
             }
+
+        }
+
+        // ********************************************************************************
+        /// <summary>
+        /// Check if both languages are valid for this term base
+        /// </summary>
+        /// <returns></returns>
+        /// <created>UPh,18.11.2015</created>
+        /// <changed>UPh,18.11.2015</changed>
+        // ********************************************************************************
+        internal override bool HasLanguagePair()
+        {
+            return _LangIndex1 != -1 && _LangIndex2 != -1;
         }
 
 

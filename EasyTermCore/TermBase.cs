@@ -22,6 +22,7 @@ namespace EasyTermCore
         internal abstract void OnCloseFile();
         internal abstract List<int> GetLanguages();
         internal abstract void InitLanguagePair(int lcid1, int lcid2);
+        internal abstract bool HasLanguagePair();
         internal abstract void GetTermList(TermListItems items, IAbortTermQuery abort);
         internal abstract bool GetTermInfo(int termID, out TermInfo info, IAbortTermQuery abort);
     }

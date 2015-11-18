@@ -146,7 +146,8 @@ namespace EasyTermCore
             {
                 char c0 = text[i];
 
-                if (!char.IsLetter(c0))
+                if (!char.IsLetter(c0) && 
+                    !char.IsDigit(c0))
                     continue;
 
                 char c = char.ToLower(c0);

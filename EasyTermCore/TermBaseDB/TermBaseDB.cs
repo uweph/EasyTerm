@@ -109,6 +109,21 @@ namespace EasyTermCore
                 return;
         }
 
+
+        // ********************************************************************************
+        /// <summary>
+        /// Check if both languages are valid for this term base
+        /// </summary>
+        /// <returns></returns>
+        /// <created>UPh,18.11.2015</created>
+        /// <changed>UPh,18.11.2015</changed>
+        // ********************************************************************************
+        internal override bool HasLanguagePair()
+        {
+            return _LangAttribute1 != null && _LangAttribute2 != null;
+        }
+
+
         // ********************************************************************************
         /// <summary>
         /// 

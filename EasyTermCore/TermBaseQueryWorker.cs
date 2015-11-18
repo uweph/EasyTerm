@@ -280,7 +280,7 @@ namespace EasyTermCore
         // ********************************************************************************
         private void HandleTermListRequest(TermBaseRequest request)
         {
-            TermListItems items = RetrieveTermList();
+            TermListItems items = RetrieveTermList(false);
             if (items == null)
                 return;
 
@@ -337,7 +337,7 @@ namespace EasyTermCore
             // Build index if necessary
             if (_Index.LCID != _TermbaseQuery.LCID1)
             {
-                TermListItems items = RetrieveTermList();
+                TermListItems items = RetrieveTermList(true);
                 if (!bSync && _shouldStop)
                     return;
 
@@ -385,7 +385,7 @@ namespace EasyTermCore
             // Build index if necessary
             if (_Index.LCID != _TermbaseQuery.LCID1)
             {
-                TermListItems items = RetrieveTermList();
+                TermListItems items = RetrieveTermList(true);
                 if (!bSync && _shouldStop)
                     return;
 
@@ -416,7 +416,7 @@ namespace EasyTermCore
             // Build index if necessary
             if (_Index.LCID != _TermbaseQuery.LCID1)
             {
-                TermListItems items = RetrieveTermList();
+                TermListItems items = RetrieveTermList(true);
                 if (!bSync && _shouldStop)
                     return;
 
@@ -519,13 +519,16 @@ namespace EasyTermCore
         /// <created>UPh,14.11.2015</created>
         /// <changed>UPh,14.11.2015</changed>
         // ********************************************************************************
-        private TermListItems RetrieveTermList()
+        private TermListItems RetrieveTermList(bool bLanguagePairOnly)
         {
             TermListItems items = new TermListItems();
             foreach (TermBase termbase in _TermBases)
             {
                 if (_Paused || _shouldStop)
                     return null;
+
+                if (bLanguagePairOnly && !termbase.HasLanguagePair())
+                    continue;
 
                 TermListItems items2 = new TermListItems();
                 termbase.GetTermList(items2, this);
