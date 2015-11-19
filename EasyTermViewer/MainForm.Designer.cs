@@ -29,29 +29,37 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
+            this.txtFind = new System.Windows.Forms.ToolStripTextBox();
+            this.btnFind = new System.Windows.Forms.ToolStripSplitButton();
+            this.btnFindText = new System.Windows.Forms.ToolStripMenuItem();
+            this.btnFindTerm = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.cmdLanguage1 = new System.Windows.Forms.ToolStripComboBox();
             this.toolStripLabel1 = new System.Windows.Forms.ToolStripLabel();
             this.cmdLanguage2 = new System.Windows.Forms.ToolStripComboBox();
             this.cmdTermBases = new System.Windows.Forms.ToolStripButton();
-            this.txtFindTerm = new System.Windows.Forms.TextBox();
             this.timerFilter = new System.Windows.Forms.Timer(this.components);
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
-            this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.termInfoControl = new EasyTermCore.TermInfoControl();
+            this.toolTip = new System.Windows.Forms.ToolTip(this.components);
+            this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.lstTerms = new EasyTermViewer.TermListBox();
             this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.termInfoControl = new EasyTermCore.TermInfoControl();
             this.toolStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
             // toolStrip1
             // 
             this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.txtFind,
+            this.btnFind,
+            this.toolStripSeparator1,
             this.cmdLanguage1,
             this.toolStripLabel1,
             this.cmdLanguage2,
@@ -62,12 +70,55 @@
             this.toolStrip1.TabIndex = 0;
             this.toolStrip1.Text = "toolStrip1";
             // 
+            // txtFind
+            // 
+            this.txtFind.Name = "txtFind";
+            this.txtFind.Size = new System.Drawing.Size(150, 25);
+            this.txtFind.ToolTipText = "Enter text or term to find";
+            this.txtFind.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtFind_KeyDown);
+            this.txtFind.TextChanged += new System.EventHandler(this.txtFind_TextChanged);
+            // 
+            // btnFind
+            // 
+            this.btnFind.AutoSize = false;
+            this.btnFind.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.btnFindText,
+            this.btnFindTerm});
+            this.btnFind.Image = ((System.Drawing.Image)(resources.GetObject("btnFind.Image")));
+            this.btnFind.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnFind.Name = "btnFind";
+            this.btnFind.Size = new System.Drawing.Size(149, 22);
+            this.btnFind.Text = "<FindType>";
+            // 
+            // btnFindText
+            // 
+            this.btnFindText.Image = global::EasyTermViewer.Properties.Resources.search;
+            this.btnFindText.Name = "btnFindText";
+            this.btnFindText.Size = new System.Drawing.Size(127, 22);
+            this.btnFindText.Text = "Find Text";
+            this.btnFindText.ToolTipText = "Find all terms that contain the text";
+            this.btnFindText.Click += new System.EventHandler(this.btnFindText_Click);
+            // 
+            // btnFindTerm
+            // 
+            this.btnFindTerm.Name = "btnFindTerm";
+            this.btnFindTerm.Size = new System.Drawing.Size(127, 22);
+            this.btnFindTerm.Text = "Find Term";
+            this.btnFindTerm.ToolTipText = "Find a term";
+            this.btnFindTerm.Click += new System.EventHandler(this.btnFindTerm_Click);
+            // 
+            // toolStripSeparator1
+            // 
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(6, 25);
+            // 
             // cmdLanguage1
             // 
             this.cmdLanguage1.AutoSize = false;
             this.cmdLanguage1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmdLanguage1.Name = "cmdLanguage1";
             this.cmdLanguage1.Size = new System.Drawing.Size(160, 23);
+            this.cmdLanguage1.ToolTipText = "Source language";
             this.cmdLanguage1.SelectedIndexChanged += new System.EventHandler(this.cmdLanguage1_SelectedIndexChanged);
             // 
             // toolStripLabel1
@@ -84,6 +135,7 @@
             this.cmdLanguage2.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmdLanguage2.Name = "cmdLanguage2";
             this.cmdLanguage2.Size = new System.Drawing.Size(160, 25);
+            this.cmdLanguage2.ToolTipText = "Target language";
             this.cmdLanguage2.SelectedIndexChanged += new System.EventHandler(this.cmdLanguage2_SelectedIndexChanged);
             // 
             // cmdTermBases
@@ -94,19 +146,8 @@
             this.cmdTermBases.Name = "cmdTermBases";
             this.cmdTermBases.Size = new System.Drawing.Size(92, 22);
             this.cmdTermBases.Text = "Termbases...";
+            this.cmdTermBases.ToolTipText = "Manage termbases";
             this.cmdTermBases.Click += new System.EventHandler(this.cmdTermBases_Click);
-            // 
-            // txtFindTerm
-            // 
-            this.txtFindTerm.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtFindTerm.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtFindTerm.Location = new System.Drawing.Point(30, 4);
-            this.txtFindTerm.Name = "txtFindTerm";
-            this.txtFindTerm.Size = new System.Drawing.Size(173, 22);
-            this.txtFindTerm.TabIndex = 2;
-            this.txtFindTerm.TextChanged += new System.EventHandler(this.txtFindTerm_TextChanged);
-            this.txtFindTerm.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtFindTerm_KeyDown);
             // 
             // timerFilter
             // 
@@ -120,9 +161,7 @@
             // 
             // splitContainer1.Panel1
             // 
-            this.splitContainer1.Panel1.Controls.Add(this.pictureBox1);
             this.splitContainer1.Panel1.Controls.Add(this.lstTerms);
-            this.splitContainer1.Panel1.Controls.Add(this.txtFindTerm);
             this.splitContainer1.Panel1MinSize = 100;
             // 
             // splitContainer1.Panel2
@@ -132,14 +171,13 @@
             this.splitContainer1.SplitterDistance = 210;
             this.splitContainer1.TabIndex = 4;
             // 
-            // pictureBox1
+            // termInfoControl
             // 
-            this.pictureBox1.Image = global::EasyTermViewer.Properties.Resources.search;
-            this.pictureBox1.Location = new System.Drawing.Point(7, 4);
-            this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(21, 22);
-            this.pictureBox1.TabIndex = 4;
-            this.pictureBox1.TabStop = false;
+            this.termInfoControl.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.termInfoControl.Location = new System.Drawing.Point(0, 0);
+            this.termInfoControl.Name = "termInfoControl";
+            this.termInfoControl.Size = new System.Drawing.Size(600, 485);
+            this.termInfoControl.TabIndex = 0;
             // 
             // lstTerms
             // 
@@ -152,11 +190,11 @@
             this.lstTerms.FullRowSelect = true;
             this.lstTerms.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
             this.lstTerms.HideSelection = false;
-            this.lstTerms.Location = new System.Drawing.Point(2, 31);
+            this.lstTerms.Location = new System.Drawing.Point(2, 3);
             this.lstTerms.MultiSelect = false;
             this.lstTerms.Name = "lstTerms";
             this.lstTerms.OwnerDraw = true;
-            this.lstTerms.Size = new System.Drawing.Size(203, 454);
+            this.lstTerms.Size = new System.Drawing.Size(203, 482);
             this.lstTerms.TabIndex = 3;
             this.lstTerms.UseCompatibleStateImageBehavior = false;
             this.lstTerms.View = System.Windows.Forms.View.Details;
@@ -167,14 +205,6 @@
             // 
             this.columnHeader1.Width = 96;
             // 
-            // termInfoControl
-            // 
-            this.termInfoControl.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.termInfoControl.Location = new System.Drawing.Point(0, 0);
-            this.termInfoControl.Name = "termInfoControl";
-            this.termInfoControl.Size = new System.Drawing.Size(600, 485);
-            this.termInfoControl.TabIndex = 0;
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -182,6 +212,7 @@
             this.ClientSize = new System.Drawing.Size(814, 510);
             this.Controls.Add(this.splitContainer1);
             this.Controls.Add(this.toolStrip1);
+            this.KeyPreview = true;
             this.MinimumSize = new System.Drawing.Size(800, 500);
             this.Name = "MainForm";
             this.Text = "Easy Term Viewer";
@@ -189,11 +220,9 @@
             this.toolStrip1.ResumeLayout(false);
             this.toolStrip1.PerformLayout();
             this.splitContainer1.Panel1.ResumeLayout(false);
-            this.splitContainer1.Panel1.PerformLayout();
             this.splitContainer1.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
             this.splitContainer1.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -203,7 +232,6 @@
 
         private System.Windows.Forms.ToolStrip toolStrip1;
         private System.Windows.Forms.ToolStripButton cmdTermBases;
-        private System.Windows.Forms.TextBox txtFindTerm;
         private TermListBox lstTerms;
         private System.Windows.Forms.Timer timerFilter;
         private System.Windows.Forms.ColumnHeader columnHeader1;
@@ -211,8 +239,14 @@
         private System.Windows.Forms.ToolStripComboBox cmdLanguage2;
         private System.Windows.Forms.ToolStripLabel toolStripLabel1;
         private System.Windows.Forms.SplitContainer splitContainer1;
-        private System.Windows.Forms.PictureBox pictureBox1;
         private EasyTermCore.TermInfoControl termInfoControl;
+        private System.Windows.Forms.ToolStripTextBox txtFind;
+        private System.Windows.Forms.ToolStripSplitButton btnFind;
+        private System.Windows.Forms.ToolStripMenuItem btnFindText;
+        private System.Windows.Forms.ToolStripMenuItem btnFindTerm;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
+        private System.Windows.Forms.ToolTip toolTip;
+        private System.Windows.Forms.ToolTip toolTip1;
     }
 }
 

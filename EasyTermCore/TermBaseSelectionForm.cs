@@ -14,7 +14,7 @@ namespace EasyTermCore
     public partial class TermBaseSelectionForm : Form
     {
         TermBaseSet _TermbaseSet;
-        bool _DataChanged = false;
+        public bool DataChanged {get; private set;}
         private PlStorePosition _StorePosition;
 
         // ********************************************************************************
@@ -28,12 +28,15 @@ namespace EasyTermCore
         // ********************************************************************************
         public TermBaseSelectionForm(TermBaseSet set)
         {
+
             if (PlProfile.Type != PlProfile.ProfileType.Unknown)
             {
                 _StorePosition = new PlStorePosition();
                 _StorePosition.Initialize(this);
             }
             InitializeComponent();
+
+            DataChanged = false;
             _TermbaseSet = set;
 
             lstFiles.FillList(_TermbaseSet);
@@ -77,7 +80,7 @@ namespace EasyTermCore
 
                 lstFiles.SelectedIndex = index;
 
-                _DataChanged = true;
+                DataChanged = true;
             }
         }
 
@@ -116,7 +119,7 @@ namespace EasyTermCore
             lstFiles.Items.RemoveAt(lstFiles.SelectedIndex);
             UpdateControls();
 
-            _DataChanged = true;
+            DataChanged = true;
         }
 
 
@@ -132,7 +135,7 @@ namespace EasyTermCore
         // ********************************************************************************
         private void btnClose_Click(object sender, EventArgs e)
         {
-            if (_DataChanged)
+            if (DataChanged)
                 _TermbaseSet.Save();
 
             Close();
@@ -165,7 +168,7 @@ namespace EasyTermCore
         // ********************************************************************************
         private void lstFiles_ActiveChanged(object sender, ActiveChangedEventArgs file)
         {
-            _DataChanged = true;
+            DataChanged = true;
         }
 
 
@@ -188,7 +191,7 @@ namespace EasyTermCore
             file.DisplayColor = e.Color;
             lstFiles.Invalidate();
             
-            _DataChanged = true;
+            DataChanged = true;
         }   
 
 

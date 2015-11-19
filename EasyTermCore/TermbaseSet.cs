@@ -352,7 +352,7 @@ namespace EasyTermCore
         /// <created>UPh,25.10.2015</created>
         /// <changed>UPh,25.10.2015</changed>
         // ********************************************************************************
-        public void EditTermBases()
+        public bool EditTermBases()
         {
             Query.PauseRequests();
             Query.ResetIndex();
@@ -364,8 +364,7 @@ namespace EasyTermCore
                 using (TermBaseSelectionForm form = new TermBaseSelectionForm(this))
                 {
                     form.ShowDialog();
-
-                    // TODO: bDataChanged = form.DataChanged
+                    bDataChanged = form.DataChanged;
                 }
             }
             catch (Exception)
@@ -378,6 +377,8 @@ namespace EasyTermCore
                 Query.ResumeRequests();
                 UpdateTermBases();
             }
+
+            return bDataChanged;
         }
 
         // ********************************************************************************

@@ -91,6 +91,7 @@
       <DependentUpon>EasyColorPicker.cs</DependentUpon>
     </Compile>
     <Compile Include="Tools\Extensions.cs" />
+    <Compile Include="Tools\LevenshteinDistance.cs" />
     <Compile Include="Tools\Tools.cs" />
     <Compile Include="Tools\WordSegments.cs" />
     <Compile Include="Tools\XmlNode.cs" />

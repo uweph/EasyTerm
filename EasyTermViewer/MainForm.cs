@@ -65,8 +65,11 @@ namespace EasyTermViewer
 
             lstTerms.TermBaseSet = _TermbaseSet;
 
+            FindType = FindTypes.Text;
+
             InitializeLanguageComboBoxes();
             InitializeLanguageSelection();
+
         }
 
 
@@ -76,6 +79,45 @@ namespace EasyTermViewer
         delegate void TermInfoResultCallback(TermInfoResultArgs e);
         TermInfoResultCallback _TermInfoResult;
 
+
+        // ********************************************************************************
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="e"></param>
+        /// <returns></returns>
+        /// <created>UPh,19.11.2015</created>
+        /// <changed>UPh,19.11.2015</changed>
+        // ********************************************************************************
+        protected override void OnShown(EventArgs e)
+        {
+            base.OnShown(e);
+            txtFind.Focus();
+
+        }
+
+
+
+        // ********************************************************************************
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="msg"></param>
+        /// <param name="keyData"></param>
+        /// <returns></returns>
+        /// <created>UPh,19.11.2015</created>
+        /// <changed>UPh,19.11.2015</changed>
+        // ********************************************************************************
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        {
+            if (keyData == (Keys.Control | Keys.F))
+            {
+                txtFind.Focus();
+                return true;
+            }
+
+            return base.ProcessCmdKey(ref msg, keyData);
+        }
 
         // ********************************************************************************
         /// <summary>
@@ -270,10 +312,23 @@ namespace EasyTermViewer
         // ********************************************************************************
         private void cmdTermBases_Click(object sender, EventArgs e)
         {
-            _TermbaseSet.EditTermBases();
+            ResetFilterChange();
 
-            InitializeLanguageSelection();
-            InitializeTermList();
+            try
+            {
+                if (_TermbaseSet.EditTermBases())
+                {
+                    _IgnoreNotification++;
+                    txtFind.Clear();
+                    InitializeLanguageSelection();
+                    InitializeTermList();
+                    _IgnoreNotification--;
+                }
+
+            }
+            catch (Exception)
+            {
+            }
         }
 
         // ********************************************************************************
@@ -327,11 +382,12 @@ namespace EasyTermViewer
         /// <created>UPh,25.10.2015</created>
         /// <changed>UPh,25.10.2015</changed>
         // ********************************************************************************
-        private void txtFindTerm_TextChanged(object sender, EventArgs e)
+        private void txtFind_TextChanged(object sender, EventArgs e)
         {
             _LastFilterTextChange = DateTime.Now;
             timerFilter.Enabled = true;
         }
+
 
         // ********************************************************************************
         /// <summary>
@@ -348,12 +404,25 @@ namespace EasyTermViewer
             if (_LastFilterTextChange != DateTime.MinValue &&
                 (DateTime.Now - _LastFilterTextChange).TotalMilliseconds >= 500)
             {
-                lstTerms.Filter(txtFindTerm.Text);
-
-                _LastFilterTextChange = DateTime.MinValue;
-                timerFilter.Enabled = false;
+                ResetFilterChange();
+                lstTerms.Filter(txtFind.Text);
             }
         }
+
+        // ********************************************************************************
+        /// <summary>
+        /// Resets the timer for filter update 
+        /// </summary>
+        /// <returns></returns>
+        /// <created>UPh,19.11.2015</created>
+        /// <changed>UPh,19.11.2015</changed>
+        // ********************************************************************************
+        private void ResetFilterChange()
+        {
+            _LastFilterTextChange = DateTime.MinValue;
+            timerFilter.Enabled = false;
+        }
+
 
         // ********************************************************************************
         /// <summary>
@@ -362,10 +431,10 @@ namespace EasyTermViewer
         /// <param name="sender"></param>
         /// <param name="e"></param>
         /// <returns></returns>
-        /// <created>UPh,25.10.2015</created>
-        /// <changed>UPh,25.10.2015</changed>
+        /// <created>UPh,19.11.2015</created>
+        /// <changed>UPh,19.11.2015</changed>
         // ********************************************************************************
-        private void txtFindTerm_KeyDown(object sender, KeyEventArgs e)
+        private void txtFind_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Down)
             {
@@ -377,26 +446,30 @@ namespace EasyTermViewer
                 lstTerms.SelectNextItem(false);
                 e.Handled = true;
             }
+            else if (e.KeyCode == Keys.Enter)
+            {
+                DoFind();
+                e.Handled = true;
+            }
         }
 
         // ********************************************************************************
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         /// <returns></returns>
-        /// <created>UPh,29.10.2015</created>
-        /// <changed>UPh,29.10.2015</changed>
+        /// <created>UPh,19.11.2015</created>
+        /// <changed>UPh,19.11.2015</changed>
         // ********************************************************************************
-        private void cmdLanguage_SelectedIndexChanged(object sender, EventArgs e)
+        private void DoFind()
         {
-
+            
         }
+
 
         // ********************************************************************************
         /// <summary>
-        /// 
+        /// User changed selection in first language combo box
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -411,7 +484,7 @@ namespace EasyTermViewer
 
         // ********************************************************************************
         /// <summary>
-        /// 
+        /// User changed selection in second language combo box
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -426,9 +499,9 @@ namespace EasyTermViewer
 
         // ********************************************************************************
         /// <summary>
-        /// 
+        /// Handle change in one of the language combo boxes
         /// </summary>
-        /// <param name="bLang1"></param>
+        /// <param name="bLang1">true = first language, false = second language has changed</param>
         /// <returns></returns>
         /// <created>UPh,29.10.2015</created>
         /// <changed>UPh,07.11.2015</changed>
@@ -442,10 +515,12 @@ namespace EasyTermViewer
 
             if (lang1 != null && lang2 != null)
             {
+                // Store language selection 
                 PlProfile.WriteString("Settings", "Language1", lang1.Name);
                 PlProfile.WriteString("Settings", "Language2", lang2.Name);
             }
 
+            // If first language has changed we need to re-build the term list
             if (bLang1)
                 InitializeTermList();
 
@@ -529,5 +604,63 @@ namespace EasyTermViewer
 
             _TermBaseQuery.RequestTermInfo(item, 0);
         }
+
+
+        enum FindTypes {Text, Term};
+
+        FindTypes _FindType = FindTypes.Text;
+        /// <summary></summary>
+        FindTypes FindType
+        {
+            get {return _FindType;}
+            set 
+            {
+                _FindType = value;
+
+                ToolStripMenuItem btn;
+                switch (_FindType)
+                {
+                    case FindTypes.Text: btn = btnFindText; break;
+                    case FindTypes.Term: btn = btnFindTerm; break;
+                    default: return;
+                }
+                btnFind.Text = btn.Text;
+                btnFind.Image = btn.Image;
+            }
+
+        }
+
+        // ********************************************************************************
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        /// <returns></returns>
+        /// <created>UPh,19.11.2015</created>
+        /// <changed>UPh,19.11.2015</changed>
+        // ********************************************************************************
+        private void btnFindText_Click(object sender, EventArgs e)
+        {
+            FindType = FindTypes.Text;
+        }
+
+        // ********************************************************************************
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        /// <returns></returns>
+        /// <created>UPh,19.11.2015</created>
+        /// <changed>UPh,19.11.2015</changed>
+        // ********************************************************************************
+        private void btnFindTerm_Click(object sender, EventArgs e)
+        {
+            FindType = FindTypes.Term;
+        }
+
+
+
     }
 }
