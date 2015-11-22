@@ -62,14 +62,18 @@ namespace EasyTermViewer
 
             _TermListResult = new TermListResultCallback(OnTermListResult);
             _TermInfoResult = new TermInfoResultCallback(OnTermInfoResult);
+            _TerminologyResult = new TerminologyResultCallback(OnTerminologyResult);
 
             lstTerms.TermBaseSet = _TermbaseSet;
+            lstTerminology.TermBaseSet = _TermbaseSet;
+
+            lstTerms.Dock = DockStyle.Fill;
+            lstTerminology.Dock = DockStyle.Fill;
 
             FindType = FindTypes.Text;
 
             InitializeLanguageComboBoxes();
             InitializeLanguageSelection();
-
         }
 
 
@@ -78,6 +82,9 @@ namespace EasyTermViewer
 
         delegate void TermInfoResultCallback(TermInfoResultArgs e);
         TermInfoResultCallback _TermInfoResult;
+
+        delegate void TerminologyResultCallback(TerminologyResultArgs e);
+        TerminologyResultCallback _TerminologyResult;
 
 
         // ********************************************************************************
@@ -119,28 +126,6 @@ namespace EasyTermViewer
             return base.ProcessCmdKey(ref msg, keyData);
         }
 
-        // ********************************************************************************
-        /// <summary>
-        /// Event Handler for results on TermList query
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        /// <returns></returns>
-        /// <created>UPh,25.10.2015</created>
-        /// <changed>UPh,25.10.2015</changed>
-        // ********************************************************************************
-        void TermBaseQuery_TermListResult(object sender, TermListResultArgs e)
-        {
-            if (InvokeRequired)
-            {
-                Invoke(_TermListResult, e);
-                return;     
-            }
-            else
-            {
-                OnTermListResult(e);
-            }
-        }
 
         // ********************************************************************************
         /// <summary>
@@ -165,20 +150,6 @@ namespace EasyTermViewer
             }
         }
 
-        // ********************************************************************************
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        /// <returns></returns>
-        /// <created>UPh,31.10.2015</created>
-        /// <changed>UPh,31.10.2015</changed>
-        // ********************************************************************************
-        void TermBaseQuery_TerminologyResult(object sender, TerminologyResultArgs e)
-        {
-            
-        }
 
 
 
@@ -344,7 +315,7 @@ namespace EasyTermViewer
             try
             {
                 lstTerms.SelectedIndices.Clear();
-                lstTerms.Clear();
+                lstTerms.ClearContent();
                 _TermBaseQuery.RequestTermList(0);
 
             }
@@ -401,11 +372,12 @@ namespace EasyTermViewer
         // ********************************************************************************
         private void timerFilter_Tick(object sender, EventArgs e)
         {
-            if (_LastFilterTextChange != DateTime.MinValue &&
+            if (FindType == FindTypes.Text && 
+                _LastFilterTextChange != DateTime.MinValue &&
                 (DateTime.Now - _LastFilterTextChange).TotalMilliseconds >= 500)
             {
                 ResetFilterChange();
-                lstTerms.Filter(txtFind.Text);
+                DoFind();
             }
         }
 
@@ -463,10 +435,132 @@ namespace EasyTermViewer
         // ********************************************************************************
         private void DoFind()
         {
-            
+            switch (FindType)
+	        {
+		        case FindTypes.Text: DoFindText(); break;
+		        case FindTypes.Terminology: DoFindTerminology(); break;
+	        }
         }
 
 
+#region Finding terms by text
+        // ********************************************************************************
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        /// <created>UPh,19.11.2015</created>
+        /// <changed>UPh,19.11.2015</changed>
+        // ********************************************************************************
+        void DoFindText()
+        {
+            lstTerms.Filter(txtFind.Text);
+        }
+
+        // ********************************************************************************
+        /// <summary>
+        /// Event Handler for results on TermList query
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        /// <returns></returns>
+        /// <created>UPh,25.10.2015</created>
+        /// <changed>UPh,25.10.2015</changed>
+        // ********************************************************************************
+        void TermBaseQuery_TermListResult(object sender, TermListResultArgs e)
+        {
+            if (InvokeRequired)
+            {
+                Invoke(_TermListResult, e);
+                return;     
+            }
+            else
+            {
+                OnTermListResult(e);
+            }
+        }
+
+        // ********************************************************************************
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        /// <returns></returns>
+        /// <created>UPh,22.11.2015</created>
+        /// <changed>UPh,22.11.2015</changed>
+        // ********************************************************************************
+        private void lstTerminology_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            DisplaySelectedTerm();
+        }
+
+        
+#endregion
+
+
+#region Finding terminology
+        int _FindTermRequestID = 1;
+
+        // ********************************************************************************
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        /// <created>UPh,19.11.2015</created>
+        /// <changed>UPh,19.11.2015</changed>
+        // ********************************************************************************
+        void DoFindTerminology()
+        {
+            lstTerminology.Initialize();
+            _TermBaseQuery.RequestTerminology(txtFind.Text, ++_FindTermRequestID);
+        }
+
+        // ********************************************************************************
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        /// <returns></returns>
+        /// <created>UPh,31.10.2015</created>
+        /// <changed>UPh,31.10.2015</changed>
+        // ********************************************************************************
+        void TermBaseQuery_TerminologyResult(object sender, TerminologyResultArgs e)
+        {
+            if (InvokeRequired)
+            {
+                Invoke(_TerminologyResult, e);
+                return;
+            }
+            else
+            {
+                OnTerminologyResult(e);
+            }
+        }
+
+        // ********************************************************************************
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="e"></param>
+        /// <returns></returns>
+        /// <created>UPh,20.11.2015</created>
+        /// <changed>UPh,20.11.2015</changed>
+        // ********************************************************************************
+        void OnTerminologyResult(TerminologyResultArgs e)
+        {
+            if (FindType != FindTypes.Terminology ||
+               _FindTermRequestID != e.RequestID)
+               return;
+               
+            lstTerminology.AddItem(e);   
+        }
+
+
+        
+#endregion
+        
         // ********************************************************************************
         /// <summary>
         /// User changed selection in first language combo box
@@ -598,37 +692,60 @@ namespace EasyTermViewer
         // ********************************************************************************
         private void DisplaySelectedTerm()
         {
-            TermListItem item = lstTerms.GetSelectedItem();
-            if (item == null)
-                return;
+            if (FindType == FindTypes.Text)
+            {
+                TermListItem item = lstTerms.GetSelectedItem();
+                if (item == null)
+                    return;
 
-            _TermBaseQuery.RequestTermInfo(item, 0);
+                _TermBaseQuery.RequestTermInfo(item, 0);
+            }
+            else if (FindType == FindTypes.Terminology)
+            {
+                TerminologyResultArgs tra = lstTerminology.GetSelectedItem();
+                if (tra == null)
+                    return;
+
+                TermListItem item = new TermListItem(tra);
+
+                _TermBaseQuery.RequestTermInfo(item, 0);
+
+            }
         }
 
 
-        enum FindTypes {Text, Term};
+        enum FindTypes {Unknown, Text, Terminology};
 
-        FindTypes _FindType = FindTypes.Text;
+        FindTypes _FindType = FindTypes.Unknown;
         /// <summary></summary>
         FindTypes FindType
         {
             get {return _FindType;}
             set 
             {
+                if (_FindType == value)
+                    return;
+
                 _FindType = value;
-
-                ToolStripMenuItem btn;
-                switch (_FindType)
-                {
-                    case FindTypes.Text: btn = btnFindText; break;
-                    case FindTypes.Term: btn = btnFindTerm; break;
-                    default: return;
-                }
-                btnFind.Text = btn.Text;
-                btnFind.Image = btn.Image;
+                OnFindTypeChanged();
             }
-
         }
+
+        // ********************************************************************************
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        /// <returns></returns>
+        /// <created>UPh,21.11.2015</created>
+        /// <changed>UPh,21.11.2015</changed>
+        // ********************************************************************************
+        private void btnFind_ButtonClick(object sender, EventArgs e)
+        {
+            DoFind();
+        }
+
 
         // ********************************************************************************
         /// <summary>
@@ -643,6 +760,7 @@ namespace EasyTermViewer
         private void btnFindText_Click(object sender, EventArgs e)
         {
             FindType = FindTypes.Text;
+            DoFind();
         }
 
         // ********************************************************************************
@@ -657,9 +775,46 @@ namespace EasyTermViewer
         // ********************************************************************************
         private void btnFindTerm_Click(object sender, EventArgs e)
         {
-            FindType = FindTypes.Term;
+            FindType = FindTypes.Terminology;
+            DoFind();
         }
 
+
+        // ********************************************************************************
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        /// <created>UPh,20.11.2015</created>
+        /// <changed>UPh,20.11.2015</changed>
+        // ********************************************************************************
+        void OnFindTypeChanged()
+        {
+            // Button gets text and image from menu entry
+            ToolStripMenuItem btn;
+            switch (_FindType)
+            {
+                case FindTypes.Text:
+                    btn = btnFindText;
+                    break;
+
+                case FindTypes.Terminology:
+                    btn = btnFindTerm;
+                    break;
+                default: return;
+            }
+
+            //
+            btnFind.Text = btn.Text;
+            btnFind.Image = btn.Image;
+            btnFind.ToolTipText = btn.ToolTipText;
+
+            lstTerminology.ClearContent();
+
+            // Switch visibility of both lists
+            lstTerms.Visible = (_FindType == FindTypes.Text);
+            lstTerminology.Visible = (_FindType == FindTypes.Terminology);
+        }
 
 
     }

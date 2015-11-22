@@ -491,6 +491,8 @@ namespace EasyTermCore
                 TerminologyResultArgs args = new TerminologyResultArgs();
 
                 args.RequestID = requestid;
+                args.TermBaseID = match.TermBaseID;
+                args.TermID = match.TermID;
                 args.FindFrom = from;
                 args.FindLen = len;
                 args.Term1 = srcterm.Text;

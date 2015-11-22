@@ -442,6 +442,12 @@ namespace EasyTermCore
         public int TermID {get; internal set;}
 
         internal TermListItem () {}
+        public TermListItem (TerminologyResultArgs e)
+        {
+            TermBaseID = e.TermBaseID;
+            TermID = e.TermID;
+            Term = e.Term1;
+        }
     }
 
     // --------------------------------------------------------------------------------
@@ -629,6 +635,7 @@ namespace EasyTermCore
     {
         public long RequestID { get; set; }
         public int TermBaseID { get; set; }
+        public int TermID { get; set; }
         public int FindFrom {get; set;} // Position of term in request string
         public int FindLen { get; set; } // Length of term in request string
         public string Term1 { get; set; } // Source term

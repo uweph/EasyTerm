@@ -42,11 +42,13 @@
             this.cmdTermBases = new System.Windows.Forms.ToolStripButton();
             this.timerFilter = new System.Windows.Forms.Timer(this.components);
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.lstTerminology = new EasyTermViewer.TerminologyListBox();
+            this.lstTerms = new EasyTermViewer.TermListBox();
+            this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.termInfoControl = new EasyTermCore.TermInfoControl();
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
-            this.lstTerms = new EasyTermViewer.TermListBox();
-            this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.panel1 = new System.Windows.Forms.Panel();
             this.toolStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -81,6 +83,7 @@
             // btnFind
             // 
             this.btnFind.AutoSize = false;
+            this.btnFind.DropDownButtonWidth = 20;
             this.btnFind.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.btnFindText,
             this.btnFindTerm});
@@ -89,22 +92,23 @@
             this.btnFind.Name = "btnFind";
             this.btnFind.Size = new System.Drawing.Size(149, 22);
             this.btnFind.Text = "<FindType>";
+            this.btnFind.ButtonClick += new System.EventHandler(this.btnFind_ButtonClick);
             // 
             // btnFindText
             // 
             this.btnFindText.Image = global::EasyTermViewer.Properties.Resources.search;
             this.btnFindText.Name = "btnFindText";
-            this.btnFindText.Size = new System.Drawing.Size(127, 22);
-            this.btnFindText.Text = "Find Text";
-            this.btnFindText.ToolTipText = "Find all terms that contain the text";
+            this.btnFindText.Size = new System.Drawing.Size(141, 22);
+            this.btnFindText.Text = "Term List";
+            this.btnFindText.ToolTipText = "Lists all terms. Enter text to filter the list.";
             this.btnFindText.Click += new System.EventHandler(this.btnFindText_Click);
             // 
             // btnFindTerm
             // 
             this.btnFindTerm.Name = "btnFindTerm";
-            this.btnFindTerm.Size = new System.Drawing.Size(127, 22);
-            this.btnFindTerm.Text = "Find Term";
-            this.btnFindTerm.ToolTipText = "Find a term";
+            this.btnFindTerm.Size = new System.Drawing.Size(141, 22);
+            this.btnFindTerm.Text = "Terminology";
+            this.btnFindTerm.ToolTipText = "Enter text and press Enter for a terminology search.";
             this.btnFindTerm.Click += new System.EventHandler(this.btnFindTerm_Click);
             // 
             // toolStripSeparator1
@@ -156,35 +160,41 @@
             // splitContainer1
             // 
             this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.splitContainer1.Location = new System.Drawing.Point(0, 25);
+            this.splitContainer1.Location = new System.Drawing.Point(0, 33);
             this.splitContainer1.Name = "splitContainer1";
             // 
             // splitContainer1.Panel1
             // 
+            this.splitContainer1.Panel1.Controls.Add(this.lstTerminology);
             this.splitContainer1.Panel1.Controls.Add(this.lstTerms);
             this.splitContainer1.Panel1MinSize = 100;
             // 
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.Controls.Add(this.termInfoControl);
-            this.splitContainer1.Size = new System.Drawing.Size(814, 485);
+            this.splitContainer1.Size = new System.Drawing.Size(814, 477);
             this.splitContainer1.SplitterDistance = 210;
+            this.splitContainer1.SplitterWidth = 8;
             this.splitContainer1.TabIndex = 4;
             // 
-            // termInfoControl
+            // lstTerminology
             // 
-            this.termInfoControl.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.termInfoControl.Location = new System.Drawing.Point(0, 0);
-            this.termInfoControl.Name = "termInfoControl";
-            this.termInfoControl.Size = new System.Drawing.Size(600, 485);
-            this.termInfoControl.TabIndex = 0;
+            this.lstTerminology.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.lstTerminology.FullRowSelect = true;
+            this.lstTerminology.Location = new System.Drawing.Point(0, 240);
+            this.lstTerminology.Name = "lstTerminology";
+            this.lstTerminology.OwnerDraw = true;
+            this.lstTerminology.Size = new System.Drawing.Size(205, 245);
+            this.lstTerminology.TabIndex = 4;
+            this.lstTerminology.UseCompatibleStateImageBehavior = false;
+            this.lstTerminology.View = System.Windows.Forms.View.Details;
+            this.lstTerminology.VirtualMode = true;
+            this.lstTerminology.SelectedIndexChanged += new System.EventHandler(this.lstTerminology_SelectedIndexChanged);
             // 
             // lstTerms
             // 
-            this.lstTerms.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
             this.lstTerms.BackColor = System.Drawing.SystemColors.Window;
+            this.lstTerms.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.lstTerms.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.columnHeader1});
             this.lstTerms.FullRowSelect = true;
@@ -194,7 +204,7 @@
             this.lstTerms.MultiSelect = false;
             this.lstTerms.Name = "lstTerms";
             this.lstTerms.OwnerDraw = true;
-            this.lstTerms.Size = new System.Drawing.Size(203, 482);
+            this.lstTerms.Size = new System.Drawing.Size(203, 231);
             this.lstTerms.TabIndex = 3;
             this.lstTerms.UseCompatibleStateImageBehavior = false;
             this.lstTerms.View = System.Windows.Forms.View.Details;
@@ -205,12 +215,29 @@
             // 
             this.columnHeader1.Width = 96;
             // 
+            // termInfoControl
+            // 
+            this.termInfoControl.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.termInfoControl.Location = new System.Drawing.Point(0, 0);
+            this.termInfoControl.Name = "termInfoControl";
+            this.termInfoControl.Size = new System.Drawing.Size(596, 477);
+            this.termInfoControl.TabIndex = 0;
+            // 
+            // panel1
+            // 
+            this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panel1.Location = new System.Drawing.Point(0, 25);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(814, 8);
+            this.panel1.TabIndex = 5;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(814, 510);
             this.Controls.Add(this.splitContainer1);
+            this.Controls.Add(this.panel1);
             this.Controls.Add(this.toolStrip1);
             this.KeyPreview = true;
             this.MinimumSize = new System.Drawing.Size(800, 500);
@@ -247,6 +274,8 @@
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolTip toolTip;
         private System.Windows.Forms.ToolTip toolTip1;
+        private TerminologyListBox lstTerminology;
+        private System.Windows.Forms.Panel panel1;
     }
 }
 
