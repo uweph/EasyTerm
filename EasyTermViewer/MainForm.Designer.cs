@@ -42,13 +42,14 @@
             this.cmdTermBases = new System.Windows.Forms.ToolStripButton();
             this.timerFilter = new System.Windows.Forms.Timer(this.components);
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
-            this.lstTerminology = new EasyTermViewer.TerminologyListBox();
-            this.lstTerms = new EasyTermViewer.TermListBox();
-            this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.termInfoControl = new EasyTermCore.TermInfoControl();
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.panel1 = new System.Windows.Forms.Panel();
+            this.btnOK = new System.Windows.Forms.Button();
+            this.lstTerminology = new EasyTermViewer.TerminologyListBox();
+            this.lstTerms = new EasyTermViewer.TermListBox();
+            this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.toolStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -68,7 +69,7 @@
             this.cmdTermBases});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.Size = new System.Drawing.Size(814, 25);
+            this.toolStrip1.Size = new System.Drawing.Size(864, 25);
             this.toolStrip1.TabIndex = 0;
             this.toolStrip1.Text = "toolStrip1";
             // 
@@ -165,6 +166,7 @@
             // 
             // splitContainer1.Panel1
             // 
+            this.splitContainer1.Panel1.Controls.Add(this.btnOK);
             this.splitContainer1.Panel1.Controls.Add(this.lstTerminology);
             this.splitContainer1.Panel1.Controls.Add(this.lstTerms);
             this.splitContainer1.Panel1MinSize = 100;
@@ -172,10 +174,36 @@
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.Controls.Add(this.termInfoControl);
-            this.splitContainer1.Size = new System.Drawing.Size(814, 477);
-            this.splitContainer1.SplitterDistance = 210;
+            this.splitContainer1.Size = new System.Drawing.Size(864, 477);
+            this.splitContainer1.SplitterDistance = 222;
             this.splitContainer1.SplitterWidth = 8;
             this.splitContainer1.TabIndex = 4;
+            // 
+            // termInfoControl
+            // 
+            this.termInfoControl.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.termInfoControl.Location = new System.Drawing.Point(0, 0);
+            this.termInfoControl.Name = "termInfoControl";
+            this.termInfoControl.Size = new System.Drawing.Size(634, 477);
+            this.termInfoControl.TabIndex = 0;
+            // 
+            // panel1
+            // 
+            this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panel1.Location = new System.Drawing.Point(0, 25);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(864, 8);
+            this.panel1.TabIndex = 5;
+            // 
+            // btnOK
+            // 
+            this.btnOK.Location = new System.Drawing.Point(3, 451);
+            this.btnOK.Name = "btnOK";
+            this.btnOK.Size = new System.Drawing.Size(75, 23);
+            this.btnOK.TabIndex = 1;
+            this.btnOK.Text = "OK";
+            this.btnOK.UseVisualStyleBackColor = true;
+            this.btnOK.Visible = false;
             // 
             // lstTerminology
             // 
@@ -184,7 +212,7 @@
             this.lstTerminology.Location = new System.Drawing.Point(0, 240);
             this.lstTerminology.Name = "lstTerminology";
             this.lstTerminology.OwnerDraw = true;
-            this.lstTerminology.Size = new System.Drawing.Size(205, 245);
+            this.lstTerminology.Size = new System.Drawing.Size(205, 194);
             this.lstTerminology.TabIndex = 4;
             this.lstTerminology.UseCompatibleStateImageBehavior = false;
             this.lstTerminology.View = System.Windows.Forms.View.Details;
@@ -215,27 +243,12 @@
             // 
             this.columnHeader1.Width = 96;
             // 
-            // termInfoControl
-            // 
-            this.termInfoControl.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.termInfoControl.Location = new System.Drawing.Point(0, 0);
-            this.termInfoControl.Name = "termInfoControl";
-            this.termInfoControl.Size = new System.Drawing.Size(596, 477);
-            this.termInfoControl.TabIndex = 0;
-            // 
-            // panel1
-            // 
-            this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panel1.Location = new System.Drawing.Point(0, 25);
-            this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(814, 8);
-            this.panel1.TabIndex = 5;
-            // 
             // MainForm
             // 
+            this.AcceptButton = this.btnOK;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(814, 510);
+            this.ClientSize = new System.Drawing.Size(864, 510);
             this.Controls.Add(this.splitContainer1);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.toolStrip1);
@@ -276,6 +289,7 @@
         private System.Windows.Forms.ToolTip toolTip1;
         private TerminologyListBox lstTerminology;
         private System.Windows.Forms.Panel panel1;
+        private System.Windows.Forms.Button btnOK;
     }
 }
 
