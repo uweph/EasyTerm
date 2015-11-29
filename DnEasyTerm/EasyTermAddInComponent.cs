@@ -35,7 +35,7 @@ namespace DnEasyTerm
             init.Ident = "EasyTerm";
             init.InfoText = "Provides terminology from tbx,csv and MultiTerm files";
             init.Name = "EasyTerm";
-            init.Type = AddinType.Translate;
+            init.Type = AddinType.Translate | AddinType.Tools;
             init.Style = enmPAIStyle.SetupData;
 
             if (!init.IsRegistration)

@@ -30,6 +30,10 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <PlatformTarget>x86</PlatformTarget>
+    <UseVSHostingProcess>true</UseVSHostingProcess>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>app.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Pass.AddIn.Core">
@@ -51,7 +55,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="EasyTermAddInComponent.cs" />
-    <Compile Include="Class1.cs" />
+    <Compile Include="EasyTermTokenCheck.cs" />
+    <Compile Include="EasyTermTools.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="EasyTermTranslations.cs" />
   </ItemGroup>
@@ -60,6 +65,14 @@
       <Project>{fd874cd4-a7b0-4d52-990f-7fa9aeb08b2c}</Project>
       <Name>EasyTermCore</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="addin.paiconfig">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="app.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8" ?>
+  <addin assembly="DnEasyTerm.dll" class="DnEasyTerm.EasyTermAddInComponent" enable="true">
+  <translations class="DnEasyTerm.EasyTermTranslations"></translations>
+    <tools class="DnEasyTerm.EasyTermTools"></tools>
+    <tokencheck class="DnEasyTerm.EasyTermTokenCheck"></tokencheck>
+</addin> 
