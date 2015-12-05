@@ -59,6 +59,7 @@
     <Compile Include="EasyTermTools.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="EasyTermTranslations.cs" />
+    <Compile Include="RangeMap.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\EasyTermCore\EasyTermCore.csproj">

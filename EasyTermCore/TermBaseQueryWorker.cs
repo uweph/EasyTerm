@@ -352,11 +352,15 @@ namespace EasyTermCore
             if (nWords == 0)
                 return;
 
-            // Loop all 1 to 3 word ranges
-            for (int iWord0 = 0; iWord0 < nWords; iWord0++)
+
+            // Start with max term word count (3)
+
+            for (int nTermWords = 3; nTermWords >= 1; nTermWords--)
             {
-                for (int iWord1 = iWord0; iWord1 < nWords && iWord1 < iWord0 + 3; iWord1++)
+                for (int iWord0 = 0; iWord0 < nWords - nTermWords + 1; iWord0++)
                 {
+                    int iWord1 = iWord0 + nTermWords - 1;
+
                     int from = wordSegments.GetWordStart(iWord0);
                     int to   = wordSegments.GetWordEnd(iWord1);
 

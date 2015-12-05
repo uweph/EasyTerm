@@ -25,6 +25,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -34,6 +35,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <UseVSHostingProcess>true</UseVSHostingProcess>
+    <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -51,10 +53,15 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="UTestRangeMap.cs" />
     <Compile Include="UTestWordSegments.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\DnEasyTerm\DnEasyTerm.csproj">
+      <Project>{8dd5a456-a6bd-4806-a490-610faec71d69}</Project>
+      <Name>DnEasyTerm</Name>
+    </ProjectReference>
     <ProjectReference Include="..\EasyTermCore\EasyTermCore.csproj">
       <Project>{fd874cd4-a7b0-4d52-990f-7fa9aeb08b2c}</Project>
       <Name>EasyTermCore</Name>
