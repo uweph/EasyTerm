@@ -494,6 +494,7 @@ namespace EasyTermCore
             {
                 TerminologyResultArgs args = new TerminologyResultArgs();
 
+                args.Status = TermStatus.None;
                 args.RequestID = requestid;
                 args.TermBaseID = match.TermBaseID;
                 args.TermID = match.TermID;

@@ -62,7 +62,7 @@ namespace EasyTermCore
         /// <created>UPh,31.10.2015</created>
         /// <changed>UPh,31.10.2015</changed>
         // ********************************************************************************
-        internal TermBaseFile FindTermBaseID(int id)
+        public TermBaseFile FindTermBaseID(int id)
         {
             foreach (TermBaseFile file in Files)
             {
@@ -340,7 +340,7 @@ namespace EasyTermCore
             return null;
         }
 
-        internal List<TermBaseFile> Files { get; private set; }
+        public List<TermBaseFile> Files { get; private set; }
 
 
 
@@ -401,7 +401,7 @@ namespace EasyTermCore
     /// 
     /// </summary>
     // --------------------------------------------------------------------------------
-    internal class TermBaseFile
+    public class TermBaseFile
     {
         static int NextID = 1;
 

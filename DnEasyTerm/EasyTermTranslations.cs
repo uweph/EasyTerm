@@ -59,6 +59,69 @@ namespace DnEasyTerm
             _Query.TerminologyResult += Query_TerminologyResult;
         }
 
+        // ********************************************************************************
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="inx"></param>
+        /// <param name="connection"></param>
+        /// <returns></returns>
+        /// <created>UPh,25.12.2015</created>
+        /// <changed>UPh,25.12.2015</changed>
+        // ********************************************************************************
+        public override bool GetTransConnection(int inx, CPAITransConnection connection)
+        {
+            if (_TermBaseSet == null)
+                InitializeTermbase();
+
+            if (_TermBaseSet == null)
+                return false;
+
+            if (inx >= 0 && inx < _TermBaseSet.Files.Count)
+            {
+                TermBaseFile file = _TermBaseSet.Files[inx];
+                connection.Name = file.DisplayName;
+                connection.ID = file.ID.ToString();
+                connection.Type = TranslationType.Terminology;
+                connection.ActiveTypes = file.Active ? TranslationType.Terminology : 0;
+                return true;
+            }
+
+            return false;
+        }
+
+        // ********************************************************************************
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="type"></param>
+        /// <param name="bActive"></param>
+        /// <returns></returns>
+        /// <created>UPh,25.12.2015</created>
+        /// <changed>UPh,25.12.2015</changed>
+        // ********************************************************************************
+        public override void ActivateTransConnection(string id, TranslationType type, bool bActive)
+        {
+            if (_TermBaseSet == null)
+                InitializeTermbase();
+
+            if (_TermBaseSet == null)
+                return;
+
+            int termbaseid;
+            if (!int.TryParse(id, out termbaseid))
+                return;
+
+            TermBaseFile file = _TermBaseSet.FindTermBaseID(termbaseid);
+            if (file == null)
+                return;
+
+            file.Active = bActive;
+                
+        }
+
+
 
         // ********************************************************************************
         /// <summary>

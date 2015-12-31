@@ -16,7 +16,6 @@ namespace EasyTermCore
     abstract internal class TermBase
     {
         internal TermBaseFile File {get; set;}
-        internal int TermBaseID {get; set;}
 
         internal abstract void OnOpenFile();
         internal abstract void OnCloseFile();
@@ -109,7 +108,7 @@ namespace EasyTermCore
         /// <created>UPh,31.10.2015</created>
         /// <changed>UPh,31.10.2015</changed>
         // ********************************************************************************
-        internal TermBase FindTermBase(int id)
+        public TermBase FindTermBase(int id)
         {
             foreach (TermBase tb in this)
             {

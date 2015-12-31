@@ -439,11 +439,13 @@ namespace EasyTermCore
     {
         public int TermBaseID {get; internal set;}
         public string Term {get; internal set;}
+        public TermStatus Status {get; internal set;}
         public int TermID {get; internal set;}
 
         internal TermListItem () {}
         public TermListItem (TerminologyResultArgs e)
         {
+            Status = e.Status;
             TermBaseID = e.TermBaseID;
             TermID = e.TermID;
             Term = e.Term1;
@@ -626,6 +628,13 @@ namespace EasyTermCore
 
     }
 
+    public enum TermStatus
+    {
+        None,
+        Admitted,
+        Preferred,
+        Prohibited,
+    }
     // --------------------------------------------------------------------------------
     /// <summary>
     /// 
@@ -642,5 +651,6 @@ namespace EasyTermCore
         public string Term2 { get; set; } // Target term
         public string Origin { get; set; } // Origin of term (which Termbase)
         public string Description { get; set; } // Description of term
+        public TermStatus Status {get; set; } // Status (if available)
     }
 }
