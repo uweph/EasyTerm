@@ -120,6 +120,15 @@
   <ItemGroup>
     <None Include="Resources\uncheck.png" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Prohibited.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\PrrProhibited_sm.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Prohibited_sm.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

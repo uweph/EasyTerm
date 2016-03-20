@@ -161,7 +161,7 @@ namespace EasyTermCore
         /// <created>UPh,01.11.2015</created>
         /// <changed>UPh,01.11.2015</changed>
         // ********************************************************************************
-        internal override void GetTermList(TermListItems items, IAbortTermQuery abort)
+        internal override void GetTermList(TermListItems items, IAbortTermQuery abort, bool bTargetLanguage)
         {
             if (_DataBase == null)
                 return;
@@ -171,7 +171,13 @@ namespace EasyTermCore
 
             try
             {
-                string sql = string.Format("SELECT origterm,conceptid FROM {0}", "I_" + _LangAttribute1);
+                string langattribute;
+                if (bTargetLanguage)
+                    langattribute = _LangAttribute2;
+                else
+                    langattribute = _LangAttribute1;                
+
+                string sql = string.Format("SELECT origterm,conceptid FROM {0}", "I_" + langattribute);
 
                 using (OleDbCommand cmd = new OleDbCommand(sql, _DataBase))
                 {
@@ -196,12 +202,53 @@ namespace EasyTermCore
                     }
                 }
 
+                // Get statuses 
+                foreach (TermListItem item in items)
+                {
+                    GetTermStatus(item, abort);
+                }
+
             }
             catch (Exception)
             {
                 items.Clear();
             }
         }
+
+
+        // ********************************************************************************
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="termID"></param>
+        /// <param name="info"></param>
+        /// <param name="abort"></param>
+        /// <returns></returns>
+        /// <created>UPh,20.03.2016</created>
+        /// <changed>UPh,20.03.2016</changed>
+        // ********************************************************************************
+        internal bool GetTermStatus(TermListItem item, IAbortTermQuery abort)
+        {
+            TermInfo info = new TermInfo();
+            if (!GetTermInfo(item.TermID, out info, abort))
+                return false;
+
+            // Find term in first language set
+            if (info.LanguageSets.Count == 0)
+                return false;
+
+            foreach (EasyTermCore.TermInfo.Term term in info.LanguageSets[0].Terms)
+            {
+                if (term.Props != null && term.Text == item.Term)
+                {
+                    item.Status = term.Props.Status;
+                    return true;
+                }
+            }
+
+            return true;
+        }
+
 
         // ********************************************************************************
         /// <summary>
@@ -396,10 +443,11 @@ namespace EasyTermCore
                 if (props == null)
                     props = new TermInfo.Properties();
 
-                if (string.Compare(attType.InnerText, "definition", true) == 0)
-                    props.Definition = nodeDescrip.InnerText;
-                else
+                if (!props.TrySetDefinition(attType.InnerText, nodeDescrip.InnerText) &&
+                    !props.TrySetStatus(attType.InnerText, nodeDescrip.InnerText))
+                {
                     props.AddValue(attType.InnerText, nodeDescrip.InnerText);
+                }
             }
 
 

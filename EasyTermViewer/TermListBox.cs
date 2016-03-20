@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using EasyTermViewer.Properties;
 
 namespace EasyTermViewer
 {
@@ -355,10 +356,11 @@ namespace EasyTermViewer
             else
                 e.DrawBackground();
 
+            TermListItem item = GetItemAt(e.ItemIndex);
+
             Color tbcolor = Color.Empty;
             if (TermBaseSet != null)
             {
-                TermListItem item = GetItemAt(e.ItemIndex);
                 if (item != null)
                     tbcolor = TermBaseSet.GetDisplayColor(item.TermBaseID);
             }
@@ -371,7 +373,17 @@ namespace EasyTermViewer
                 e.Graphics.FillRectangle(brush, rcBar);
             }
 
-            e.Graphics.DrawString(e.Item.Text, Font, _TextBrush, e.Bounds.Left + 4.0f, e.Bounds.Top + 2.0f);
+            Rectangle rect = e.Bounds;
+            rect.X += 4;
+            rect.Y += 2;
+
+            if (item != null && item.Status == TermStatus.prohibited)
+            {
+                e.Graphics.DrawImage(Resources.Prohibited_sm, rect.Left, rect.Top);
+                rect.X += 12;
+            }
+
+            e.Graphics.DrawString(e.Item.Text, Font, _TextBrush, rect.X, rect.Y);
 
             e.DrawFocusRectangle();
         }

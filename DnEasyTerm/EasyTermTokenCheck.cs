@@ -15,7 +15,7 @@ namespace DnEasyTerm
         TermBaseQuery _Query = null;
 
         bool bCheckTermUsage = true;
-        bool bCheckForbiddenTerms = true;
+        bool bCheckProhibitedTerms = true;
 
 
 
@@ -49,9 +49,26 @@ namespace DnEasyTerm
                 _Query = _TermBaseSet.Query;
             }            
 
+            bCheckTermUsage       = false;
+            bCheckProhibitedTerms = false;
+
+            if (_Query == null)
+                return 0;
+
+            var stringlist = checker.GetStringList();
+            if (stringlist == null)
+                return 0;
+
+            var listinfo = stringlist.GetListInfo();
+            if (listinfo == null)
+                return 0;
 
             checker.GetOption(PslConstant.TCO_CUSTOM_0, ref bCheckTermUsage);
-            checker.GetOption(PslConstant.TCO_CUSTOM_1, ref bCheckForbiddenTerms);
+            checker.GetOption(PslConstant.TCO_CUSTOM_1, ref bCheckProhibitedTerms);
+            if (!bCheckProhibitedTerms && !bCheckTermUsage)
+                return 0;
+
+            _Query.SetLanguagePair(listinfo.Lang1, listinfo.Lang2);
 
             return 0;
         }
@@ -69,7 +86,7 @@ namespace DnEasyTerm
         // ********************************************************************************
         public override uint CheckToken(CPAIToken token, Pass.AddIn.Core.CPAIResource resource, CPAITokenCheck checker)
         {
-            if (!bCheckForbiddenTerms && !bCheckTermUsage)
+            if (!bCheckProhibitedTerms && !bCheckTermUsage)
                 return 0;
 
             if (_Query == null)
@@ -77,14 +94,31 @@ namespace DnEasyTerm
 
             int nTranslated = (int) token.GetProperty(enmTokenProperties.StateTranslated);
             if (nTranslated == 0)
-                return 0;
-
-            string src = token.GetProperty(enmTokenProperties.Text, PropSelectionType.Source) as string;
-            string trn = token.GetProperty(enmTokenProperties.Text, PropSelectionType.Target) as string;
-
-            if (bCheckTermUsage)
             {
-                DoCheckTermUsage(src, trn, token, checker);
+                // Check source string
+                string src = token.GetProperty(enmTokenProperties.Text, PropSelectionType.Source) as string;
+ 
+                if (bCheckProhibitedTerms)
+                {
+                    DoCheckProhibitedTerm(src, token, checker);
+                }
+
+            }
+            else
+            {
+                // Check translation string
+                string src = token.GetProperty(enmTokenProperties.Text, PropSelectionType.Source) as string;
+                string trn = token.GetProperty(enmTokenProperties.Text, PropSelectionType.Target) as string;
+
+                if (bCheckTermUsage)
+                {
+                    DoCheckTermUsage(src, trn, token, checker);
+                }
+
+                if (bCheckProhibitedTerms)
+                {
+                    DoCheckProhibitedTerm(trn, token, checker);
+                }
             }
 
             return 0;
@@ -139,6 +173,33 @@ namespace DnEasyTerm
 
             if (strMissingTerm.Length > 0)
                 checker.ErrorOutput(token, string.Format("ET: Missing term {0}", strMissingTerm));                        
+        }
+
+        // ********************************************************************************
+        /// <summary>
+        /// Checks target language for forbidden terms
+        /// </summary>
+        /// <param name="src"></param>
+        /// <param name="trn"></param>
+        /// <param name="token"></param>
+        /// <param name="checker"></param>
+        /// <created>UPh,20.03.2016</created>
+        /// <changed>UPh,20.03.2016</changed>
+        // ********************************************************************************
+        public void DoCheckProhibitedTerm(string text, CPAIToken token, CPAITokenCheck checker)
+        {
+            RangeMap ranges = new RangeMap();
+
+            List<TerminologyResultArgs> results = _Query.RequestSyncProhibitedTerminology(text, 0);
+
+            // Results come sorted by word range. Longer sections (number of words in term) come first
+            foreach (TerminologyResultArgs result in results)
+            {
+                if (result.Status != TermStatus.prohibited)
+                    continue;
+
+                checker.ErrorOutput(token, string.Format("ET: Prohibited term used: {0}", result.Term1));
+            }
         }
 
         // ********************************************************************************

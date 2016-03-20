@@ -45,6 +45,9 @@
     <Image Include="res\app.ico">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="res\Prohibited.png">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <Manifest Include="res\app.manifest" />

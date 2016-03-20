@@ -254,7 +254,7 @@ namespace EasyTermCore
         /// <created>UPh,25.10.2015</created>
         /// <changed>UPh,25.10.2015</changed>
         // ********************************************************************************
-        internal override void GetTermList(TermListItems items, IAbortTermQuery abort)
+        internal override void GetTermList(TermListItems items, IAbortTermQuery abort, bool bTargetLanguage)
         {
             if (_Stream == null)
                 return;      
@@ -264,7 +264,10 @@ namespace EasyTermCore
                 var tuple = _Terms[i];
 
                 TermListItem item = new TermListItem();
-                items.Add(File.ID, tuple.Item1, i);
+                if (bTargetLanguage)    
+                    items.Add(File.ID, tuple.Item2, i);
+                else
+                    items.Add(File.ID, tuple.Item1, i);
             }      
         }
 

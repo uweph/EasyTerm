@@ -573,6 +573,9 @@ namespace EasyTermViewer
         // ********************************************************************************
         private void cmdLanguage1_SelectedIndexChanged(object sender, EventArgs e)
         {
+            if (_IgnoreNotification > 0)
+                return;
+
             OnLanguageSelectionChanged(true);
         }
 
@@ -588,6 +591,9 @@ namespace EasyTermViewer
         // ********************************************************************************
         private void cmdLanguage2_SelectedIndexChanged(object sender, EventArgs e)
         {
+            if (_IgnoreNotification > 0)
+                return;
+
             OnLanguageSelectionChanged(false);
         }
 
@@ -816,6 +822,45 @@ namespace EasyTermViewer
             lstTerminology.Visible = (_FindType == FindTypes.Terminology);
         }
 
+        // ********************************************************************************
+        /// <summary>
+        /// Click on language arrow -> switch languages
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        /// <returns></returns>
+        /// <created>UPh,23.01.2016</created>
+        /// <changed>UPh,23.01.2016</changed>
+        // ********************************************************************************
+        private void lblLanguageDirection_Click(object sender, EventArgs e)
+        {
+            SwitchLanguagePair();
+        }
 
+        // ********************************************************************************
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        /// <created>UPh,23.01.2016</created>
+        /// <changed>UPh,23.01.2016</changed>
+        // ********************************************************************************
+        private void SwitchLanguagePair()
+        {
+            int sel1 = cmdLanguage1.SelectedIndex;
+            int sel2 = cmdLanguage2.SelectedIndex;
+            if (sel1 < 0 || sel2 < 0)
+                return;
+
+            _IgnoreNotification++;
+
+            cmdLanguage1.SelectedIndex = sel2;
+            cmdLanguage2.SelectedIndex = sel1;
+
+            _IgnoreNotification--;
+
+            OnLanguageSelectionChanged(true);
+
+        }
     }
 }

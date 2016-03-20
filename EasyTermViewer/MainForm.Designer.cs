@@ -37,19 +37,19 @@
             this.btnFindTerm = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.cmdLanguage1 = new System.Windows.Forms.ToolStripComboBox();
-            this.toolStripLabel1 = new System.Windows.Forms.ToolStripLabel();
+            this.lblLanguageDirection = new System.Windows.Forms.ToolStripLabel();
             this.cmdLanguage2 = new System.Windows.Forms.ToolStripComboBox();
             this.cmdTermBases = new System.Windows.Forms.ToolStripButton();
             this.timerFilter = new System.Windows.Forms.Timer(this.components);
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
-            this.termInfoControl = new EasyTermCore.TermInfoControl();
-            this.toolTip = new System.Windows.Forms.ToolTip(this.components);
-            this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
-            this.panel1 = new System.Windows.Forms.Panel();
             this.btnOK = new System.Windows.Forms.Button();
             this.lstTerminology = new EasyTermViewer.TerminologyListBox();
             this.lstTerms = new EasyTermViewer.TermListBox();
             this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.termInfoControl = new EasyTermCore.TermInfoControl();
+            this.toolTip = new System.Windows.Forms.ToolTip(this.components);
+            this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
+            this.panel1 = new System.Windows.Forms.Panel();
             this.toolStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -64,7 +64,7 @@
             this.btnFind,
             this.toolStripSeparator1,
             this.cmdLanguage1,
-            this.toolStripLabel1,
+            this.lblLanguageDirection,
             this.cmdLanguage2,
             this.cmdTermBases});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
@@ -126,14 +126,15 @@
             this.cmdLanguage1.ToolTipText = "Source language";
             this.cmdLanguage1.SelectedIndexChanged += new System.EventHandler(this.cmdLanguage1_SelectedIndexChanged);
             // 
-            // toolStripLabel1
+            // lblLanguageDirection
             // 
-            this.toolStripLabel1.AutoSize = false;
-            this.toolStripLabel1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.toolStripLabel1.Image = global::EasyTermViewer.Properties.Resources.ArrowRight;
-            this.toolStripLabel1.Name = "toolStripLabel1";
-            this.toolStripLabel1.Size = new System.Drawing.Size(20, 22);
-            this.toolStripLabel1.Text = "toolStripLabel1";
+            this.lblLanguageDirection.AutoSize = false;
+            this.lblLanguageDirection.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.lblLanguageDirection.Image = global::EasyTermViewer.Properties.Resources.ArrowRight;
+            this.lblLanguageDirection.Name = "lblLanguageDirection";
+            this.lblLanguageDirection.Size = new System.Drawing.Size(20, 22);
+            this.lblLanguageDirection.Text = "toolStripLabel1";
+            this.lblLanguageDirection.Click += new System.EventHandler(this.lblLanguageDirection_Click);
             // 
             // cmdLanguage2
             // 
@@ -178,22 +179,6 @@
             this.splitContainer1.SplitterDistance = 222;
             this.splitContainer1.SplitterWidth = 8;
             this.splitContainer1.TabIndex = 4;
-            // 
-            // termInfoControl
-            // 
-            this.termInfoControl.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.termInfoControl.Location = new System.Drawing.Point(0, 0);
-            this.termInfoControl.Name = "termInfoControl";
-            this.termInfoControl.Size = new System.Drawing.Size(634, 477);
-            this.termInfoControl.TabIndex = 0;
-            // 
-            // panel1
-            // 
-            this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panel1.Location = new System.Drawing.Point(0, 25);
-            this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(864, 8);
-            this.panel1.TabIndex = 5;
             // 
             // btnOK
             // 
@@ -243,6 +228,22 @@
             // 
             this.columnHeader1.Width = 96;
             // 
+            // termInfoControl
+            // 
+            this.termInfoControl.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.termInfoControl.Location = new System.Drawing.Point(0, 0);
+            this.termInfoControl.Name = "termInfoControl";
+            this.termInfoControl.Size = new System.Drawing.Size(634, 477);
+            this.termInfoControl.TabIndex = 0;
+            // 
+            // panel1
+            // 
+            this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panel1.Location = new System.Drawing.Point(0, 25);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(864, 8);
+            this.panel1.TabIndex = 5;
+            // 
             // MainForm
             // 
             this.AcceptButton = this.btnOK;
@@ -277,7 +278,7 @@
         private System.Windows.Forms.ColumnHeader columnHeader1;
         private System.Windows.Forms.ToolStripComboBox cmdLanguage1;
         private System.Windows.Forms.ToolStripComboBox cmdLanguage2;
-        private System.Windows.Forms.ToolStripLabel toolStripLabel1;
+        private System.Windows.Forms.ToolStripLabel lblLanguageDirection;
         private System.Windows.Forms.SplitContainer splitContainer1;
         private EasyTermCore.TermInfoControl termInfoControl;
         private System.Windows.Forms.ToolStripTextBox txtFind;

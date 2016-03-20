@@ -282,10 +282,13 @@ namespace EasyTermCore
         /// <created>UPh,29.10.2015</created>
         /// <changed>UPh,29.10.2015</changed>
         // ********************************************************************************
-        internal override void GetTermList(TermListItems items, IAbortTermQuery abort)
+        internal override void GetTermList(TermListItems items, IAbortTermQuery abort, bool bTargetLanguage)
         {
             if (_Doc == null)
                 return;
+
+            if (bTargetLanguage)
+                return; // TODO
 
             for (int iLangset = 0; iLangset < _Langset1.Count; iLangset++)
             {
@@ -326,10 +329,11 @@ namespace EasyTermCore
                 if (props == null)
                     props = new TermInfo.Properties();
 
-                if (string.Compare(attType.InnerText, "definition", true) == 0)
-                    props.Definition = nodeDescrip.InnerText;
-                else
+                if (!props.TrySetDefinition(attType.InnerText, nodeDescrip.InnerText) &&
+                    !props.TrySetStatus(attType.InnerText, nodeDescrip.InnerText))
+                {
                     props.AddValue(attType.InnerText, nodeDescrip.InnerText);
+                }
             }
 
             foreach (XmlNode nodeDescrip in node.SelectNodes("./descrip"))
@@ -341,10 +345,11 @@ namespace EasyTermCore
                 if (props == null)
                     props = new TermInfo.Properties();
 
-                if (string.Compare(attType.InnerText, "definition", true) == 0)
-                    props.Definition = nodeDescrip.InnerText;
-                else
+                if (!props.TrySetDefinition(attType.InnerText, nodeDescrip.InnerText) &&
+                    !props.TrySetStatus(attType.InnerText, nodeDescrip.InnerText))
+                {
                     props.AddValue(attType.InnerText, nodeDescrip.InnerText);
+                }
             }
 
         }

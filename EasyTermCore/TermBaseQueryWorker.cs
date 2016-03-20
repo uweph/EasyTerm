@@ -21,6 +21,7 @@ namespace EasyTermCore
         private Thread _Thread;
         private AutoResetEvent _DataAvailableEvent;
         private TermIndex _Index;
+        private TermIndex _Index2; // Index on second language 
 
         // ********************************************************************************
         /// <summary>
@@ -36,6 +37,7 @@ namespace EasyTermCore
             _TermbaseQuery = termbaseQuery;
             _TermBases = termbases;
             _Index = new TermIndex();
+            _Index2 = new TermIndex();
         }
 
         // ********************************************************************************
@@ -158,6 +160,7 @@ namespace EasyTermCore
             }
 
             _Index.ClearIndex();
+            _Index2.ClearIndex();
         }
 
         // ********************************************************************************
@@ -263,6 +266,10 @@ namespace EasyTermCore
                 {
                     HandleTerminologyRequest(request);
                 }
+                else if (request.Type == RequestType.ProhibitedTerminology)
+                {
+                    HandleProhibitedTerminologyRequest(request);
+                }
 
                 // TODO Bei _PauseRequest die aktuelle Suche abbrechen
             }
@@ -280,7 +287,7 @@ namespace EasyTermCore
         // ********************************************************************************
         private void HandleTermListRequest(TermBaseRequest request)
         {
-            TermListItems items = RetrieveTermList(false);
+            TermListItems items = RetrieveTermList(false, false);
             if (items == null)
                 return;
 
@@ -337,7 +344,7 @@ namespace EasyTermCore
             // Build index if necessary
             if (_Index.LCID != _TermbaseQuery.LCID1)
             {
-                TermListItems items = RetrieveTermList(true);
+                TermListItems items = RetrieveTermList(true, false);
                 if (!bSync && _shouldStop)
                     return;
 
@@ -378,6 +385,61 @@ namespace EasyTermCore
         /// </summary>
         /// <param name="request"></param>
         /// <param name="result"></param>
+        /// <created>UPh,20.03.2016</created>
+        /// <changed>UPh,20.03.2016</changed>
+        // ********************************************************************************
+        internal void HandleProhibitedTerminologyRequest(TermBaseRequest request, List<TerminologyResultArgs> result = null)
+        {
+            bool bSync = (result != null);
+
+
+            bool bTargetLanguage = (_TermbaseQuery.LCID2 > 0);
+
+
+            // Build index if necessary (works on target language)
+            if (_Index2.LCID != _TermbaseQuery.LCID2)
+            {
+                TermListItems items = RetrieveTermList(false, bTargetLanguage);
+                if (!bSync && _shouldStop)
+                    return;
+
+                // Index from items
+                _Index2.BuildIndex(bTargetLanguage ?  _TermbaseQuery.LCID2 : _TermbaseQuery.LCID1, items);
+            }
+
+            
+            WordSegments wordSegments = new WordSegments(request.Term);
+
+            int nWords = wordSegments.Count;
+            if (nWords == 0)
+                return;
+
+
+            // Start with max term word count (3)
+
+            for (int nTermWords = 3; nTermWords >= 1; nTermWords--)
+            {
+                for (int iWord0 = 0; iWord0 < nWords - nTermWords + 1; iWord0++)
+                {
+                    int iWord1 = iWord0 + nTermWords - 1;
+
+                    int from = wordSegments.GetWordStart(iWord0);
+                    int to   = wordSegments.GetWordEnd(iWord1);
+
+                    foreach (IndexItem match in _Index2.Matches(request.Term, from, to - from))
+                    {
+                        HandleProhibitedTerminologyMatch(bTargetLanguage, request.ID, match, from, to - from, result);
+                    }
+                }
+            }
+        }
+
+        // ********************************************************************************
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="result"></param>
         /// <returns></returns>
         /// <created>UPh,17.11.2015</created>
         /// <changed>UPh,17.11.2015</changed>
@@ -389,7 +451,7 @@ namespace EasyTermCore
             // Build index if necessary
             if (_Index.LCID != _TermbaseQuery.LCID1)
             {
-                TermListItems items = RetrieveTermList(true);
+                TermListItems items = RetrieveTermList(true, false);
                 if (!bSync && _shouldStop)
                     return;
 
@@ -420,7 +482,7 @@ namespace EasyTermCore
             // Build index if necessary
             if (_Index.LCID != _TermbaseQuery.LCID1)
             {
-                TermListItems items = RetrieveTermList(true);
+                TermListItems items = RetrieveTermList(true, false);
                 if (!bSync && _shouldStop)
                     return;
 
@@ -494,7 +556,10 @@ namespace EasyTermCore
             {
                 TerminologyResultArgs args = new TerminologyResultArgs();
 
-                args.Status = TermStatus.None;
+                if (term.Props != null)
+                    args.Status = term.Props.Status;
+                else
+                    args.Status = TermStatus.none;
                 args.RequestID = requestid;
                 args.TermBaseID = match.TermBaseID;
                 args.TermID = match.TermID;
@@ -520,13 +585,87 @@ namespace EasyTermCore
 
         // ********************************************************************************
         /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="requestid"></param>
+        /// <param name="match"></param>
+        /// <param name="from"></param>
+        /// <param name="len"></param>
+        /// <param name="result"></param>
+        /// <created>UPh,20.03.2016</created>
+        /// <changed>UPh,20.03.2016</changed>
+        // ********************************************************************************
+        private void HandleProhibitedTerminologyMatch(bool bTargetLanguage, long requestid, IndexItem match, int from, int len, List<TerminologyResultArgs> result = null)
+        {
+            // Get TermInfo
+            TermBase termbase = _TermBases.FindTermBase(match.TermBaseID);
+            if (termbase == null)
+                return;
+
+            TermInfo terminfo = null;
+            if (!termbase.GetTermInfo(match.TermID, out terminfo, this))
+                return;
+
+            int langset = -1;
+            if (bTargetLanguage)
+            {
+                if (terminfo.LanguageSets.Count < 2)
+                    return;
+                langset = 1;
+            }
+            else
+            {
+                if (terminfo.LanguageSets.Count < 1)
+                    return;
+                langset = 0;
+            }
+
+
+            foreach (TermInfo.Term term in terminfo.LanguageSets[langset].Terms)
+            {
+                if (term.Props == null || term.Props.Status != TermStatus.prohibited)
+                    continue;
+
+                ulong hash = TermIndex.MakeGlossaryHashCode(term.Text);
+                if (match.Hash != hash)
+                    continue;
+
+                TerminologyResultArgs args = new TerminologyResultArgs();
+
+                args.Status = term.Props.Status;
+                args.RequestID = requestid;
+                args.TermBaseID = match.TermBaseID;
+                args.TermID = match.TermID;
+                args.FindFrom = from;
+                args.FindLen = len;
+                args.Term1 = term.Text;
+                args.Term2 = term.Text;
+                args.Origin = termbase.File.DisplayName;
+                args.Description = "";
+
+                if (result != null)
+                {
+                    result.Add(args);
+                }
+                else
+                {
+                    _TermbaseQuery.FireTerminologyResult(args);
+                }
+            }
+
+
+        }
+
+
+        // ********************************************************************************
+        /// <summary>
         /// Loops all term bases and collects terms in current language
         /// </summary>
         /// <returns></returns>
         /// <created>UPh,14.11.2015</created>
         /// <changed>UPh,14.11.2015</changed>
         // ********************************************************************************
-        private TermListItems RetrieveTermList(bool bLanguagePairOnly)
+        private TermListItems RetrieveTermList(bool bLanguagePairOnly, bool bTargetLanguage)
         {
             TermListItems items = new TermListItems();
             foreach (TermBase termbase in _TermBases)
@@ -538,7 +677,7 @@ namespace EasyTermCore
                     continue;
 
                 TermListItems items2 = new TermListItems();
-                termbase.GetTermList(items2, this);
+                termbase.GetTermList(items2, this, bTargetLanguage);
                 items.AddRange(items2);
             }
 
@@ -562,9 +701,10 @@ namespace EasyTermCore
 
     enum RequestType
     {
-        TermList,      // Return list of all terms in current source language
-        TermInfo,      // Return a term with a given id
-        Terminology    // Find matching terms for a given string
+        TermList,            // Return list of all terms in current source language
+        TermInfo,            // Return a term with a given id
+        Terminology,         // Find matching terms for a given string
+        ProhibitedTerminology // Find forbidden terms in a given string
     };
 
 
@@ -639,6 +779,25 @@ namespace EasyTermCore
             TermBaseRequest request = new TermBaseRequest();
             request.ID = requestid;
             request.Type = RequestType.Terminology;
+            request.Term = term;
+            return request;
+        }
+
+        // ********************************************************************************
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="term"></param>
+        /// <param name="requestid"></param>
+        /// <returns></returns>
+        /// <created>UPh,20.03.2016</created>
+        /// <changed>UPh,20.03.2016</changed>
+        // ********************************************************************************
+        static internal TermBaseRequest MakeProhibitedTerminologyRequest(string term, long requestid)
+        {
+            TermBaseRequest request = new TermBaseRequest();
+            request.ID = requestid;
+            request.Type = RequestType.ProhibitedTerminology;
             request.Term = term;
             return request;
         }

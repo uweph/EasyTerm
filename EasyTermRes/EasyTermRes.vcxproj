@@ -68,6 +68,7 @@
   <ItemGroup>
     <Image Include="res\app.ico" />
     <Image Include="res\copy.png" />
+    <Image Include="res\Prohibited.png" />
   </ItemGroup>
   <ItemGroup>
     <Manifest Include="res\app.manifest" />

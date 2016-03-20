@@ -225,6 +225,27 @@ namespace EasyTermCore
         /// 
         /// </summary>
         /// <typeparam name="TerminologyResultArgs"></typeparam>
+        /// <param name="text"></param>
+        /// <param name="nLangSet"></param>
+        /// <param name="requestid"></param>
+        /// <returns></returns>
+        /// <created>UPh,20.03.2016</created>
+        /// <changed>UPh,20.03.2016</changed>
+        // ********************************************************************************
+        public List<TerminologyResultArgs> RequestSyncProhibitedTerminology(string text, long requestid)
+        {
+            List<TerminologyResultArgs> result = new List<TerminologyResultArgs>();
+
+            _Worker.HandleProhibitedTerminologyRequest(TermBaseRequest.MakeProhibitedTerminologyRequest(text, requestid), result);
+
+            return result;
+        }
+
+        // ********************************************************************************
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="TerminologyResultArgs"></typeparam>
         /// <param name="term"></param>
         /// <param name="requestid"></param>
         /// <returns></returns>
@@ -546,6 +567,8 @@ namespace EasyTermCore
         public class Properties
         {
             public string Definition {get; internal set;}
+            public TermStatus Status {get; internal set;}
+
             public List<KeyValuePair<string,string>> Values;
 
             // Adds new key/value 
@@ -556,6 +579,51 @@ namespace EasyTermCore
                 Values.Add(new KeyValuePair<string,string>(key, value));
             }
 
+            // ********************************************************************************
+            /// <summary>
+            /// Assumes that termbase contains a "definition" key
+            /// </summary>
+            /// <param name="key"></param>
+            /// <param name="value"></param>
+            /// <returns></returns>
+            /// <created>UPh,20.03.2016</created>
+            /// <changed>UPh,20.03.2016</changed>
+            // ********************************************************************************
+            internal bool TrySetDefinition(string key, string value)
+            {
+                if (string.Compare(key, "definition", true) != 0)
+                    return false;
+
+                Definition = value;
+                return true;
+            }
+
+            // ********************************************************************************
+            /// <summary>
+            /// Assumes that termbase contains a "status" key
+            /// </summary>
+            /// <param name="key"></param>
+            /// <param name="value"></param>
+            /// <returns></returns>
+            /// <created>UPh,20.03.2016</created>
+            /// <changed>UPh,20.03.2016</changed>
+            // ********************************************************************************
+            internal bool TrySetStatus(string key, string value)
+            {
+                if (string.Compare(key, "status", true) != 0)
+                    return false;
+
+                switch (value)
+                {
+                    case "admitted":   Status = TermStatus.admitted; break;
+                    case "preferred":  Status = TermStatus.preferred; break;
+                    case "prohibited": Status = TermStatus.prohibited; break;
+                    case "obsolete":   Status = TermStatus.obsolete; break;
+                    default: return false;
+                }
+
+                return true;
+            }
         }
 
         // --------------------------------------------------------------------------------
@@ -630,10 +698,11 @@ namespace EasyTermCore
 
     public enum TermStatus
     {
-        None,
-        Admitted,
-        Preferred,
-        Prohibited,
+        none,
+        preferred,
+        admitted,
+        prohibited,
+        obsolete,
     }
     // --------------------------------------------------------------------------------
     /// <summary>

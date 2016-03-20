@@ -137,7 +137,14 @@ namespace DnEasyTerm
         {
             string origin = string.Concat("EasyTerm:", e.Origin);
 
-            _AddInComponent.ApplicationTools.SendTerminology(PAIAddIn, (int) e.RequestID, e.FindFrom, e.FindLen, e.Term1, e.Term2, origin, e.Description);
+            if (e.Status == TermStatus.prohibited)
+            {
+                _AddInComponent.ApplicationTools.SendTerminology(PAIAddIn, (int) e.RequestID, e.FindFrom, e.FindLen, e.Term1, "[" + e.Term2 + "]", origin, "[prohibited] " + e.Description);
+            }
+            else
+            {
+                _AddInComponent.ApplicationTools.SendTerminology(PAIAddIn, (int) e.RequestID, e.FindFrom, e.FindLen, e.Term1, e.Term2, origin, e.Description);
+            }
         }
 
         int _LCID1 = -1;
@@ -245,7 +252,14 @@ namespace DnEasyTerm
 
             foreach (TerminologyResultArgs e in results)
             {
-                trans.AddTerminology(e.FindFrom, e.FindLen, e.Term1, e.Term2, e.Origin, e.Description);
+                if (e.Status == TermStatus.prohibited)
+                {
+                    trans.AddTerminology(e.FindFrom, e.FindLen, e.Term1, "[" + e.Term2 + "]", e.Origin, "[prohibited] " + e.Description);
+                }
+                else
+                {
+                    trans.AddTerminology(e.FindFrom, e.FindLen, e.Term1, e.Term2, e.Origin, e.Description);
+                }
             }
 
             return 0;
@@ -270,7 +284,14 @@ namespace DnEasyTerm
 
             foreach (TerminologyResultArgs e in results)
             {
-                trans.AddTerminology(e.FindFrom, e.FindLen, e.Term1, e.Term2, e.Origin, e.Description);
+                if (e.Status == TermStatus.prohibited)
+                {
+                    trans.AddTerminology(e.FindFrom, e.FindLen, e.Term1, "[" + e.Term2 + "]", e.Origin, "[prohibited] " + e.Description);                
+                }
+                else
+                {
+                    trans.AddTerminology(e.FindFrom, e.FindLen, e.Term1, e.Term2, e.Origin, e.Description);
+                }
             }
 
             return 0;

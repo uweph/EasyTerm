@@ -228,6 +228,19 @@ namespace EasyTermCore
                 return;
             if (!string.IsNullOrEmpty(props.Definition))
                 AppendDefinition(props.Definition);
+
+            if (props.Status != TermStatus.none)
+            {
+                if (props.Status == TermStatus.prohibited)
+                {
+                    AppendValueWithImage("Status", props.Status.ToString(), "Prohibited");
+                }
+                else
+                {
+                    AppendValue("Status", props.Status.ToString());
+                }
+            }    
+
             if (props.Values != null)
             {
                 foreach (var value in props.Values)
@@ -275,6 +288,33 @@ namespace EasyTermCore
             _SB.AppendLine("</span></p>");
     
 
+        }
+
+        // ********************************************************************************
+        /// <summary>
+        /// Append a key value pair with image before the key
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        /// <param name="image"></param>
+        /// <created>UPh,20.03.2016</created>
+        /// <changed>UPh,20.03.2016</changed>
+        // ********************************************************************************
+        public void AppendValueWithImage(string key, string value, string image)
+        {
+            string respath = Assembly.GetCallingAssembly().Location;
+            respath = respath.Replace("\\", "%5C");
+
+            _SB.Append("<p class='value'><span class='key'>");
+
+            string img = string.Format(" <img style=\"vertical-align=middle\" hspace=2 border=0 src=\"res://{0}/PNG/{1}\" alt=\"{1}\"/>", respath, image);
+            _SB.Append(img);
+
+            _SB.Append(key);
+            _SB.Append(": ");
+            _SB.Append("</span><span class='value'>");
+            _SB.Append(value);
+            _SB.AppendLine("</span></p>");
         }
 
         // ********************************************************************************
@@ -347,13 +387,19 @@ namespace EasyTermCore
             _SB.AppendFormat("<{0}>{1}</{0}>", tag, text);
         }
 
+        // ********************************************************************************
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="text"></param>
+        /// <created>UPh,20.03.2016</created>
+        /// <changed>UPh,20.03.2016</changed>
+        // ********************************************************************************
         public void AppendText(string text)
         {
             text = text.Replace("<", "&lt;");
             _SB.Append(text);
         }
-
-
 
         public override string ToString()
         {
